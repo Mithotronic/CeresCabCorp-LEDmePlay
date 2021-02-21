@@ -416,6 +416,11 @@ byte playerAnimationPhase;  // Animation phase (0 or 1)
 boolean playerDirection;    // 0 == looking right, 1 == looking left
 boolean playerDirectionNew; // New direction after movement
 
+float xSpeed;
+float ySpeed;
+float xStepCounter;
+float yStepCounter;
+
 // X and Y Positions of the body parts after death
 float todesanimationX[5];
 float todesanimationY[5];
@@ -942,6 +947,10 @@ void setupLevel()
       playerYVector = 0.0;
       playerDirection = RIGHT;
       playerDirectionNew = RIGHT;
+      xSpeed = 0.0;
+      ySpeed = 0.0;
+      xStepCounter = 0.0;
+      yStepCounter = 0.0;
       screenXNew = screenX;
       screenYNew = screenY;
       redraw = false;
@@ -3179,39 +3188,68 @@ boolean directionDownFree()
 void movePlayer()
 {
   // Moving to the left side
-  if(joy1Left() && int(playerXMap) > 0)
+  if(joy1Left())
   {
-    playerDirectionNew = LEFT;      
+    xSpeed = xSpeed - 0.05;
+    if(xSpeed < -1.0){ xSpeed = -1.0; }
+  }
+  else if(joy1Right())
+  {
+    xSpeed = xSpeed + 0.05;
+    if(xSpeed > 1.0){ xSpeed = 1.0; }    
+  }
+    
+  if(xSpeed < 0.0 && int(playerXMap) > 0)
+  {
+    playerDirectionNew = LEFT;
+    xStepCounter = xStepCounter + xSpeed;      
     if(directionLeftFree())
     {
-      playerXMapNew = playerXMap - 1;
-      if(screenX > 0 && playerXScreen < 16)
+      if(xStepCounter <= -1.0)
       {
-        screenXNew = screenX - 1;
-        redraw = true;
+        xStepCounter = xStepCounter + 1.0;
+        playerXMapNew = playerXMap - 1;
+        if(screenX > 0 && playerXScreen < 16)
+        {
+          screenXNew = screenX - 1;
+          redraw = true;
+        }
+        else
+        {
+          playerXScreenNew = playerXScreen - 1;
+        }
       }
-      else
-      {
-        playerXScreenNew = playerXScreen - 1;
-      }
+    }
+    else
+    {
+      xSpeed = 0.0;
     }
   }
   // Moving to the right side
-  else if(joy1Right() && int(playerXMap) < (mapWidth - 4))
+  else if(xSpeed > 0.0 && int(playerXMap) < (mapWidth - 4))
   {
     playerDirectionNew = RIGHT;
+    xStepCounter = xStepCounter + xSpeed;      
     if(directionRightFree())
     {
-      playerXMapNew = playerXMap + 1;
-      if(screenX < (mapWidth - 32) && playerXScreen > 13)
+      if(xStepCounter >= 1.0)
       {
-        screenXNew = screenX + 1;
-        redraw = true;
+        xStepCounter = xStepCounter - 1.0;
+        playerXMapNew = playerXMap + 1;
+        if(screenX < (mapWidth - 32) && playerXScreen > 13)
+        {
+          screenXNew = screenX + 1;
+          redraw = true;
+        }
+        else
+        {
+          playerXScreenNew = playerXScreen + 1;
+        }
       }
-      else
-      {
-        playerXScreenNew = playerXScreen + 1;
-      }
+    }
+    else
+    {
+      xSpeed = 0.0;
     }
   }
 
