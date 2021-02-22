@@ -421,6 +421,12 @@ float ySpeed;
 float xStepCounter;
 float yStepCounter;
 
+boolean mainThrusters;
+boolean breakThrusters;
+boolean hoverThrusters;
+boolean downThrusters;
+boolean anyThrusterOn;
+
 // X and Y Positions of the body parts after death
 float todesanimationX[5];
 float todesanimationY[5];
@@ -954,6 +960,11 @@ void setupLevel()
       screenXNew = screenX;
       screenYNew = screenY;
       redraw = false;
+      mainThrusters = false;
+      breakThrusters = false;
+      hoverThrusters = false;
+      downThrusters = false;
+      anyThrusterOn = false;
     }
         
     // Set normal gem
@@ -3107,7 +3118,7 @@ void drawPlayer()
   if(playerDirectionNew == RIGHT)
   {
     matrix.drawPixel(playerXScreenNew, playerYScreenNew, matrix.Color333(0, 3, 0));
-    matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew, matrix.Color333(0, 1, 0));
     matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew, matrix.Color333(0, 0, 0));
     matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew, matrix.Color333(0, 0, 0));
     matrix.drawPixel(playerXScreenNew, playerYScreenNew + 1, matrix.Color333(0, 1, 0));
@@ -3123,7 +3134,7 @@ void drawPlayer()
   {
     matrix.drawPixel(playerXScreenNew, playerYScreenNew, matrix.Color333(0, 0, 0));
     matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew, matrix.Color333(0, 0, 0));
-    matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew, matrix.Color333(0, 1, 0));
     matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew, matrix.Color333(0, 3, 0));
     matrix.drawPixel(playerXScreenNew, playerYScreenNew + 1, matrix.Color333(0, 0, 0));
     matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 0, 3));
@@ -3139,7 +3150,7 @@ void drawPlayer()
 // Check whether movement to the left is possible
 boolean directionLeftFree()
 {
-  if(playfield[playerXScreenNew + 10][playerYScreenNew + 8] == 1){ return false; }
+  if(playfield[playerXScreenNew + 9][playerYScreenNew + 8] == 1){ return false; }
   if(playfield[playerXScreenNew + 8][playerYScreenNew + 9] == 1){ return false; }
   if(playfield[playerXScreenNew + 7][playerYScreenNew + 10] == 1){ return false; }
   return true;
@@ -3148,7 +3159,7 @@ boolean directionLeftFree()
 // Check whether movement to the right is possible
 boolean directionRightFree()
 {
-  if(playfield[playerXScreenNew + 9][playerYScreenNew + 8] == 1){ return false; }
+  if(playfield[playerXScreenNew + 10][playerYScreenNew + 8] == 1){ return false; }
   if(playfield[playerXScreenNew + 11][playerYScreenNew + 9] == 1){ return false; }
   if(playfield[playerXScreenNew + 12][playerYScreenNew + 10] == 1){ return false; }
   return true;
@@ -3161,13 +3172,13 @@ boolean directionUpFree()
   {
     if(playfield[playerXScreenNew + 8][playerYScreenNew + 7] == 1){ return false; }
     if(playfield[playerXScreenNew + 9][playerYScreenNew + 8] == 1){ return false; }
-    if(playfield[playerXScreenNew + 10][playerYScreenNew + 8] == 1){ return false; }
+    if(playfield[playerXScreenNew + 10][playerYScreenNew + 9] == 1){ return false; }
     if(playfield[playerXScreenNew + 11][playerYScreenNew + 9] == 1){ return false; }
   }
   else
   {
     if(playfield[playerXScreenNew + 8][playerYScreenNew + 9] == 1){ return false; }
-    if(playfield[playerXScreenNew + 9][playerYScreenNew + 8] == 1){ return false; }
+    if(playfield[playerXScreenNew + 9][playerYScreenNew + 9] == 1){ return false; }
     if(playfield[playerXScreenNew + 10][playerYScreenNew + 8] == 1){ return false; }
     if(playfield[playerXScreenNew + 11][playerYScreenNew + 7] == 1){ return false; }
   }
@@ -3184,19 +3195,151 @@ boolean directionDownFree()
   return true;
 }
 
+void drawThrusters()
+{
+  // Remove old thruster effect
+  if(playerDirection == LEFT)
+  {
+    if(playfield[playerXScreen + 12][playerYScreen + 9] == 0)
+    {
+      matrix.drawPixel(playerXScreen + 4, playerYScreen + 1, matrix.Color333(0, 0, 0));                
+    }    
+    if(playfield[playerXScreen + 7][playerYScreen + 10] == 0)
+    {
+      matrix.drawPixel(playerXScreen - 1, playerYScreen + 2, matrix.Color333(0, 0, 0));                
+    }
+    if(playfield[playerXScreen + 9][playerYScreen + 11] == 0 && playfield[playerXScreen + 10][playerYScreen + 11] == 0)
+    {
+      matrix.drawPixel(playerXScreen + 1, playerYScreen + 3, matrix.Color333(0, 0, 0));                
+      matrix.drawPixel(playerXScreen + 2, playerYScreen + 3, matrix.Color333(0, 0, 0));                
+    }
+    if(playfield[playerXScreen + 10][playerYScreen + 7] == 0)
+    {
+      matrix.drawPixel(playerXScreen + 2, playerYScreen - 1, matrix.Color333(0, 0, 0));                
+    }
+  }
+  else
+  {
+    if(playfield[playerXScreen + 7][playerYScreen + 9] == 0)
+    {
+      matrix.drawPixel(playerXScreen - 1, playerYScreen + 1, matrix.Color333(0, 0, 0));                
+    }
+    if(playfield[playerXScreen + 12][playerYScreen + 10] == 0)
+    {
+      matrix.drawPixel(playerXScreen + 4, playerYScreen + 2, matrix.Color333(0, 0, 0)); 
+    }                   
+    if(playfield[playerXScreen + 9][playerYScreen + 11] == 0 && playfield[playerXScreen + 10][playerYScreen + 11] == 0)
+    {
+      matrix.drawPixel(playerXScreen + 1, playerYScreen + 3, matrix.Color333(0, 0, 0));                
+      matrix.drawPixel(playerXScreen + 2, playerYScreen + 3, matrix.Color333(0, 0, 0));                
+    }      
+    if(playfield[playerXScreen + 9][playerYScreen + 7] == 0)
+    {
+      matrix.drawPixel(playerXScreen + 1, playerYScreen - 1, matrix.Color333(0, 0, 0));                
+    }
+  }
+
+  if(playerDirectionNew == LEFT)
+  {
+    if(mainThrusters && playfield[playerXScreenNew + 12][playerYScreenNew + 9] == 0 && animationCounter % 4 == 0)
+    {
+      matrix.drawPixel(playerXScreenNew + 4, playerYScreenNew + 1, matrix.Color333(3, 3, 2));
+    }
+    if(breakThrusters && playfield[playerXScreenNew + 7][playerYScreenNew + 10] == 0 && animationCounter % 4 == 0)
+    {
+      matrix.drawPixel(playerXScreenNew - 1, playerYScreenNew + 2, matrix.Color333(3, 3, 2));
+    }
+    if(hoverThrusters && playfield[playerXScreenNew + 9][playerYScreenNew + 11] == 0 && playfield[playerXScreenNew + 10][playerYScreenNew + 11] == 0 && animationCounter % 4 == 0)
+    {
+      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 3, matrix.Color333(3, 3, 2));        
+      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 3, matrix.Color333(3, 3, 2));
+    }
+    if(downThrusters && playfield[playerXScreenNew + 10][playerYScreenNew + 7] == 0 && animationCounter % 4 == 0)
+    {
+      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew - 1, matrix.Color333(3, 3, 2));
+    }
+  }
+  else
+  {
+    if(mainThrusters && playfield[playerXScreenNew + 7][playerYScreenNew + 9] == 0 && animationCounter % 4 == 0)
+    {
+      matrix.drawPixel(playerXScreenNew - 1, playerYScreenNew + 1, matrix.Color333(3, 3, 2));
+    }
+    if(breakThrusters && playfield[playerXScreenNew + 12][playerYScreenNew + 10] == 0 && animationCounter % 4 == 0)
+    {
+      matrix.drawPixel(playerXScreenNew + 4, playerYScreenNew + 2, matrix.Color333(3, 3, 2));
+    }
+    if(hoverThrusters && playfield[playerXScreenNew + 9][playerYScreenNew + 11] == 0 && playfield[playerXScreenNew + 10][playerYScreenNew + 11] == 0 && animationCounter % 4 == 0)
+    {
+      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 3, matrix.Color333(3, 3, 2));        
+      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 3, matrix.Color333(3, 3, 2));
+    }
+    if(downThrusters && playfield[playerXScreenNew + 9][playerYScreenNew + 7] == 0 && animationCounter % 4 == 0)
+    {
+      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew - 1, matrix.Color333(3, 3, 2));
+    }
+  } 
+}
+
 // Moves player (checks also the joystick)
 void movePlayer()
 {
-  // Moving to the left side
+
+Serial.print("x: ");
+Serial.print(xSpeed);
+Serial.print("   y: ");
+Serial.print(ySpeed);
+Serial.println();
+
+  // Simulate friction
+  if(xSpeed < 0.0)
+  { 
+    xSpeed = xSpeed + 0.01;
+    if(xSpeed > 0.0){ xSpeed = 0.0; }
+  }
+  else if(xSpeed > 0.0)
+  { 
+    xSpeed = xSpeed - 0.01;
+    if(xSpeed < 0.0){ xSpeed = 0.0; }
+  }
+
+  // Simulate gravitiy
+  if(ySpeed < 1.0){ ySpeed = ySpeed + 0.01; }
+  
+  // Left
   if(joy1Left())
   {
+    if(playerDirection == LEFT){ mainThrusters = true; }
+    else{ breakThrusters = true; }
+//    anyThrusterOn = true;
     xSpeed = xSpeed - 0.05;
     if(xSpeed < -1.0){ xSpeed = -1.0; }
   }
+  // Right
   else if(joy1Right())
   {
+    if(playerDirection == RIGHT){ mainThrusters = true; }
+    else{ breakThrusters = true; }
+//    anyThrusterOn = true;
     xSpeed = xSpeed + 0.05;
     if(xSpeed > 1.0){ xSpeed = 1.0; }    
+  }
+
+  // Up
+  if(joy1Up())
+  {
+    hoverThrusters = true;
+//    anyThrusterOn = true;
+    ySpeed = ySpeed - 0.025;
+    if(ySpeed < -1.0){ ySpeed = -1.0; }
+  }
+  // Down
+  else if(joy1Down())
+  {
+    downThrusters = true;
+//    anyThrusterOn = true;
+    ySpeed = ySpeed + 0.05;
+    if(ySpeed > 1.0){ ySpeed = 1.0; }    
   }
     
   if(xSpeed < 0.0 && int(playerXMap) > 0)
@@ -3254,39 +3397,64 @@ void movePlayer()
   }
 
   // Moving up
-  if(joy1Up() && int(playerYMap) > 0)
+  if(ySpeed < 0.0 && int(playerYMap) > 0)
   {
+    yStepCounter = yStepCounter + ySpeed;          
     if(directionUpFree())
     {
-      playerYMapNew = playerYMap - 1;
-      if(screenY > 0 && playerYScreen < 16)
+      if(yStepCounter <= 1.0)
       {
-        screenYNew = screenY - 1;
-        redraw = true;
+        yStepCounter = yStepCounter + 1.0;
+        playerYMapNew = playerYMap - 1;
+        if(screenY > 0 && playerYScreen < 16)
+        {
+          screenYNew = screenY - 1;
+          redraw = true;
+        }
+        else
+        {
+          playerYScreenNew = playerYScreen - 1;
+        }
       }
-      else
-      {
-        playerYScreenNew = playerYScreen - 1;
-      }
+    }
+    else
+    {
+      ySpeed = 0.0;
     }
   }
   // Moving down
-  else if(joy1Down() && int(playerYMap) < (mapHeight - 3))
+  else if(ySpeed > 0.0 && int(playerYMap) < (mapHeight - 3))
   {
+    yStepCounter = yStepCounter + ySpeed;              
     if(directionDownFree())
     {
-      playerYMapNew = playerYMap + 1;
-      if(screenY < (mapHeight - 32) && playerYScreen > 13)
+      if(yStepCounter >= 1.0)
       {
-        screenYNew = screenY + 1;
-        redraw = true;
-      }
-      else
-      {
-        playerYScreenNew = playerYScreen + 1;
+        yStepCounter = yStepCounter - 1.0;
+        playerYMapNew = playerYMap + 1;
+        if(screenY < (mapHeight - 32) && playerYScreen > 13)
+        {
+          screenYNew = screenY + 1;
+          redraw = true;
+        }
+        else
+        {
+          playerYScreenNew = playerYScreen + 1;
+        }
       }
     }
+    else
+    {
+      ySpeed = 0.0;
+    }
   }
+
+  // Draw Thrusters
+  drawThrusters();
+  mainThrusters = false;        
+  breakThrusters = false;        
+  hoverThrusters = false;        
+  downThrusters = false;        
 
   // Redraw player if position has changed or animation is incomplete   
   if(redraw || ((playerXScreen != playerXScreenNew) || (playerYScreen != playerYScreenNew) || (playerXMap != playerXMapNew) || (playerYMap != playerYMapNew) || playerDirection != playerDirectionNew))
