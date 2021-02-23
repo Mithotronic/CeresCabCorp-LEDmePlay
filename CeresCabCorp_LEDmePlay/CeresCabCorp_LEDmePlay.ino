@@ -178,10 +178,10 @@ int buttonPause = 43;
 const byte numberOfLevels = 16;
 const uint8_t levels[] PROGMEM  = {
                                          // Level 1: The Introduction
-                                         16, 4, 2,
+                                         16, 4, 3,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  10,
-                                         0,   0,   0,   0,   0,   0,   0,   1,   1,   0,   0,   1,   0,   0,   0,   1,
-                                         0,   1,   0,   0,   1,   1,   0,   0,   0,   0,   1,   1,   1,   1,   0,   0,
+                                         0,   1,   1,   0,   0,   0,   0,   1,   1,   0,   0,   1,   0,   0,   0,   1,
+                                         0,   0,   0,   0,   0,   1,   1,   0,   0,   0,   1,   1,   1,   1,   0,   0,
                                        241,   1,   1,   1,   1,   1,   1,   1,   1,   1,   3,   0,   0,   4,   1,   1,
 
                                          // Level 2: The Big Mac
@@ -425,7 +425,8 @@ boolean mainThrusters;
 boolean breakThrusters;
 boolean hoverThrusters;
 boolean downThrusters;
-boolean anyThrusterOn;
+
+boolean heavyCollisionWithObstacle;
 
 // X and Y Positions of the body parts after death
 float todesanimationX[5];
@@ -521,7 +522,7 @@ byte collisionDetection();
 boolean checkForLosingLive();
 void checkForGems();
 void showStatus();
-void realistischeTodesanimation();
+void taxiExplodes();
 void endSequence();
 void loop();
 
@@ -964,7 +965,7 @@ void setupLevel()
       breakThrusters = false;
       hoverThrusters = false;
       downThrusters = false;
-      anyThrusterOn = false;
+      heavyCollisionWithObstacle = false;
     }
         
     // Set normal gem
@@ -3243,40 +3244,40 @@ void drawThrusters()
   {
     if(mainThrusters && playfield[playerXScreenNew + 12][playerYScreenNew + 9] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew + 4, playerYScreenNew + 1, matrix.Color333(3, 3, 2));
+      matrix.drawPixel(playerXScreenNew + 4, playerYScreenNew + 1, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
     if(breakThrusters && playfield[playerXScreenNew + 7][playerYScreenNew + 10] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew - 1, playerYScreenNew + 2, matrix.Color333(3, 3, 2));
+      matrix.drawPixel(playerXScreenNew - 1, playerYScreenNew + 2, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
     if(hoverThrusters && playfield[playerXScreenNew + 9][playerYScreenNew + 11] == 0 && playfield[playerXScreenNew + 10][playerYScreenNew + 11] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 3, matrix.Color333(3, 3, 2));        
-      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 3, matrix.Color333(3, 3, 2));
+      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));        
+      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
     if(downThrusters && playfield[playerXScreenNew + 10][playerYScreenNew + 7] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew - 1, matrix.Color333(3, 3, 2));
+      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew - 1, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
   }
   else
   {
     if(mainThrusters && playfield[playerXScreenNew + 7][playerYScreenNew + 9] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew - 1, playerYScreenNew + 1, matrix.Color333(3, 3, 2));
+      matrix.drawPixel(playerXScreenNew - 1, playerYScreenNew + 1, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
     if(breakThrusters && playfield[playerXScreenNew + 12][playerYScreenNew + 10] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew + 4, playerYScreenNew + 2, matrix.Color333(3, 3, 2));
+      matrix.drawPixel(playerXScreenNew + 4, playerYScreenNew + 2, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
     if(hoverThrusters && playfield[playerXScreenNew + 9][playerYScreenNew + 11] == 0 && playfield[playerXScreenNew + 10][playerYScreenNew + 11] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 3, matrix.Color333(3, 3, 2));        
-      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 3, matrix.Color333(3, 3, 2));
+      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));        
+      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
     if(downThrusters && playfield[playerXScreenNew + 9][playerYScreenNew + 7] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew - 1, matrix.Color333(3, 3, 2));
+      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew - 1, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
   } 
 }
@@ -3311,7 +3312,8 @@ Serial.println();
   {
     if(playerDirection == LEFT){ mainThrusters = true; }
     else{ breakThrusters = true; }
-//    anyThrusterOn = true;
+    // SOUND: Thrusters
+    tone(audio, 80 + random(20), 10);
     xSpeed = xSpeed - 0.05;
     if(xSpeed < -1.0){ xSpeed = -1.0; }
   }
@@ -3320,16 +3322,18 @@ Serial.println();
   {
     if(playerDirection == RIGHT){ mainThrusters = true; }
     else{ breakThrusters = true; }
-//    anyThrusterOn = true;
+    // SOUND: Thrusters
+    tone(audio, 80 + random(20), 10);
     xSpeed = xSpeed + 0.05;
     if(xSpeed > 1.0){ xSpeed = 1.0; }    
   }
 
   // Up
-  if(joy1Up())
+  if(joy1Up() || joy1Fire())
   {
     hoverThrusters = true;
-//    anyThrusterOn = true;
+    // SOUND: Thrusters
+    tone(audio, 50 + random(10), 10);
     ySpeed = ySpeed - 0.025;
     if(ySpeed < -1.0){ ySpeed = -1.0; }
   }
@@ -3337,7 +3341,8 @@ Serial.println();
   else if(joy1Down())
   {
     downThrusters = true;
-//    anyThrusterOn = true;
+    // SOUND: Thrusters
+    tone(audio, 100 + random(40), 10);
     ySpeed = ySpeed + 0.05;
     if(ySpeed > 1.0){ ySpeed = 1.0; }    
   }
@@ -3365,7 +3370,9 @@ Serial.println();
     }
     else
     {
+      if(xSpeed < -0.5){ heavyCollisionWithObstacle = true; }
       xSpeed = 0.0;
+      xStepCounter = 0.0;
     }
   }
   // Moving to the right side
@@ -3392,7 +3399,9 @@ Serial.println();
     }
     else
     {
+      if(xSpeed > 0.5){ heavyCollisionWithObstacle = true; }
       xSpeed = 0.0;
+      xStepCounter = 0.0;
     }
   }
 
@@ -3402,7 +3411,7 @@ Serial.println();
     yStepCounter = yStepCounter + ySpeed;          
     if(directionUpFree())
     {
-      if(yStepCounter <= 1.0)
+      if(yStepCounter <= -1.0)
       {
         yStepCounter = yStepCounter + 1.0;
         playerYMapNew = playerYMap - 1;
@@ -3419,7 +3428,9 @@ Serial.println();
     }
     else
     {
+      if(ySpeed < -0.5){ heavyCollisionWithObstacle = true; }
       ySpeed = 0.0;
+      yStepCounter = 0.0;
     }
   }
   // Moving down
@@ -3445,7 +3456,9 @@ Serial.println();
     }
     else
     {
+      if(ySpeed > 0.5){ heavyCollisionWithObstacle = true; }
       ySpeed = 0.0;
+      yStepCounter = 0.0;
     }
   }
 
@@ -3499,6 +3512,13 @@ byte collisionDetection()
 // Check if collision with enemy is true
 boolean checkForLosingLive()
 {
+  // Heavy collision with obstacle
+  if(heavyCollisionWithObstacle)
+  {
+    lives--;
+    return true;
+  }
+  
   // Collision with enemy
   if(collisionDetection() == 2)
   {
@@ -3622,42 +3642,28 @@ void showStatus()
 }
 
 // Death animation with flying body parts
-void realistischeTodesanimation()
+void taxiExplodes()
 {
-  todesanimationX[0] = playerXScreen + playerDirection;
-  todesanimationY[0] = playerYScreen;
-  todesanimationX[1] = playerXScreen + playerDirection;
-  todesanimationY[1] = playerYScreen + 1;
-  todesanimationX[2] = playerXScreen + 1 - playerDirection;
-  todesanimationY[2] = playerYScreen + 1;
-  todesanimationX[3] = playerXScreen + playerDirection;
-  todesanimationY[3] = playerYScreen + 2;
-  todesanimationX[4] = playerXScreen + playerDirection;
-  todesanimationY[4] = playerYScreen + 3;
-  for(i = 0; i < 32; i++)
+  for(byte i = 0; i < 8; i++)
   {
-    // Sound: realistischeTodesanimation
-    tone(audio, 2048 / pow(2, (i / 3)),40);
-    matrix.drawPixel(todesanimationX[0], todesanimationY[0], matrix.Color333(5, 2, 0));
-    matrix.drawPixel(todesanimationX[1], todesanimationY[1], matrix.Color333(3, 0, 0));
-    matrix.drawPixel(todesanimationX[2], todesanimationY[2], matrix.Color333(5, 0, 0));
-    matrix.drawPixel(todesanimationX[3], todesanimationY[3], matrix.Color333(3, 0, 0));
-    matrix.drawPixel(todesanimationX[4], todesanimationY[4], matrix.Color333(0, 3, 0));
-    delay(20);    
-    matrix.drawPixel(todesanimationX[0], todesanimationY[0], matrix.Color333(0, 0, 0));
-    matrix.drawPixel(todesanimationX[1], todesanimationY[1], matrix.Color333(0, 0, 0));
-    matrix.drawPixel(todesanimationX[2], todesanimationY[2], matrix.Color333(0, 0, 0));
-    matrix.drawPixel(todesanimationX[3], todesanimationY[3], matrix.Color333(0, 0, 0));
-    matrix.drawPixel(todesanimationX[4], todesanimationY[4], matrix.Color333(0, 0, 0));
-    todesanimationY[0]--;
-    todesanimationX[1] = todesanimationX[1] + 0.95;
-    todesanimationY[1] = todesanimationY[1] - 0.3;
-    todesanimationX[2] = todesanimationX[2] - 0.95;
-    todesanimationY[2] = todesanimationY[2] - 0.3;
-    todesanimationX[3] = todesanimationX[3] + 0.575;
-    todesanimationY[3] = todesanimationY[3] + 0.8;
-    todesanimationX[4] = todesanimationX[4] - 0.575;
-    todesanimationY[4] = todesanimationY[4] + 0.8;
+    for(byte j = 0; j < i; j++)
+    {
+      matrix.drawCircle(playerXScreen + 1, playerYScreen + 1, j, matrix.Color333(random(3) + 3, random(3) + 3, 7 - i));
+      delay(10);
+      // SOUND: Taxi explodes
+      tone(audio, 120 - i * j + random(40), 9);
+      matrix.drawCircle(playerXScreen + 2, playerYScreen + 1, j, matrix.Color333(random(3) + 3, random(3) + 3, 7 - i));
+      delay(10);
+      // SOUND: Taxi explodes
+      tone(audio, 120 - i * j + random(20), 9);
+    }
+  }
+  for(byte i = 0; i < 8; i++)
+  {
+     matrix.drawCircle(playerXScreen + 1, playerYScreen + 1, i, matrix.Color333(0, 0, 0));
+     delay(10);
+     matrix.drawCircle(playerXScreen + 2, playerYScreen + 1, i, matrix.Color333(0, 0, 0));
+     delay(10);
   }
 }
 
@@ -3811,7 +3817,7 @@ void loop()
       // Live lost
       if(gemsToFinishLevel > 0)
       {
-        realistischeTodesanimation();
+        taxiExplodes();
         delay(1000);
         initializeLevelWithGems = false;
       }
