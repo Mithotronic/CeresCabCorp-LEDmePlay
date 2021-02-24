@@ -153,7 +153,7 @@ int buttonPause = 43;
 // Add tile type value (0 - 6)
 // to values of
 // Normal gem:               10
-// Extralife gem:            20
+// Platform:                 20
 // Bird:                     30
 // Fireball flying left:     40
 // Fireball flying right:    50
@@ -175,195 +175,17 @@ int buttonPause = 43;
 //
 // Example: Tile 1 with crab (value 70) is encoded by 71.
 //
-const byte numberOfLevels = 16;
+const byte numberOfLevels = 1;
 const uint8_t levels[] PROGMEM  = {
-                                         // Level 1: The Introduction
-                                         16, 4, 3,
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  10,
-                                         0,   1,   1,   0,   0,   0,   0,   1,   1,   0,   0,   1,   0,   0,   0,   1,
-                                         0,   0,   0,   0,   0,   1,   1,   0,   0,   0,   1,   1,   1,   1,   0,   0,
-                                       241,   1,   1,   1,   1,   1,   1,   1,   1,   1,   3,   0,   0,   4,   1,   1,
-
-                                         // Level 2: The Big Mac
-                                         8, 5, 1,
-                                        0,   0,   0,   0,   0,   0,   0,   0,
-                                       51,  21,  81,  11,  11,   1,   1,   0,
-                                        0,  41,   1,  11,  11,   1,   1,   1,
-                                       51,   1,   1,  11,  11,   1,   1,   0,
-                                      241,   1,   1,  11,  11,   1,   1,   1, 
-                                         
-                                         // Level 3: The Scaffold
-                                         8, 8, 3,
-                                        50,   0,   0,  11,  11,   0,   0,   0,  
-                                         0,   0,   1,   1,  71,   1,   0,   0,  
-                                        11,   0,   0,   0,   0,   0,   0,  11,  
-                                         0,  60,  11,  71,   1,  11,  60,   0,  
-                                        11,   1,   1,   0,   0,   1,   1,  11,  
-                                         0,   0,   0,  11,  11,   0,   0,   0,  
-                                         0,   0,   1,   1,   1,   1,   0,  40,  
-                                       241,  11,   1,   1,   1,   1,  11,  71,  
-                                         
-                                         // Level 4: The Beach
-                                        24, 4, 6,
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 180,   0,   0,   0,   0,   0,   0,  11,  71,   0,  10,
-                                         0,   0,   0,   0,  11,  71,   0,   0,   0,   0,  11,  71,   0,   0,   0,  11,  71,   0,   0,   1,  11,  71,   0,   1,
-                                         0,   0,  11,  71,   0,   0,   1,  71,   0,   0,   0,  11,   1,   0,   0,   0,   0,   0,   1,   1,  11,   1,  60,   3,
-                                       241,   1,   0,   0,  11,  71,   0,   0,  11,  71,   0,   0,   0,   0,   1,   0,  11,   1,   0,   0,   0,   0,   1,   3,
-                                          
-                                         // Level 5: The Laserdisco
-                                         8, 8, 5,
-                                       241,   1,   1,   1,   1,   1, 151,   0,
-                                         1,  11,   1, 130, 130,   1,   1,  41,
-                                        51,  11,   0,   1,   1,   0,  11,   1,
-                                        11,   1, 151, 130, 130, 141,   1,  11,
-                                        21,   1, 130,   1,   1, 130,   1,  11,
-                                         0,   0,   0, 141, 151,   0,   0,  40,
-                                         0,  11,  11,   0,   0,  11,  11,   0,
-                                         0,   0,   0,   0,   0,   0,   0,   0,
-
-                                         // Level 6: The Tower
-                                         4, 16, 1,
-                                         0,   0, 120,  20, 
-                                         0,   0,  11,  60, 
-                                         0,   0,   0,   0, 
-                                         0,  11,   0,   0, 
-                                         0, 120,  60,   0,
-                                        81,  11,   0,   0,
-                                         0,  60,   0,   0,
-                                         0,   0,   1,  11,
-                                         0,   0,  60,   0,
-                                        11,   1,   0,   0,
-                                         0,  60,  30,   0,
-                                         0,   0,  11,   1,
-                                         0,   0,   0,   0,
-                                         1,   0,   1,   1,
-                                        11,   1,   0,  11,
-                                       241,   1,   1,  11,
-                                         
-                                         // Level 7: The Abyss
-                                         12, 8, 4,
-                                        51,  11,   1,  11,   1,  11,   1,  11,   1,  11,   1,  40,
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 120,
-                                         0,   0,   0,   1,   1,   0,   1,  71,   0,   1,   0,   1,
-                                         0,   1,   0,   0,   5,  81,   1,   1,  81,   1,  81,   1, 
-                                        11,  81,  81,  11,   1,  11,   1,  11,   1,  11,   1,  40,
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 120,
-                                       241,   1,   0,   1,  71,   0,   1,  71,   0,   1,   0,   1,
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-
-                                         // Level 8: The Arena
-                                         8, 8, 7, 
-                                         0,   0,   1,  11,  11,   1,   0,   0,
-                                        11,   1,   1,   0,   0,   1,   1,  11,
-                                         0,   0,   0,  11,  11,   0,   0,   0,
-                                       100,   0,  11,   1,   1,  11,   0, 100,
-                                        11,   1,   0,   0,   0,   0,   1,  11,
-                                         0,   0,   1,   0,   0,   1,   0,   0,
-                                         1,   1,   0,  11,  11,   0,   1,   1,
-                                       241,   1,   1,   0,   0,   1,   1,   1,
- 
-                                         // Level 9: The Windpark
-                                         24, 4, 2,
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  11,  11,   0,   0,   0,   0,  11,  11,   0,   0,
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  71,   1,   1,  91,   0,   0,   0,   0,   0,   0,   0,  10,
-                                         0,   0,   0,   0,   1,  11,  11,  91,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,  91,   0,   0,   0,   0,
-                                       241,  11,  11,  71,   0,   0,   0,   0,   1,  11,  11,  91,   0,   0,   0,   0,   1,  71,   0,   0,   0,   0,   1,  91,
-                                         
-                                         // Level 10: The Magic Mountain
-                                         10, 10, 5,
-                                         0,  60,   0,  60,   0,  60,   0,   0,   1, 160,              
-                                         0,   0,   0,   0,   0,   0,   1,   2,   4,   0,              
-                                         0,   0,   0,   0,   1,   2, 120,  20,   4,   0,              
-                                         0,   0,   1,   2,   0,  60,  11,  11,   4,   0,              
-                                       241,   2,   0,  60,  11,  11,  11,  11,   4,   0,              
-                                       120,   0,   0,   0,   0,   0,   0,   0,   4,   0,              
-                                         0,   1,  11,   1,   1,  11,   1,   0,   4,   0,              
-                                       171,   1,  11,   1,   1,  11,   1, 130,   6,   0,              
-                                         0, 171,  11,   1,   1,  11,   1,   1,   3,   1,              
-                                       171,   1,  11,   1,   1,  11,   1,   1,   1, 171,              
-
-                                         // Level 11: The Bad Lands
-                                         20, 6, 6,
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 180,   0,   0,   0,   0,   0, 180,
-                                        30,   0,   0,   0,  11,  11,   0,   0,   0,   0,  30,   0,   0,  11,  11,   0,   0,   0,   0,  20,
-                                         0,   0,   0,   0,   0,   0,   0,  11,  11,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-                                         0,   0,   0,   0,   0, 180,   0,   0,   0,   0, 111,   1,   0,  11,   0,   0,   0, 180,  11,   0,
-                                         0,   0,   0, 111,   1,   0,   0,   0,   1,   2,   0,   0,   0,   0,   2, 111,   0,   0,   0,   0,
-                                       241,  11,   2,   0,   0,   0,  11,   0,   0,   0,   0,   0,   0,   0,   0,   0,  11, 111,   0,  10,
-
-                                         // Level 12: The Spiral
-                                         12, 8, 4,
-                                        30,  0, 171,   1,   1,   1,  31,   1,   1,   1,   1, 241,
-                                       160,   0,   3,   0, 171,   1,   1,   1,   1,   1,   0,   0,
-                                         0,   1,   3,   1,   3,   0,   1, 171,   0,   4,   1,   0,
-                                         0,   0,   3,   0,  13,  10,  10,  14,   0,   4,   0,   0,
-                                         0,   1,   3,   1,  13,  10,  10,  14,   1,   4,   1,   0,
-                                         0,   0,   3,   0,  15,  11,  11,  16,   0,   4,   0, 160,
-                                         0,   1,   5,   1,   1,   1,   1,   1, 171,   6,   1,   0,
-                                       171,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-
-                                         // Level 13: The Descend
-                                         4, 24, 5,
-                                       241,   1,   1,   0,
-                                         0,  20,   4,  30,
-                                         0,   0,   4,   0,
-                                         0,  81,   1,   1,
-                                         0,   3,   0,   0,
-                                         0,   3,   0,   0,
-                                         1,   1,  81,   0,
-                                         0,  10,   4,   0,
-                                       120,   1,  81,   1,
-                                         0,   3,  10,   0,
-                                         1,  81,   1, 120,
-                                        30,  10,  10,   0,
-                                         0,  81,  81,   0,
-                                         0,   1,   1,   1,
-                                         0,   1,   1,   0,
-                                         0,   0,   0,   1,
-                                         0,   0,   0,   0,
-                                         0,  10,  10,   1,
-                                         0,  10,  10,   0,
-                                         0,  10,  10,   1,
-                                         0,  10,  10,   0,
-                                         0,  10,  10,  31,
-                                         0,   0,   0,   0,
-                                         1,   0,   0,   1,
- 
-                                         // Level 14: The Twisted Valley
-                                         12, 8, 3,
-                                         0,   0,   0,   0, 180,   0,   0,   0,   0,   0,   0,  20,
-                                         0,   0,   0,  11,   1,   1,   0,   1,  11,   0,   0,   0,
-                                       241,   0,   0,   0,  11,   1, 181,  11,   0,   0,   0,   1,
-                                         4,   1,   0,   0,   1,   0,   1,   1,   0,   0,   1,   3,
-                                        10,   4,   1,   0,   0, 181,  91,   0,   0,   1,   3,  10,
-                                        11,   0,   4,   1,   0,  11,  11,   0,   1,   3,   0,  11,
-                                        91,   1,   0,   4,   0,   0,   0, 180,   3,   0,   1,  91,
-                                         0,   0,   0,   1,  11,  91,   1,  11,   1,   0,   0,   0,
-
-                                         // Level 15: The total Insanity
-                                         12, 8, 1,
-                                         0, 180,   0,   0,  60,   0,   0,   0,   0,   0, 180,  30,
-                                        11,   0,   0,   0,   0,  11,  91,  11,   0,   0,   0,   0,
-                                         0,   0,   1, 111,   0,   0,   0,   0,   0,  11,   0,   0,
-                                        21,   0,   3,   4,   0,   0,   0,  11,  71,   0,   0,  11,
-                                         0,   0,   5,   6,   1,   1,   1,   0,   0,   0,   0,   0,
-                                         0,   0, 171, 171,   1,   1,   1,   0,   0,  11, 130,  10,
-                                       241,   0,   0,   0,   0,   0, 151,   1,   0,   0,  40, 140,
-                                         0,   0,   0,  11,  91,  11,   0,   0,   0,   0,   0, 141,
-
-                                         // Level 16: The Devils Cove
-                                         10, 10, 7,
-                                       100,   0,   0, 100,  11,  11,   0,   0,   0, 100, 
-                                         0,  11,   0,   0,   0,   0,   0,   0,  11,   0, 
-                                         0,   0,   0,   0,   1,   1,   0,   0,   0,   0, 
-                                         0,   0,  11,   0,   0,   0,   0,  11,   0,   0, 
-                                        11,   0,   0,   0, 241,   1,   0,   0,   0,  11, 
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 
-                                         0,   0,  11,   0,  11,  11,   0,  11,   0,   0, 
-                                        11,   0,   0,   0,   0,   0,   0,   0,   0,  11, 
-                                         0,   1,   0,   0,  11,  11,   0,   0,   1,   0, 
-                                       100,   0,   0,   0,   0,   0, 100,   0,   0, 100
-                                         
+                                         16, 8, 3,
+                                         1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
+                                         0,   0,   1,  21,   1,   1,   0,   0,   0,   0,   1,   1,  21,   1,   0,  10,
+                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+                                         1,  21,   1,   1,   0,   0,   0,   8,   7,   0,   0,   0,   1,   1,  21,   1,
+                                         0,   0,   0,   0,   0,   0,   0,   7,   8,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,   1,   1,   1,   1,   0,   0,   0,   0,   1,   1,   1,   1,   0,   0,
+                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+                                       241,   1,  21,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,  21,   1,   1                                         
                                   };
                                   
 byte levelMap[128]; // Contains the current level after loading from PROGMEM
@@ -399,6 +221,7 @@ int upperLeftTileYOffset; // Number of pixels of upper left tile in Y-direction 
 byte lives;                 // Remaining lives
 byte level;                 // Current level
 int gems;                   // Counts the collected gems
+int passengers;             // Counts the delivered passengers
 int playerXScreen;          // X position on screen
 int playerYScreen;          // Y position on screen
 int playerXScreenNew;       // New X position after movement
@@ -448,6 +271,24 @@ int enemyX2[16];
 int enemyY2[16];
 byte enemyStatus[16]; // 0 == inactive, 1 == active
 byte enemyCounter;    // Number of enemies in current level (16 is the maximum)
+
+// Platforms
+#define RED       1
+#define GREEN     2
+#define BLUE      3
+#define YELLOW    4
+#define VIOLET    5
+#define TURQUOISE 6
+int platformXScreen[6];                // X position on screen
+int platformYScreen[6];                // Y position on screen
+int platformXScreenNew[6];             // New X position after movement
+int platformYScreenNew[6];             // New Y position after movement
+float platformXMap[6];                 // X position on map
+float platformYMap[6];                 // Y position on map
+byte platformColor[6];                 // RED, GREEN, BLUE, YELLOW, VIOLOET, TURQUOISE
+byte platformStatus[6];               // 0 == inactive, 1 == empty, 2 == passenger is waiting
+byte platformCounter;                  // Number of platforms in current level (6 is the maximum)
+byte remainingPassengersToFinishLevel; // Jump to next level if 0
 
 // Gems
 int gemXScreen[16];              // X position on screen
@@ -841,6 +682,7 @@ void setupGame()
 {
   lives = 3;
   level = 1;
+  passengers = 0;
   gems = 0;
   initializeLevelWithGems = true;
 }
@@ -864,6 +706,20 @@ void setupLevel()
     gemCounter = 0;
     gemsToFinishLevel = 0;
   }
+
+  for(i = 0; i < 6; i++)
+  {
+    platformXScreen[i] = 0;
+    platformYScreen[i] = 0;
+    platformXScreenNew[i] = 0;
+    platformYScreenNew[i] = 0;
+    platformXMap[i] = 0.0;
+    platformYMap[i] = 0.0;
+    platformColor[i] = 0;
+    platformStatus[i] = 0;
+  }
+  platformCounter = 0;
+  remainingPassengersToFinishLevel = 0;
   
   enemyCounter = 0;
   
@@ -913,7 +769,7 @@ void setupLevel()
     if(j == 24)
     {
       playerXMap = ((i % tileNumberX) * 8) + 3;
-      playerYMap = ((i / tileNumberX) * 8) + 3;
+      playerYMap = ((i / tileNumberX) * 8) + 4;
       playerXScreen = 15;
       playerYScreen = 14;
 
@@ -980,16 +836,17 @@ void setupLevel()
         gemCounter++;
       }
     }
-
-    // Set extralife gem
-    if(j == 2 && initializeLevelWithGems)
+    
+    // Set platform
+    if(j == 2)
     {
-      gemXMap[gemCounter] = ((i % tileNumberX) * 8) + 3;
-      gemYMap[gemCounter] = ((i / tileNumberX) * 8) + 3;
-      gemStatus[gemCounter] = 2;
-      if(gemCounter < 15)
+      platformXMap[platformCounter] = ((i % tileNumberX) * 8);
+      platformYMap[platformCounter] = ((i / tileNumberX) * 8) + 5;
+      platformStatus[platformCounter] = 1;
+      if(platformCounter < 6)
       {
-        gemCounter++;
+        platformColor[platformCounter] = platformCounter + 1;
+        platformCounter++;
       }
     }
 
@@ -1304,22 +1161,22 @@ void drawScreen()
 
 // Draws a tile (8*8) at position x, y
 //
-//   type 0     type 1     type 2     type 3     type 4     type 5     type 6
-//   --------   --------   --------   O-------   -------O   O-------   -------O
-//   --------   --------   --------   O-------   -------O   O-------   -------O
-//   --------   --------   --------   O-------   -------O   O-------   -------O
-//   --------   --------   OOOOOOOO   O-------   -------O   O-------   -------O
-//   --------   --------   --------   O-------   -------O   O-------   -------O
-//   --------   --------   --------   O-------   -------O   O-------   -------O
-//   --------   --------   --------   O-------   -------O   O-------   -------O
-//   --------   OOOOOOOO   --------   O-------   -------O   OOOOOOOO   OOOOOOOO
+//   type 0     type 1     type 2     type 3     type 4     type 5     type 6     type 7     type 8
+//   --------   --------   --------   O-------   -------O   O-------   -------O   O-------   -------O
+//   --------   --------   --------   O-------   -------O   O-------   -------O   -O------   ------O-
+//   --------   --------   --------   O-------   -------O   O-------   -------O   --O-----   -----O--
+//   --------   --------   OOOOOOOO   O-------   -------O   O-------   -------O   ---O----   ----O---
+//   --------   --------   --------   O-------   -------O   O-------   -------O   ----O---   ---O----
+//   --------   --------   --------   O-------   -------O   O-------   -------O   -----O--   --O-----
+//   --------   --------   --------   O-------   -------O   O-------   -------O   ------O-   -O------
+//   --------   OOOOOOOO   --------   O-------   -------O   OOOOOOOO   OOOOOOOO   -------O   O-------
 //
 void drawTile(byte _type, int _x, int _y)
 {
   if(_type == 0)
   {
   }
-  if(_type == 1)
+  else if(_type == 1)
   {
     matrix.drawPixel(_x, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 1, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
@@ -1338,7 +1195,7 @@ void drawTile(byte _type, int _x, int _y)
     playfield[_x + 14][_y + 15] = 1;
     playfield[_x + 15][_y + 15] = 1;
   }
-  if(_type == 2)
+  else if(_type == 2)
   {
     matrix.drawPixel(_x, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 1, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
@@ -1357,7 +1214,7 @@ void drawTile(byte _type, int _x, int _y)
     playfield[_x + 14][_y + 11] = 1;
     playfield[_x + 15][_y + 11] = 1;
   }
-  if(_type == 3)
+  else if(_type == 3)
   {
     matrix.drawPixel(_x, _y, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x, _y + 1, matrix.Color333(red * 2, green * 2, blue * 2));
@@ -1376,7 +1233,7 @@ void drawTile(byte _type, int _x, int _y)
     playfield[_x + 8][_y + 14] = 1;
     playfield[_x + 8][_y + 15] = 1;
   }
-  if(_type == 4)
+  else if(_type == 4)
   {
     matrix.drawPixel(_x + 7, _y, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 7, _y + 1, matrix.Color333(red * 2, green * 2, blue * 2));
@@ -1395,7 +1252,7 @@ void drawTile(byte _type, int _x, int _y)
     playfield[_x + 15][_y + 14] = 1;
     playfield[_x + 15][_y + 15] = 1;
   }
-  if(_type == 5)
+  else if(_type == 5)
   {
     matrix.drawPixel(_x, _y, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x, _y + 1, matrix.Color333(red * 2, green * 2, blue * 2));
@@ -1428,7 +1285,7 @@ void drawTile(byte _type, int _x, int _y)
     playfield[_x + 14][_y + 15] = 1;
     playfield[_x + 15][_y + 15] = 1;
   }
-  if(_type == 6)
+  else if(_type == 6)
   {
     matrix.drawPixel(_x + 7, _y, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 7, _y + 1, matrix.Color333(red * 2, green * 2, blue * 2));
@@ -1461,6 +1318,44 @@ void drawTile(byte _type, int _x, int _y)
     playfield[_x + 14][_y + 15] = 1;
     playfield[_x + 15][_y + 15] = 1;
   }
+  else if(_type == 7)
+  {
+    matrix.drawPixel(_x, _y, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 1, _y + 1, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 2, _y + 2, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 3, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 4, _y + 4, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 5, _y + 5, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 6, _y + 6, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 7, _y + 7, matrix.Color333(red, green, blue));
+    playfield[_x + 8][_y + 8] = 1;
+    playfield[_x + 9][_y + 9] = 1;
+    playfield[_x + 10][_y + 10] = 1;
+    playfield[_x + 11][_y + 11] = 1;
+    playfield[_x + 12][_y + 12] = 1;
+    playfield[_x + 13][_y + 13] = 1;
+    playfield[_x + 14][_y + 14] = 1;
+    playfield[_x + 15][_y + 15] = 1;
+  }
+  else if(_type == 8)
+  {
+    matrix.drawPixel(_x + 7, _y, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 6, _y + 1, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 5, _y + 2, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 4, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 3, _y + 4, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 2, _y + 5, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 1, _y + 6, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x, _y + 7, matrix.Color333(red, green, blue));
+    playfield[_x + 15][_y + 8] = 1;
+    playfield[_x + 14][_y + 9] = 1;
+    playfield[_x + 13][_y + 10] = 1;
+    playfield[_x + 12][_y + 11] = 1;
+    playfield[_x + 11][_y + 12] = 1;
+    playfield[_x + 10][_y + 13] = 1;
+    playfield[_x + 9][_y + 14] = 1;
+    playfield[_x + 8][_y + 15] = 1;
+  }
 }
 
 // Clear a tile (8*8) at position x, y
@@ -1469,7 +1364,7 @@ void clearTile(byte _type, int _x, int _y)
   if(_type == 0)
   {
   }
-  if(_type == 1)
+  else if(_type == 1)
   {
     matrix.drawPixel(_x, _y + 7, matrix.Color333(0, 0, 0));
     matrix.drawPixel(_x + 1, _y + 7, matrix.Color333(0, 0, 0));
@@ -1488,7 +1383,7 @@ void clearTile(byte _type, int _x, int _y)
     playfield[_x + 14][_y + 15] = 0;
     playfield[_x + 15][_y + 15] = 0;
   }
-  if(_type == 2)
+  else if(_type == 2)
   {
     matrix.drawPixel(_x, _y + 3, matrix.Color333(0, 0, 0));
     matrix.drawPixel(_x + 1, _y + 3, matrix.Color333(0, 0, 0));
@@ -1507,7 +1402,7 @@ void clearTile(byte _type, int _x, int _y)
     playfield[_x + 14][_y + 11] = 0;
     playfield[_x + 15][_y + 11] = 0;
   }
-  if(_type == 3)
+  else if(_type == 3)
   {
     matrix.drawPixel(_x, _y, matrix.Color333(0, 0, 0));
     matrix.drawPixel(_x, _y + 1, matrix.Color333(0, 0, 0));
@@ -1526,7 +1421,7 @@ void clearTile(byte _type, int _x, int _y)
     playfield[_x + 8][_y + 14] = 0;
     playfield[_x + 8][_y + 15] = 0;
   }
-  if(_type == 4)
+  else if(_type == 4)
   {
     matrix.drawPixel(_x + 7, _y, matrix.Color333(0, 0, 0));
     matrix.drawPixel(_x + 7, _y + 1, matrix.Color333(0, 0, 0));
@@ -1545,7 +1440,7 @@ void clearTile(byte _type, int _x, int _y)
     playfield[_x + 15][_y + 14] = 0;
     playfield[_x + 15][_y + 15] = 0;
   }
-  if(_type == 5)
+  else if(_type == 5)
   {
     matrix.drawPixel(_x, _y, matrix.Color333(0, 0, 0));
     matrix.drawPixel(_x, _y + 1, matrix.Color333(0, 0, 0));
@@ -1578,7 +1473,7 @@ void clearTile(byte _type, int _x, int _y)
     playfield[_x + 14][_y + 15] = 0;
     playfield[_x + 15][_y + 15] = 0;
   }
-  if(_type == 6)
+  else if(_type == 6)
   {
     matrix.drawPixel(_x + 7, _y, matrix.Color333(0, 0, 0));
     matrix.drawPixel(_x + 7, _y + 1, matrix.Color333(0, 0, 0));
@@ -1610,6 +1505,44 @@ void clearTile(byte _type, int _x, int _y)
     playfield[_x + 13][_y + 15] = 0;
     playfield[_x + 14][_y + 15] = 0;
     playfield[_x + 15][_y + 15] = 0;
+  }
+  else if(_type == 7)
+  {
+    matrix.drawPixel(_x, _y, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(_x + 1, _y + 1, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(_x + 2, _y + 2, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(_x + 3, _y + 3, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(_x + 4, _y + 4, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(_x + 5, _y + 5, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(_x + 6, _y + 6, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(_x + 7, _y + 7, matrix.Color333(0, 0, 0));
+    playfield[_x + 8][_y + 8] = 0;
+    playfield[_x + 9][_y + 9] = 0;
+    playfield[_x + 10][_y + 10] = 0;
+    playfield[_x + 11][_y + 11] = 0;
+    playfield[_x + 12][_y + 12] = 0;
+    playfield[_x + 13][_y + 13] = 0;
+    playfield[_x + 14][_y + 14] = 0;
+    playfield[_x + 15][_y + 15] = 0;
+  }
+  else if(_type == 8)
+  {
+    matrix.drawPixel(_x + 7, _y, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(_x + 6, _y + 1, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(_x + 5, _y + 2, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(_x + 4, _y + 3, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(_x + 3, _y + 4, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(_x + 2, _y + 5, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(_x + 1, _y + 6, matrix.Color333(0, 0, 0));
+    matrix.drawPixel(_x, _y + 7, matrix.Color333(0, 0, 0));
+    playfield[_x + 15][_y + 8] = 0;
+    playfield[_x + 14][_y + 9] = 0;
+    playfield[_x + 13][_y + 10] = 0;
+    playfield[_x + 12][_y + 11] = 0;
+    playfield[_x + 11][_y + 12] = 0;
+    playfield[_x + 10][_y + 13] = 0;
+    playfield[_x + 9][_y + 14] = 0;
+    playfield[_x + 8][_y + 15] = 0;
   }
 }
 
@@ -3018,7 +2951,7 @@ void drawGems()
       gemXScreenNew[i] = gemXMap[i] - screenXNew;
       gemYScreenNew[i] = gemYMap[i] - screenYNew;
 
-      if(gemXScreen[i] > -9 && gemXScreen[i] < 39 && gemYScreen[i] > -9 && gemYScreen[i] < 39)
+      if(gemXScreen[i] > -8 && gemXScreen[i] < 32 && gemYScreen[i] > -8 && gemYScreen[i] < 32)
       {     
         x1 = gemXScreen[i];
         y1 = gemYScreen[i];
@@ -3045,7 +2978,7 @@ void drawGems()
         // Draw gems at new position
         if(gemStatus[i] == 1 || gemStatus[i] == 2)
         {
-          if(gemXScreenNew[i] > -9 && gemXScreenNew[i] < 39 && gemYScreenNew[i] > -9 && gemYScreenNew[i] < 39)
+          if(gemXScreenNew[i] > -8 && gemXScreenNew[i] < 32 && gemYScreenNew[i] > -8 && gemYScreenNew[i] < 32)
           {
             if(gemStatus[i] == 1)
             {
@@ -3094,6 +3027,69 @@ void drawGems()
       }  
       gemXScreen[i] = gemXScreenNew[i];
       gemYScreen[i] = gemYScreenNew[i];
+    }
+  }  
+}
+
+// Draw all not collected gems
+void drawPlatforms()
+{
+  for(i = 0; i < 6; i++)
+  {
+    if(platformStatus[i] > 0)
+    {
+      platformXScreenNew[i] = platformXMap[i] - screenXNew;
+      platformYScreenNew[i] = platformYMap[i] - screenYNew;
+
+      if(platformXScreen[i] > -8 && platformXScreen[i] < 32 && platformYScreen[i] > -8 && platformYScreen[i] < 32)
+      {     
+        x1 = platformXScreen[i];
+        y1 = platformYScreen[i];
+        x2 = platformXScreenNew[i];
+        y2 = platformYScreenNew[i];
+                
+        // Remove gems at old position
+        matrix.drawPixel(x1, y1 + 1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 3, y1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 4, y1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 5, y1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 6, y1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 7, y1 + 1, matrix.Color333(0, 0, 0));
+        playfield[x1 + 8][y1 + 9] = 0;
+        playfield[x1 + 9][y1 + 8] = 0;
+        playfield[x1 + 10][y1 + 8] = 0;
+        playfield[x1 + 11][y1 + 8] = 0;
+        playfield[x1 + 12][y1 + 8] = 0;
+        playfield[x1 + 13][y1 + 8] = 0;
+        playfield[x1 + 14][y1 + 8] = 0;
+        playfield[x1 + 15][y1 + 9] = 0;
+        
+        // Draw gems at new position
+        if(platformXScreenNew[i] > -8 && platformXScreenNew[i] < 32 && platformYScreenNew[i] > -8 && platformYScreenNew[i] < 32)
+        {
+          matrix.drawPixel(x2, y2 + 1, matrix.Color333(1, 1, 1));
+          matrix.drawPixel(x2 + 1, y2, matrix.Color333(2, 0, 0));
+          matrix.drawPixel(x2 + 2, y2, matrix.Color333(2, 0, 0));
+          matrix.drawPixel(x2 + 3, y2, matrix.Color333(2, 0, 0));
+          matrix.drawPixel(x2 + 4, y2, matrix.Color333(2, 0, 0));
+          matrix.drawPixel(x2 + 5, y2, matrix.Color333(2, 0, 0));
+          matrix.drawPixel(x2 + 6, y2, matrix.Color333(2, 0, 0));
+          matrix.drawPixel(x2 + 7, y2 + 1, matrix.Color333(1, 1, 1));
+          
+          playfield[x2 + 8][y2 + 9] = 1;
+          playfield[x2 + 9][y2 + 8] = 1;
+          playfield[x2 + 10][y2 + 8] = 1;
+          playfield[x2 + 11][y2 + 8] = 1;
+          playfield[x2 + 12][y2 + 8] = 1;
+          playfield[x2 + 13][y2 + 8] = 1;
+          playfield[x2 + 14][y2 + 8] = 1;
+          playfield[x2 + 15][y2 + 9] = 1;
+        }
+      }  
+      platformXScreen[i] = platformXScreenNew[i];
+      platformYScreen[i] = platformYScreenNew[i];
     }
   }  
 }
@@ -3285,13 +3281,6 @@ void drawThrusters()
 // Moves player (checks also the joystick)
 void movePlayer()
 {
-
-Serial.print("x: ");
-Serial.print(xSpeed);
-Serial.print("   y: ");
-Serial.print(ySpeed);
-Serial.println();
-
   // Simulate friction
   if(xSpeed < 0.0)
   { 
@@ -3753,6 +3742,9 @@ void loop()
       setupLevel();
       reset = false; // Set reset indicator to false
       matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
+
+      drawPlayer();
+      
       do
       {
         // Get time of engine loop start point (important for a constant game speed)
@@ -3772,6 +3764,9 @@ void loop()
         {
           movePlayer();
         }
+
+        // Draw platforms
+        drawPlatforms();
         
         // Draw gems
         drawGems();
@@ -3849,11 +3844,11 @@ void loop()
     // All lives lost (Game over sequence)
     if(lives < 1)
     {
-      matrix.setTextColor(matrix.Color333(3,0,0));
+      matrix.setTextColor(matrix.Color333(0,0,3));
       matrix.setCursor(4, 8);
-      matrix.println("GAME");
+      matrix.println("Game");
       matrix.setCursor(4, 16);
-      matrix.println("OVER");
+      matrix.println("Over");
       tone(audio, NOTE_C5, 200);
       delay(200);
       tone(audio, NOTE_G4, 200);
