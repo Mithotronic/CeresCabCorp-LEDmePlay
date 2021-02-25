@@ -202,6 +202,11 @@ byte green;
 byte blue;
 
 // Playfield
+// 0: Nothing
+// 1: Obstacle
+// 2: Enemy
+// 3: Gas station
+// 4-9: Platform
 byte playfield[48][48]; // Visible buffer on screen
 
 // Position of the screen (screenX and screenY define the upper left position of the complete map)
@@ -845,7 +850,6 @@ void setupLevel()
       platformStatus[platformCounter] = 1;
       if(platformCounter < 6)
       {
-        platformColor[platformCounter] = platformCounter + 1;
         platformCounter++;
       }
     }
@@ -1038,6 +1042,23 @@ void setupLevel()
     {
       enemyCounter++;
     }
+  }
+
+Serial.println("Platform colors:");
+  for(i = 0; i < platformCounter; i++)
+  {
+    boolean colorDuplicate;
+    do
+    {   
+      platformColor[i] = random(6) + 1;
+      colorDuplicate = false;
+      for(j = 0; j < i; j++)
+      {
+        if(platformColor[i] == platformColor[j]){ colorDuplicate = true; }
+      }
+    }
+    while(colorDuplicate);
+Serial.println(platformColor[i]);
   }
 
   // Initialize enemy movement
@@ -3018,10 +3039,10 @@ void drawGems()
               else if(animationCounter % 8 < 6) { matrix.drawPixel(x2 + 1, y2, matrix.Color333(5, 0, 0)); }
               else if(animationCounter % 8 < 8) { matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(5, 0, 0)); }
             }
-            playfield[x2 + 8][y2 + 8] = i + 3;
-            playfield[x2 + 9][y2 + 8] = i + 3;
-            playfield[x2 + 8][y2 + 9] = i + 3;
-            playfield[x2 + 9][y2 + 9] = i + 3;
+            playfield[x2 + 8][y2 + 8] = i + 10;
+            playfield[x2 + 9][y2 + 8] = i + 10;
+            playfield[x2 + 8][y2 + 9] = i + 10;
+            playfield[x2 + 9][y2 + 9] = i + 10;
           }
         }
       }  
@@ -3034,6 +3055,7 @@ void drawGems()
 // Draw all not collected gems
 void drawPlatforms()
 {
+  byte r, g, b;
   for(i = 0; i < 6; i++)
   {
     if(platformStatus[i] > 0)
@@ -3065,17 +3087,44 @@ void drawPlatforms()
         playfield[x1 + 13][y1 + 8] = 0;
         playfield[x1 + 14][y1 + 8] = 0;
         playfield[x1 + 15][y1 + 9] = 0;
-        
+        playfield[x1 + 11][y1 + 7] = 0; // "Detection zone" above platform
+        playfield[x1 + 12][y1 + 7] = 0; // "Detection zone" above platform
+
         // Draw gems at new position
         if(platformXScreenNew[i] > -8 && platformXScreenNew[i] < 32 && platformYScreenNew[i] > -8 && platformYScreenNew[i] < 32)
         {
+          switch(platformColor[i])
+          {
+            case RED:
+              r = 2; g = 0; b = 0;
+              break;
+            case GREEN:
+              r = 0; g = 2; b = 0;
+              break;
+            case BLUE:
+              r = 0; g = 0; b = 2;
+              break;
+            case YELLOW:
+              r = 2; g = 2; b = 0;
+              break;
+            case VIOLET:
+              r = 2; g = 0; b = 2;
+              break;
+            case TURQUOISE:
+              r = 0; g = 2; b = 2;
+              break;
+            default:
+              break;
+          }
+          
+          
           matrix.drawPixel(x2, y2 + 1, matrix.Color333(1, 1, 1));
-          matrix.drawPixel(x2 + 1, y2, matrix.Color333(2, 0, 0));
-          matrix.drawPixel(x2 + 2, y2, matrix.Color333(2, 0, 0));
-          matrix.drawPixel(x2 + 3, y2, matrix.Color333(2, 0, 0));
-          matrix.drawPixel(x2 + 4, y2, matrix.Color333(2, 0, 0));
-          matrix.drawPixel(x2 + 5, y2, matrix.Color333(2, 0, 0));
-          matrix.drawPixel(x2 + 6, y2, matrix.Color333(2, 0, 0));
+          matrix.drawPixel(x2 + 1, y2, matrix.Color333(r, g, b));
+          matrix.drawPixel(x2 + 2, y2, matrix.Color333(r, g, b));
+          matrix.drawPixel(x2 + 3, y2, matrix.Color333(r, g, b));
+          matrix.drawPixel(x2 + 4, y2, matrix.Color333(r, g, b));
+          matrix.drawPixel(x2 + 5, y2, matrix.Color333(r, g, b));
+          matrix.drawPixel(x2 + 6, y2, matrix.Color333(r, g, b));
           matrix.drawPixel(x2 + 7, y2 + 1, matrix.Color333(1, 1, 1));
           
           playfield[x2 + 8][y2 + 9] = 1;
@@ -3086,6 +3135,8 @@ void drawPlatforms()
           playfield[x2 + 13][y2 + 8] = 1;
           playfield[x2 + 14][y2 + 8] = 1;
           playfield[x2 + 15][y2 + 9] = 1;
+          playfield[x2 + 11][y2 + 7] = platformColor[i] + 3; // "Detection zone" above platform
+          playfield[x2 + 12][y2 + 7] = platformColor[i] + 3; // "Detection zone" above platform
         }
       }  
       platformXScreen[i] = platformXScreenNew[i];
@@ -3524,13 +3575,22 @@ boolean checkForLosingLive()
 }
 
 // Check if collision with gem is true (gem collected)
-void checkForGems()
+void checkForFuelPlatformsExtralifes()
 {
   i = collisionDetection();
-  if(i > 2)
+  if(xSpeed == 0.0 && ySpeed == 0.0)
+  {
+    if(i == 4){ Serial.println("Red"); }
+    if(i == 5){ Serial.println("Green"); }
+    if(i == 6){ Serial.println("Blue"); }
+    if(i == 7){ Serial.println("Yellow"); }
+    if(i == 8){ Serial.println("Violet"); }
+    if(i == 9){ Serial.println("Turquoise"); }
+  }
+  if(i > 9)
   {
     // Normal gem collected
-    if(gemStatus[i - 3] == 1)
+    if(gemStatus[i - 10] == 1)
     {
       gems++;
       gemsToFinishLevel--;
@@ -3538,7 +3598,7 @@ void checkForGems()
       tone(audio, 440, 200);
     }
     // Extralife gem collected
-    else if(gemStatus[i - 3] == 2)
+    else if(gemStatus[i - 10] == 2)
     {
       if(lives < 9)
       {
@@ -3547,7 +3607,7 @@ void checkForGems()
       // Sound: Gem collected
       tone(audio, 220, 400);
     }
-    gemStatus[i - 3] = 3;
+    gemStatus[i - 10] = 3;
     // Blocks all movement sounds
     audioOffUntil = animationCounter + 4;
     if(audioOffUntil == 0)
@@ -3638,21 +3698,21 @@ void taxiExplodes()
     for(byte j = 0; j < i; j++)
     {
       matrix.drawCircle(playerXScreen + 1, playerYScreen + 1, j, matrix.Color333(random(3) + 3, random(3) + 3, 7 - i));
-      delay(10);
+      delay(8);
       // SOUND: Taxi explodes
-      tone(audio, 120 - i * j + random(40), 9);
+      tone(audio, 120 - i * j + random(40), 7);
       matrix.drawCircle(playerXScreen + 2, playerYScreen + 1, j, matrix.Color333(random(3) + 3, random(3) + 3, 7 - i));
-      delay(10);
+      delay(8);
       // SOUND: Taxi explodes
-      tone(audio, 120 - i * j + random(20), 9);
+      tone(audio, 120 - i * j + random(20), 7);
     }
   }
   for(byte i = 0; i < 8; i++)
   {
      matrix.drawCircle(playerXScreen + 1, playerYScreen + 1, i, matrix.Color333(0, 0, 0));
-     delay(10);
+     delay(8);
      matrix.drawCircle(playerXScreen + 2, playerYScreen + 1, i, matrix.Color333(0, 0, 0));
-     delay(10);
+     delay(8);
   }
 }
 
@@ -3774,8 +3834,8 @@ void loop()
         // Move enemies
         moveEnemies();
         
-        // Check whether gem has been collected
-        checkForGems();
+        // Check for goods
+        checkForFuelPlatformsExtralifes();
         
         animationCounter++;
     
