@@ -183,7 +183,7 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          1,  21,   1,   1,   0,   0,   0,   8,   7,   0,   0,   0,   1,   1,  21,   1,
                                          0,   0,   0,   0,   0,   0,   0,   7,   8,   0,   0,   0,   0,   0,   0,   0,
-                                         0,   0,  31,   1,   1,   1,   0,   0,   0,   0,   1,   1,   1,   1,   0,   0,
+                                         0,   0,  31,   1,   1,   1,   0,   0,   0,   0,   1,  31,   1,   1,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
                                        241,   1,  21,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,  21,   1,   1                                         
                                   };
@@ -226,6 +226,9 @@ int upperLeftTileYOffset; // Number of pixels of upper left tile in Y-direction 
 // Player
 byte lives;                 // Remaining lives
 byte level;                 // Current level
+int fuel;                   // Remaining fuel
+const int fuelMax = 1024;   // Maximal fuel (this is also the initial value)
+boolean refuling;
 int passengers;             // Counts the delivered passengers
 int playerXScreen;          // X position on screen
 int playerYScreen;          // Y position on screen
@@ -255,6 +258,7 @@ boolean hoverThrusters;
 boolean downThrusters;
 
 boolean heavyCollisionWithObstacle;
+boolean taxiExplosion;
 
 // X and Y Positions of the body parts after death
 float todesanimationX[5];
@@ -828,7 +832,9 @@ void setupLevel()
         screenY = 0;
         playerYScreen = playerYMap;
       }
-      
+
+      fuel = fuelMax;
+      refuling = false;
       playerXMapNew = playerXMap;
       playerYMapNew = playerYMap;
       playerXScreenNew = playerXScreen;
@@ -848,6 +854,7 @@ void setupLevel()
       hoverThrusters = false;
       downThrusters = false;
       heavyCollisionWithObstacle = false;
+      taxiExplosion = false;
     }
         
     // Set extra life
@@ -2997,7 +3004,7 @@ void drawExtraLives()
 {
   for(i = 0; i < 16; i++)
   {
-    if(extraLifeStatus[i] == 1)
+    if(extraLifeStatus[i] == 1 || extraLifeStatus[i] == 2)
     {
       extraLifeXScreenNew[i] = extraLifeXMap[i] - screenXNew;
       extraLifeYScreenNew[i] = extraLifeYMap[i] - screenYNew;
@@ -3197,15 +3204,31 @@ void drawGasStations()
         // Draw platforms at new position
         if(gasStationXScreenNew[i] > -8 && gasStationXScreenNew[i] < 32 && gasStationYScreenNew[i] > -8 && gasStationYScreenNew[i] < 32)
         { 
-          if((animationCounter / 64) % 2 == 0)
+          if(refuling)
           {
-            matrix.drawPixel(x2, y2, matrix.Color333(0, 4, 0));
-            matrix.drawPixel(x2 + 5, y2, matrix.Color333(4, 0, 0));         
+            if((animationCounter / 8) % 2 == 0)
+            {
+              matrix.drawPixel(x2, y2, matrix.Color333(3, 3, 0));
+              matrix.drawPixel(x2 + 5, y2, matrix.Color333(3, 3, 0));         
+            }
+            else
+            {
+              matrix.drawPixel(x2, y2, matrix.Color333(1, 1, 1));
+              matrix.drawPixel(x2 + 5, y2, matrix.Color333(1, 1, 1));         
+            }            
           }
           else
           {
-            matrix.drawPixel(x2, y2, matrix.Color333(1, 1, 1));
-            matrix.drawPixel(x2 + 5, y2, matrix.Color333(1, 1, 1));         
+            if((animationCounter / 64) % 2 == 0)
+            {
+              matrix.drawPixel(x2, y2, matrix.Color333(0, 4, 0));
+              matrix.drawPixel(x2 + 5, y2, matrix.Color333(4, 0, 0));         
+            }
+            else
+            {
+              matrix.drawPixel(x2, y2, matrix.Color333(1, 1, 1));
+              matrix.drawPixel(x2 + 5, y2, matrix.Color333(1, 1, 1));         
+            }
           }          
           matrix.drawPixel(x2 + 1, y2, matrix.Color333(2, 2, 2));
           matrix.drawPixel(x2 + 2, y2, matrix.Color333(3, 3, 3));
@@ -3232,7 +3255,7 @@ void drawGasStations()
 }
 
 // Draw player
-void drawPlayer()
+void drawPlayer(boolean blinking, byte blinkInterval)
 {
   // Remove player at old position
   matrix.drawPixel(playerXScreen, playerYScreen, matrix.Color333(0, 0, 0));
@@ -3247,95 +3270,98 @@ void drawPlayer()
   matrix.drawPixel(playerXScreen + 1, playerYScreen + 2, matrix.Color333(0, 0, 0));
   matrix.drawPixel(playerXScreen + 2, playerYScreen + 2, matrix.Color333(0, 0, 0));
   matrix.drawPixel(playerXScreen + 3, playerYScreen + 2, matrix.Color333(0, 0, 0));
-  
-  // Draw player at new position
-  if(playerDirectionNew == RIGHT)
+
+  if(!blinking || animationCounter % blinkInterval != 0)
   {
-    matrix.drawPixel(playerXScreenNew, playerYScreenNew, matrix.Color333(0, 3, 0));
-    matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew, matrix.Color333(0, 1, 0));
-    matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew, matrix.Color333(0, 0, 0));
-    matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew, matrix.Color333(0, 0, 0));
-    matrix.drawPixel(playerXScreenNew, playerYScreenNew + 1, matrix.Color333(0, 1, 0));
-    switch(targetPlatform)
+    // Draw player at new position
+    if(playerDirectionNew == RIGHT)
     {
-      case RED:
-        matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(2, 0, 0));
-        matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(3, 0, 0));
-        break;
-      case GREEN:
-        matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 2, 0));
-        matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 3, 0));
-        break;
-      case BLUE:
-        matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 0, 2));
-        matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 0, 3));
-        break;
-      case YELLOW:
-        matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(2, 2, 0));
-        matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(3, 3, 0));
-        break;
-      case VIOLET:
-        matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(2, 0, 2));
-        matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(3, 0, 3));
-        break;
-      case TURQUOISE:
-        matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 2, 2));
-        matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 3, 3));
-        break;
-      default:
-        matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(1, 1, 1));
-        matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(2, 2, 2));
-        break;
+      matrix.drawPixel(playerXScreenNew, playerYScreenNew, matrix.Color333(0, 3, 0));
+      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(playerXScreenNew, playerYScreenNew + 1, matrix.Color333(0, 1, 0));
+      switch(targetPlatform)
+      {
+        case RED:
+          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(2, 0, 0));
+          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(3, 0, 0));
+          break;
+        case GREEN:
+          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 2, 0));
+          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 3, 0));
+          break;
+        case BLUE:
+          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 0, 2));
+          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 0, 3));
+          break;
+        case YELLOW:
+          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(2, 2, 0));
+          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(3, 3, 0));
+          break;
+        case VIOLET:
+          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(2, 0, 2));
+          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(3, 0, 3));
+          break;
+        case TURQUOISE:
+          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 2, 2));
+          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 3, 3));
+          break;
+        default:
+          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(1, 1, 1));
+          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(2, 2, 2));
+          break;
+      }
+      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(playerXScreenNew, playerYScreenNew + 2, matrix.Color333(0, 3, 0));
+      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 2, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 2, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 2, matrix.Color333(0, 3, 0));
     }
-    matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 1, matrix.Color333(0, 0, 0));
-    matrix.drawPixel(playerXScreenNew, playerYScreenNew + 2, matrix.Color333(0, 3, 0));
-    matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 2, matrix.Color333(0, 1, 0));
-    matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 2, matrix.Color333(0, 1, 0));
-    matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 2, matrix.Color333(0, 3, 0));
-  }
-  else
-  {
-    matrix.drawPixel(playerXScreenNew, playerYScreenNew, matrix.Color333(0, 0, 0));
-    matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew, matrix.Color333(0, 0, 0));
-    matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew, matrix.Color333(0, 1, 0));
-    matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew, matrix.Color333(0, 3, 0));
-    matrix.drawPixel(playerXScreenNew, playerYScreenNew + 1, matrix.Color333(0, 0, 0));
-    switch(targetPlatform)
+    else
     {
-      case RED:
-        matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(3, 0, 0));
-        matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(2, 0, 0));
-        break;
-      case GREEN:
-        matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 3, 0));
-        matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 2, 0));
-        break;
-      case BLUE:
-        matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 0, 3));
-        matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 0, 2));
-        break;
-      case YELLOW:
-        matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(3, 3, 0));
-        matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(2, 2, 0));
-        break;
-      case VIOLET:
-        matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(3, 0, 3));
-        matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(2, 0, 2));
-        break;
-      case TURQUOISE:
-        matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 3, 3));
-        matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 2, 2));
-        break;
-      default:
-        matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(2, 2, 2));
-        matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(1, 1, 1));
-        break;
+      matrix.drawPixel(playerXScreenNew, playerYScreenNew, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew, matrix.Color333(0, 3, 0));
+      matrix.drawPixel(playerXScreenNew, playerYScreenNew + 1, matrix.Color333(0, 0, 0));
+      switch(targetPlatform)
+      {
+        case RED:
+          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(3, 0, 0));
+          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(2, 0, 0));
+          break;
+        case GREEN:
+          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 3, 0));
+          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 2, 0));
+          break;
+        case BLUE:
+          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 0, 3));
+          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 0, 2));
+          break;
+        case YELLOW:
+          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(3, 3, 0));
+          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(2, 2, 0));
+          break;
+        case VIOLET:
+          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(3, 0, 3));
+          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(2, 0, 2));
+          break;
+        case TURQUOISE:
+          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 3, 3));
+          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 2, 2));
+          break;
+        default:
+          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(2, 2, 2));
+          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(1, 1, 1));
+          break;
+      }
+      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 1, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(playerXScreenNew, playerYScreenNew + 2, matrix.Color333(0, 3, 0));
+      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 2, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 2, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 2, matrix.Color333(0, 3, 0));
     }
-    matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 1, matrix.Color333(0, 1, 0));
-    matrix.drawPixel(playerXScreenNew, playerYScreenNew + 2, matrix.Color333(0, 3, 0));
-    matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 2, matrix.Color333(0, 1, 0));
-    matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 2, matrix.Color333(0, 1, 0));
-    matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 2, matrix.Color333(0, 3, 0));
   }
 }
 
@@ -3492,20 +3518,22 @@ void movePlayer()
   if(ySpeed < 1.0){ ySpeed = ySpeed + 0.01; }
   
   // Left
-  if(joy1Left())
+  if(joy1Left() && fuel > 0)
   {
     if(playerDirection == LEFT){ mainThrusters = true; }
     else{ breakThrusters = true; }
+    fuel--;
     // SOUND: Thrusters
     tone(audio, 80 + random(20), 10);
     xSpeed = xSpeed - 0.05;
     if(xSpeed < -1.0){ xSpeed = -1.0; }
   }
   // Right
-  else if(joy1Right())
+  else if(joy1Right() && fuel > 0)
   {
     if(playerDirection == RIGHT){ mainThrusters = true; }
     else{ breakThrusters = true; }
+    fuel--;
     // SOUND: Thrusters
     tone(audio, 80 + random(20), 10);
     xSpeed = xSpeed + 0.05;
@@ -3513,24 +3541,41 @@ void movePlayer()
   }
 
   // Up
-  if(joy1Up() || joy1Fire())
+  if((joy1Up() || joy1Fire()) && fuel > 0)
   {
     hoverThrusters = true;
+    fuel = fuel - 2;
+    if(fuel < 0){ fuel = 0; }
     // SOUND: Thrusters
     tone(audio, 50 + random(10), 10);
     ySpeed = ySpeed - 0.025;
     if(ySpeed < -1.0){ ySpeed = -1.0; }
   }
   // Down
-  else if(joy1Down())
+  else if(joy1Down() && fuel > 0)
   {
     downThrusters = true;
+    fuel--;
     // SOUND: Thrusters
     tone(audio, 100 + random(40), 10);
     ySpeed = ySpeed + 0.05;
     if(ySpeed > 1.0){ ySpeed = 1.0; }    
   }
-    
+
+  // SOUND: Gas low
+  if(fuel < 64 && (animationCounter % 8 == 0))
+  {
+    tone(audio, 800, 20);
+  }
+  else if(fuel < 128 && (animationCounter % 16 == 0))
+  {
+    tone(audio, 800, 20);
+  }
+  else if(fuel < 256 && (animationCounter % 32 == 0))
+  {
+    tone(audio, 800, 20);
+  }
+  
   if(xSpeed < 0.0 && int(playerXMap) > 0)
   {
     playerDirectionNew = LEFT;
@@ -3654,15 +3699,18 @@ void movePlayer()
   downThrusters = false;        
 
   // Redraw player if position has changed or animation is incomplete   
-  if(redraw || ((playerXScreen != playerXScreenNew) || (playerYScreen != playerYScreenNew) || (playerXMap != playerXMapNew) || (playerYMap != playerYMapNew) || playerDirection != playerDirectionNew))
-  {
-    drawPlayer();  
-    playerXScreen = playerXScreenNew;
-    playerYScreen = playerYScreenNew;
-    playerXMap = playerXMapNew;
-    playerYMap = playerYMapNew;
-    playerDirection = playerDirectionNew;
-  }
+//  if(redraw || ((playerXScreen != playerXScreenNew) || (playerYScreen != playerYScreenNew) || (playerXMap != playerXMapNew) || (playerYMap != playerYMapNew) || playerDirection != playerDirectionNew))
+//  {
+  if(fuel < 64){ drawPlayer(true, 8); }
+  else if(fuel < 128){ drawPlayer(true, 16); }
+  else if(fuel < 256){ drawPlayer(true, 32); }
+  else{ drawPlayer(false, 0); }
+  playerXScreen = playerXScreenNew;
+  playerYScreen = playerYScreenNew;
+  playerXMap = playerXMapNew;
+  playerYMap = playerYMapNew;
+  playerDirection = playerDirectionNew;
+//  }
 }
 
 // Checks whether new player position collides with something (except walls)
@@ -3700,6 +3748,7 @@ boolean checkForLosingLive()
   if(heavyCollisionWithObstacle)
   {
     lives--;
+    taxiExplosion = true;
     return true;
   }
   
@@ -3707,10 +3756,12 @@ boolean checkForLosingLive()
   if(collisionDetection() == 2)
   {
     lives--;
+    taxiExplosion = true;
     return true;
   }
-  // Player falls out of screen
-  if(playerYMap == mapHeight - 3)
+
+  // Running out of gas
+  if(fuel == 0 && xSpeed == 0.0 && ySpeed == 0.0)
   {
     lives--;
     return true;
@@ -3722,14 +3773,21 @@ boolean checkForLosingLive()
 void checkForFuelPlatformsExtraLives()
 {
   i = collisionDetection();
+  refuling = false;
   if(xSpeed == 0.0 && ySpeed == 0.0)
   {
-//    if(i == 4){ Serial.println("Red"); }
-//    if(i == 5){ Serial.println("Green"); }
-//    if(i == 6){ Serial.println("Blue"); }
-//    if(i == 7){ Serial.println("Yellow"); }
-//    if(i == 8){ Serial.println("Violet"); }
-//    if(i == 9){ Serial.println("Turquoise"); }
+    if(i == 3)
+    {
+      if(fuel < fuelMax)
+      {
+        refuling = true;
+        fuel = fuel + 5;
+        // SOUND: Refuel
+        if(animationCounter % 32 == 0){ tone(audio, 400, 100); }
+        if(fuel > fuelMax - 5){ tone(audio, 400, 200); }
+        if(fuel > fuelMax){ fuel = fuelMax; }
+      }
+    }
     if(i >= 4 && i <= 9)
     {
       // Pickup passenger
@@ -3840,7 +3898,7 @@ void showStatus()
   delay(200);  
 }
 
-// Death animation with flying body parts
+// Taxi explodes
 void taxiExplodes()
 {
   for(byte i = 0; i < 8; i++)
@@ -3953,7 +4011,7 @@ void loop()
       reset = false; // Set reset indicator to false
       matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
 
-      drawPlayer();
+      drawPlayer(false, 0);
       
       do
       {
@@ -4025,28 +4083,30 @@ void loop()
       // Live lost
       if(remainingPassengersToFinishLevel > 0)
       {
-        taxiExplodes();
+        if(taxiExplosion){ taxiExplodes(); }
         delay(1000);
         initializeNewLevel = false;
       }
-      // Level complete (beam player away)
+      // Level complete
       else
       {
-        j = playerXScreen;
-        k = playerYScreen;
-        for(i = 0; i < 20; i++)
+        matrix.setTextColor(matrix.Color333(0,3,0));
+        matrix.setCursor(1, 8);
+        matrix.println("Level");
+        matrix.setCursor(1, 16);
+        matrix.println("done!");
+        for(i = 0; i < 3; i++)
         {
-          playerXScreenNew = j;
-          playerYScreenNew = k;
-          drawPlayer();
-          tone(audio, 256 + i * 10, 100);
-          delay(100 - (i * 5));
-          playerXScreenNew = -4;
-          playerYScreenNew = -4;
-          drawPlayer();
-          tone(audio, 128 + i * 10, 100);
-          delay(i * 5);
+          tone(audio, NOTE_C5, 100);
+          delay(100);
+          tone(audio, NOTE_E5, 100);
+          delay(100);
+          tone(audio, NOTE_G5, 100);
+          delay(100);        
         }
+        tone(audio,1047,400);
+        delay(1000);
+        showStatus();
         level++;
         initializeNewLevel = true;
         matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
@@ -4057,7 +4117,7 @@ void loop()
     // All lives lost (Game over sequence)
     if(lives < 1)
     {
-      matrix.setTextColor(matrix.Color333(0,0,3));
+      matrix.setTextColor(matrix.Color333(3,0,3));
       matrix.setCursor(4, 8);
       matrix.println("Game");
       matrix.setCursor(4, 16);
