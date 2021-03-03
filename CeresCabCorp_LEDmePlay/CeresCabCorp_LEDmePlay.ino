@@ -180,11 +180,11 @@ const uint8_t levels[] PROGMEM  = {
                                          16, 8, 3,
                                          1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
                                          0,   0,   1,  21,   1,   1,   0,   0,   0,   0,   1,   1,  21,   1,   0,  10,
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+                                       120,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          1,  21,   1,   1,   0,   0,   0,   8,   7,   0,   0,   0,   1,   1,  21,   1,
                                          0,   0,   0,   0,   0,   0,   0,   7,   8,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,  31,   1,   1,   1,   0,   0,   0,   0,   1,  31,   1,   1,   0,   0,
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,   0,   0,   0,   0,   0,   0, 120,   0,   0,   0,   0,   0,   0,   0,
                                        241,   1,  21,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,  21,   1,   1                                         
                                   };
                                   
@@ -297,6 +297,8 @@ float platformYMap[6];                 // Y position on map
 byte platformColor[6];                 // RED, GREEN, BLUE, YELLOW, VIOLOET, TURQUOISE
 byte platformStatus[6];                // 0 == inactive, 1 == empty, 2 == passenger is waiting
 byte platformCounter;                  // Number of platforms in current level (6 is the maximum)
+byte numberOfWaitingPassengers;
+const byte maximalNumberOfWaitingPassengers = 3;
 byte remainingPassengersToFinishLevel; // Jump to next level if 0
 byte targetPlatform;                   // RED, GREEN, BLUE, YELLOW, VIOLOET, TURQUOISE
 
@@ -832,29 +834,6 @@ void setupLevel()
         screenY = 0;
         playerYScreen = playerYMap;
       }
-
-      fuel = fuelMax;
-      refuling = false;
-      playerXMapNew = playerXMap;
-      playerYMapNew = playerYMap;
-      playerXScreenNew = playerXScreen;
-      playerYScreenNew = playerYScreen;
-      playerYVector = 0.0;
-      playerDirection = RIGHT;
-      playerDirectionNew = RIGHT;
-      xSpeed = 0.0;
-      ySpeed = 0.0;
-      xStepCounter = 0.0;
-      yStepCounter = 0.0;
-      screenXNew = screenX;
-      screenYNew = screenY;
-      redraw = false;
-      mainThrusters = false;
-      breakThrusters = false;
-      hoverThrusters = false;
-      downThrusters = false;
-      heavyCollisionWithObstacle = false;
-      taxiExplosion = false;
     }
         
     // Set extra life
@@ -1112,7 +1091,32 @@ void setupLevel()
       playfield[i][j] = 0;
     }
   }
-  
+
+  fuel = fuelMax;
+  refuling = false;
+  playerXMapNew = playerXMap;
+  playerYMapNew = playerYMap;
+  playerXScreenNew = playerXScreen;
+  playerYScreenNew = playerYScreen;
+  playerYVector = 0.0;
+  playerDirection = RIGHT;
+  playerDirectionNew = RIGHT;
+  xSpeed = 0.0;
+  ySpeed = 0.0;
+  xStepCounter = 0.0;
+  yStepCounter = 0.0;
+  screenXNew = screenX;
+  screenYNew = screenY;
+  redraw = false;
+  mainThrusters = false;
+  breakThrusters = false;
+  hoverThrusters = false;
+  downThrusters = false;
+  heavyCollisionWithObstacle = false;
+  taxiExplosion = false;
+
+  numberOfWaitingPassengers = 0;
+
   animationCounter = 0;
   audioOffUntil = 0;
 }
@@ -2625,7 +2629,7 @@ void moveEnemies()
         {
           if(enemyXMap[i] > enemyX1[i])
           {
-            enemyXMap[i] = enemyXMap[i] - 0.75;
+            enemyXMap[i] = enemyXMap[i] - 0.5;
           }
           else
           {
@@ -2636,7 +2640,7 @@ void moveEnemies()
         {
           if(enemyXMap[i] < enemyX2[i])
           {
-            enemyXMap[i] = enemyXMap[i] + 0.75;
+            enemyXMap[i] = enemyXMap[i] + 0.5;
           }
           else
           {
@@ -3080,6 +3084,13 @@ void drawPlatforms()
   {
     if(platformStatus[i] > 0)
     {
+      // Add another waiting passenger
+      if(platformStatus[i] == 1 && numberOfWaitingPassengers < maximalNumberOfWaitingPassengers && random(1000) < 10)
+      {
+        numberOfWaitingPassengers++;
+        platformStatus[i] = 2;
+      }
+      
       platformXScreenNew[i] = platformXMap[i] - screenXNew;
       platformYScreenNew[i] = platformYMap[i] - screenYNew;
 
@@ -3109,6 +3120,19 @@ void drawPlatforms()
         playfield[x1 + 15][y1 + 9] = 0;
         playfield[x1 + 11][y1 + 7] = 0; // "Detection zone" above platform
         playfield[x1 + 12][y1 + 7] = 0; // "Detection zone" above platform
+        if(platformStatus[i] == 2)
+        {
+          if((animationCounter / 4) > 55 || (animationCounter / 4) == 0){ matrix.drawPixel(x1 + 7, y1 - 2, matrix.Color333(0, 0, 0)); }
+          matrix.drawPixel(x1 + 7, y1 - 1, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 7, y1, matrix.Color333(0, 0, 0));              
+        }
+        if(platformStatus[i] == 3)
+        {
+          if((animationCounter / 4) > 55 || (animationCounter / 4) == 0){ matrix.drawPixel(x1 + 7, y1 - 2, matrix.Color333(0, 0, 0)); }
+          matrix.drawPixel(x1 + 7, y1 - 1, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 7, y1, matrix.Color333(0, 0, 0));
+          platformStatus[i] = 1;              
+        }
 
         // Draw platforms at new position
         if(platformXScreenNew[i] > -8 && platformXScreenNew[i] < 32 && platformYScreenNew[i] > -8 && platformYScreenNew[i] < 32)
@@ -3156,6 +3180,19 @@ void drawPlatforms()
           playfield[x2 + 15][y2 + 9] = 1;
           playfield[x2 + 11][y2 + 7] = platformColor[i] + 3; // "Detection zone" above platform
           playfield[x2 + 12][y2 + 7] = platformColor[i] + 3; // "Detection zone" above platform
+          if(platformStatus[i] == 2)
+          {
+            if((animationCounter / 4) < 56)
+            {
+              matrix.drawPixel(x2 + 7, y2 - 1, matrix.Color333(5, 2, 0));
+              matrix.drawPixel(x2 + 7, y2, matrix.Color333(3, 0, 0));              
+            }
+            else
+            {
+              matrix.drawPixel(x2 + 7, y2 - 2, matrix.Color333(5, 2, 0));
+              matrix.drawPixel(x2 + 7, y2 - 1, matrix.Color333(3, 0, 0));                            
+            }
+          }
         }
       }  
       platformXScreen[i] = platformXScreenNew[i];
@@ -3276,11 +3313,11 @@ void drawPlayer(boolean blinking, byte blinkInterval)
     // Draw player at new position
     if(playerDirectionNew == RIGHT)
     {
-      matrix.drawPixel(playerXScreenNew, playerYScreenNew, matrix.Color333(0, 3, 0));
-      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(playerXScreenNew, playerYScreenNew, matrix.Color333(0, 5, 2));
+      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew, matrix.Color333(0, 3, 1));
       matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew, matrix.Color333(0, 0, 0));
       matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(playerXScreenNew, playerYScreenNew + 1, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(playerXScreenNew, playerYScreenNew + 1, matrix.Color333(0, 3, 1));
       switch(targetPlatform)
       {
         case RED:
@@ -3313,17 +3350,17 @@ void drawPlayer(boolean blinking, byte blinkInterval)
           break;
       }
       matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(playerXScreenNew, playerYScreenNew + 2, matrix.Color333(0, 3, 0));
-      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 2, matrix.Color333(0, 1, 0));
-      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 2, matrix.Color333(0, 1, 0));
-      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 2, matrix.Color333(0, 3, 0));
+      matrix.drawPixel(playerXScreenNew, playerYScreenNew + 2, matrix.Color333(0, 5, 2));
+      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 2, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 2, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 2, matrix.Color333(0, 5, 2));
     }
     else
     {
       matrix.drawPixel(playerXScreenNew, playerYScreenNew, matrix.Color333(0, 0, 0));
       matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew, matrix.Color333(0, 1, 0));
-      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew, matrix.Color333(0, 3, 0));
+      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew, matrix.Color333(0, 5, 2));
       matrix.drawPixel(playerXScreenNew, playerYScreenNew + 1, matrix.Color333(0, 0, 0));
       switch(targetPlatform)
       {
@@ -3356,11 +3393,11 @@ void drawPlayer(boolean blinking, byte blinkInterval)
           matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(1, 1, 1));
           break;
       }
-      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 1, matrix.Color333(0, 1, 0));
-      matrix.drawPixel(playerXScreenNew, playerYScreenNew + 2, matrix.Color333(0, 3, 0));
-      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 2, matrix.Color333(0, 1, 0));
-      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 2, matrix.Color333(0, 1, 0));
-      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 2, matrix.Color333(0, 3, 0));
+      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 1, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(playerXScreenNew, playerYScreenNew + 2, matrix.Color333(0, 5, 2));
+      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 2, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 2, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 2, matrix.Color333(0, 5, 2));
     }
   }
 }
@@ -3790,16 +3827,24 @@ void checkForFuelPlatformsExtraLives()
     }
     if(i >= 4 && i <= 9)
     {
-      // Pickup passenger
-      if(targetPlatform == 0)
-      {
-        targetPlatform = random(6) + 1;
-      }
       // Deliver passenger
       if(targetPlatform == (i - 3))
       {
         remainingPassengersToFinishLevel--;
         targetPlatform = 0;
+      }
+      // Pickup passenger      
+      else if(targetPlatform == 0)
+      {
+        for(byte j = 0; j < platformCounter; j++)
+        {
+          if((platformColor[j] == i - 3) && platformStatus[j] == 2)
+          {
+            platformStatus[j] = 3;
+            targetPlatform = platformColor[random(platformCounter)];
+            numberOfWaitingPassengers--;            
+          }
+        }
       }
     }
   }
