@@ -239,6 +239,7 @@ float playerYMap;           // Y position on map
 float playerXMapNew;        // New X position after movement
 float playerYMapNew;        // New Y position after movement
 float playerYVector;        // Counts down to define the maximal jump height
+boolean taxiParks;
 
 byte playerAnimationPhase;  // Animation phase (0 or 1)
 
@@ -295,7 +296,8 @@ int platformYScreenNew[6];             // New Y position after movement
 float platformXMap[6];                 // X position on map
 float platformYMap[6];                 // Y position on map
 byte platformColor[6];                 // RED, GREEN, BLUE, YELLOW, VIOLOET, TURQUOISE
-byte platformStatus[6];                // 0 == inactive, 1 == empty, 2 == passenger is waiting
+byte platformBordingStatus[6];         // 0 == inactive, 1 == empty, 2 == passenger is waiting, 3 == start bording, 4-6 == bording animation
+byte platformDisembarkingStatus[6];       // 0 == inactive, 1 == empty, 2 == passenger is waiting
 byte platformCounter;                  // Number of platforms in current level (6 is the maximum)
 byte numberOfWaitingPassengers;
 const byte maximalNumberOfWaitingPassengers = 3;
@@ -641,56 +643,58 @@ void ledMePlay()
   matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
 }
 
-// Keen Kenny title screen
+// Ceres Cab Corp title screen
 void title()
 {
   // Clear screen
   matrix.fillScreen(matrix.Color333(0, 0, 0));
 
   // Write 'Keen Kenny'
-  matrix.setTextColor(matrix.Color333(0,3,0));
-  matrix.setCursor(5, 2);
-  matrix.println("Keen");
+  matrix.setTextColor(matrix.Color333(4,2,0));
+  matrix.setCursor(1, 0);
+  matrix.println("Ceres");
   matrix.setCursor(1, 8);
-  matrix.println("Kenny");
+  matrix.println(" Cab ");
+  matrix.setCursor(1, 16);
+  matrix.println("Corp.");
 
-  i = 0;
+  // Moon
+  matrix.drawLine(0, 27, 1, 27, matrix.Color333(4, 3, 1));
+  matrix.drawLine(2, 26, 5, 26, matrix.Color333(4, 3, 1));
+  matrix.drawLine(6, 25, 11, 25, matrix.Color333(3, 3, 1));
+  matrix.drawLine(12, 24, 19, 24, matrix.Color333(3, 3, 1));
+  matrix.drawLine(20, 25, 25, 25, matrix.Color333(3, 2, 1));
+  matrix.drawLine(26, 26, 29, 26, matrix.Color333(3, 2, 1));
+  matrix.drawLine(30, 27, 31, 27, matrix.Color333(3, 1, 1));
+
+  // Craters
+  matrix.drawLine(0, 29, 2, 29, matrix.Color333(3, 3, 1));
+  matrix.drawLine(3, 30, 5, 30, matrix.Color333(3, 2, 1));
+  matrix.drawLine(6, 31, 7, 31, matrix.Color333(3, 1, 1));
+  
+  matrix.drawLine(8, 27, 12, 27, matrix.Color333(4, 3, 1));
+  matrix.drawPixel(7, 28, matrix.Color333(3, 3, 1));
+  matrix.drawPixel(13, 28, matrix.Color333(3, 1, 1));
+  matrix.drawLine(8, 29, 12, 29, matrix.Color333(3, 2, 1));
+
+  matrix.drawLine(12, 31, 13, 31, matrix.Color333(4, 3, 1));
+  matrix.drawLine(14, 30, 19, 30, matrix.Color333(3, 3, 1));
+  matrix.drawLine(20, 31, 21, 31, matrix.Color333(3, 3, 1));
+
+  matrix.drawLine(16, 26, 20, 26, matrix.Color333(4, 3, 1));
+  matrix.drawPixel(15, 27, matrix.Color333(3, 3, 1));
+  matrix.drawPixel(21, 27, matrix.Color333(3, 1, 1));
+  matrix.drawLine(16, 28, 20, 28, matrix.Color333(3, 2, 1));
+
+  matrix.drawLine(23, 28, 28, 28, matrix.Color333(4, 3, 1));
+  matrix.drawPixel(22, 29, matrix.Color333(3, 3, 1));
+  matrix.drawPixel(29, 29, matrix.Color333(3, 1, 1));
+  matrix.drawLine(23, 30, 28, 30, matrix.Color333(3, 2, 1));
+
+  matrix.drawLine(30, 31, 31, 31, matrix.Color333(4, 3, 1));
+
   do
   {
-    i++;
-    if(i == 1)
-    {
-      // Draw diamond
-      matrix.drawLine(5, 20, 8, 17, matrix.Color333(1,1,4));
-      matrix.drawLine(9, 17, 12, 20, matrix.Color333(1,1,7));
-      matrix.drawLine(12, 20, 15, 17, matrix.Color333(1,1,7));
-      matrix.drawLine(16, 17, 19, 20, matrix.Color333(1,1,7));
-      matrix.drawLine(19, 20, 22, 17, matrix.Color333(1,1,7));
-      matrix.drawLine(23, 17, 26, 20, matrix.Color333(1,1,4));
-      matrix.drawLine(9, 17, 21, 17, matrix.Color333(1,1,4));
-      matrix.drawLine(5, 20, 26, 20, matrix.Color333(1,1,4));
-      matrix.drawLine(12, 20, 15, 29, matrix.Color333(1,1,7));
-      matrix.drawLine(19, 20, 16, 29, matrix.Color333(1,1,7));
-      matrix.drawLine(5, 20, 15, 29, matrix.Color333(1,1,4));
-      matrix.drawLine(26, 20, 16, 29, matrix.Color333(1,1,4));
-      x1 = random(12) + 10;
-      y1 = random(8) + 18;
-    }
-    if(i == 750)
-    {
-      matrix.drawPixel(x1, y1, matrix.Color333(7,7,7));
-    }
-    if(i == 850)
-    {
-      matrix.drawLine(x1 - 1, y1, x1 + 1, y1, matrix.Color333(7,7,7));
-      matrix.drawLine(x1, y1 - 1, x1, y1 + 1, matrix.Color333(7,7,7));
-    }
-    if(i == 1000)
-    {
-      matrix.drawLine(x1 - 1, y1, x1 + 1, y1, matrix.Color333(0,0,0));
-      matrix.drawLine(x1, y1 - 1, x1, y1 + 1, matrix.Color333(0,0,0));
-      i = 0;
-    }
     delay(1);
   }
   while(!joy1Fire()); 
@@ -737,7 +741,8 @@ void setupLevel()
     platformXMap[i] = 0.0;
     platformYMap[i] = 0.0;
     platformColor[i] = 0;
-    platformStatus[i] = 0;
+    platformBordingStatus[i] = 0;
+    platformDisembarkingStatus[i] = 0;    
   }
   platformCounter = 0;
   targetPlatform = 0;
@@ -853,7 +858,7 @@ void setupLevel()
     {
       platformXMap[platformCounter] = ((i % tileNumberX) * 8);
       platformYMap[platformCounter] = ((i / tileNumberX) * 8) + 5;
-      platformStatus[platformCounter] = 1;
+      platformBordingStatus[platformCounter] = 1;
       if(platformCounter < 6)
       {
         platformCounter++;
@@ -1101,6 +1106,7 @@ void setupLevel()
   playerYVector = 0.0;
   playerDirection = RIGHT;
   playerDirectionNew = RIGHT;
+  taxiParks = false;
   xSpeed = 0.0;
   ySpeed = 0.0;
   xStepCounter = 0.0;
@@ -3082,13 +3088,13 @@ void drawPlatforms()
   byte r, g, b;
   for(i = 0; i < 6; i++)
   {
-    if(platformStatus[i] > 0)
+    if(platformBordingStatus[i] > 0)
     {
       // Add another waiting passenger
-      if(platformStatus[i] == 1 && numberOfWaitingPassengers < maximalNumberOfWaitingPassengers && random(1000) < 10)
+      if(platformBordingStatus[i] == 1 && numberOfWaitingPassengers < maximalNumberOfWaitingPassengers && random(1000) < 10)
       {
         numberOfWaitingPassengers++;
-        platformStatus[i] = 2;
+        platformBordingStatus[i] = 2;
       }
       
       platformXScreenNew[i] = platformXMap[i] - screenXNew;
@@ -3120,20 +3126,85 @@ void drawPlatforms()
         playfield[x1 + 15][y1 + 9] = 0;
         playfield[x1 + 11][y1 + 7] = 0; // "Detection zone" above platform
         playfield[x1 + 12][y1 + 7] = 0; // "Detection zone" above platform
-        if(platformStatus[i] == 2)
+
+        // Passenger is waiting
+        if(platformBordingStatus[i] == 2)
         {
           if((animationCounter / 4) > 55 || (animationCounter / 4) == 0){ matrix.drawPixel(x1 + 7, y1 - 2, matrix.Color333(0, 0, 0)); }
           matrix.drawPixel(x1 + 7, y1 - 1, matrix.Color333(0, 0, 0));
           matrix.drawPixel(x1 + 7, y1, matrix.Color333(0, 0, 0));              
         }
-        if(platformStatus[i] == 3)
+        // Intermediate status (passenger stops jumping and starts to bord taxi)
+        else if(platformBordingStatus[i] == 3)
         {
           if((animationCounter / 4) > 55 || (animationCounter / 4) == 0){ matrix.drawPixel(x1 + 7, y1 - 2, matrix.Color333(0, 0, 0)); }
           matrix.drawPixel(x1 + 7, y1 - 1, matrix.Color333(0, 0, 0));
           matrix.drawPixel(x1 + 7, y1, matrix.Color333(0, 0, 0));
-          platformStatus[i] = 1;              
+          platformBordingStatus[i] = 4;              
         }
-
+        else if(platformBordingStatus[i] == 4)
+        {
+          matrix.drawPixel(x1 + 6, y1 - 2, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 6, y1 - 1, matrix.Color333(0, 0, 0));
+          if(animationCounter % 32 == 0){ platformBordingStatus[i] = 5; }
+        }          
+        else if(platformBordingStatus[i] == 5)
+        {
+          matrix.drawPixel(x1 + 5, y1 - 2, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 5, y1 - 1, matrix.Color333(0, 0, 0));              
+          if(animationCounter % 32 == 0){ platformBordingStatus[i] = 6; }
+        }          
+        else if(platformBordingStatus[i] == 6)
+        {
+          matrix.drawPixel(x1 + 4, y1 - 2, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 4, y1 - 1, matrix.Color333(0, 0, 0));              
+          if(animationCounter % 32 == 0)
+          { 
+            // New target platform
+            do
+            {
+              targetPlatform = platformColor[random(platformCounter)];
+            }
+            while(targetPlatform == platformColor[i]); // Avoids that the target platform is the current platform
+            platformBordingStatus[i] = 1;
+            numberOfWaitingPassengers--;            
+            taxiParks = false;
+          }
+        }
+        
+        // Passenger leaves taxi
+        if(platformDisembarkingStatus[i] == 1)
+        {
+          matrix.drawPixel(x1 + 3, y1 - 2, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 3, y1 - 1, matrix.Color333(0, 0, 0));                          
+          if(animationCounter % 32 == 0){ platformDisembarkingStatus[i] = 2; }
+        }
+        else if(platformDisembarkingStatus[i] == 2)
+        {
+          matrix.drawPixel(x1 + 2, y1 - 2, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 2, y1 - 1, matrix.Color333(0, 0, 0));                          
+          if(animationCounter % 32 == 0){ platformDisembarkingStatus[i] = 3; }
+        }
+        else if(platformDisembarkingStatus[i] == 3)
+        {
+          matrix.drawPixel(x1 + 1, y1 - 2, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 1, y1 - 1, matrix.Color333(0, 0, 0));                          
+          if(animationCounter % 32 == 0){ platformDisembarkingStatus[i] = 4; }
+        }
+        else if(platformDisembarkingStatus[i] == 4)
+        {
+          matrix.drawPixel(x1, y1 - 1, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));                          
+          if(animationCounter % 32 == 0)
+          { 
+            targetPlatform = 0;
+            platformDisembarkingStatus[i] = 0;
+            remainingPassengersToFinishLevel--;
+            passengers++;
+            taxiParks = false;
+          }
+        }
+                  
         // Draw platforms at new position
         if(platformXScreenNew[i] > -8 && platformXScreenNew[i] < 32 && platformYScreenNew[i] > -8 && platformYScreenNew[i] < 32)
         {
@@ -3180,7 +3251,8 @@ void drawPlatforms()
           playfield[x2 + 15][y2 + 9] = 1;
           playfield[x2 + 11][y2 + 7] = platformColor[i] + 3; // "Detection zone" above platform
           playfield[x2 + 12][y2 + 7] = platformColor[i] + 3; // "Detection zone" above platform
-          if(platformStatus[i] == 2)
+          // Passenger is waiting and jumps
+          if(platformBordingStatus[i] == 2)
           {
             if((animationCounter / 4) < 56)
             {
@@ -3192,6 +3264,44 @@ void drawPlatforms()
               matrix.drawPixel(x2 + 7, y2 - 2, matrix.Color333(5, 2, 0));
               matrix.drawPixel(x2 + 7, y2 - 1, matrix.Color333(3, 0, 0));                            
             }
+          }
+          // Passenger enters taxi
+          else if(platformBordingStatus[i] == 4)
+          {
+            matrix.drawPixel(x2 + 6, y2 - 2, matrix.Color333(5, 2, 0));
+            matrix.drawPixel(x2 + 6, y2 - 1, matrix.Color333(3, 0, 0));
+          }          
+          else if(platformBordingStatus[i] == 5)
+          {
+            matrix.drawPixel(x2 + 5, y2 - 2, matrix.Color333(5, 2, 0));
+            matrix.drawPixel(x2 + 5, y2 - 1, matrix.Color333(3, 0, 0));              
+          }          
+          else if(platformBordingStatus[i] == 6)
+          {
+            matrix.drawPixel(x2 + 4, y2 - 2, matrix.Color333(5, 2, 0));
+            matrix.drawPixel(x2 + 4, y2 - 1, matrix.Color333(3, 0, 0));              
+          }
+
+          // Passenger leaves taxi
+          if(platformDisembarkingStatus[i] == 1)
+          {
+            matrix.drawPixel(x2 + 3, y2 - 2, matrix.Color333(5, 2, 0));
+            matrix.drawPixel(x2 + 3, y2 - 1, matrix.Color333(3, 0, 0));                          
+          }
+          else if(platformDisembarkingStatus[i] == 2)
+          {
+            matrix.drawPixel(x2 + 2, y2 - 2, matrix.Color333(5, 2, 0));
+            matrix.drawPixel(x2 + 2, y2 - 1, matrix.Color333(3, 0, 0));                          
+          }
+          else if(platformDisembarkingStatus[i] == 3)
+          {
+            matrix.drawPixel(x2 + 1, y2 - 2, matrix.Color333(5, 2, 0));
+            matrix.drawPixel(x2 + 1, y2 - 1, matrix.Color333(3, 0, 0));                          
+          }
+          else if(platformDisembarkingStatus[i] == 4)
+          {
+            matrix.drawPixel(x2, y2 - 1, matrix.Color333(5, 2, 0));
+            matrix.drawPixel(x2, y2, matrix.Color333(3, 0, 0));                          
           }
         }
       }  
@@ -3555,7 +3665,7 @@ void movePlayer()
   if(ySpeed < 1.0){ ySpeed = ySpeed + 0.01; }
   
   // Left
-  if(joy1Left() && fuel > 0)
+  if(joy1Left() && fuel > 0 && !taxiParks)
   {
     if(playerDirection == LEFT){ mainThrusters = true; }
     else{ breakThrusters = true; }
@@ -3566,7 +3676,7 @@ void movePlayer()
     if(xSpeed < -1.0){ xSpeed = -1.0; }
   }
   // Right
-  else if(joy1Right() && fuel > 0)
+  else if(joy1Right() && fuel > 0 && !taxiParks)
   {
     if(playerDirection == RIGHT){ mainThrusters = true; }
     else{ breakThrusters = true; }
@@ -3578,7 +3688,7 @@ void movePlayer()
   }
 
   // Up
-  if((joy1Up() || joy1Fire()) && fuel > 0)
+  if((joy1Up() || joy1Fire()) && fuel > 0 && !taxiParks)
   {
     hoverThrusters = true;
     fuel = fuel - 2;
@@ -3589,7 +3699,7 @@ void movePlayer()
     if(ySpeed < -1.0){ ySpeed = -1.0; }
   }
   // Down
-  else if(joy1Down() && fuel > 0)
+  else if(joy1Down() && fuel > 0 && !taxiParks)
   {
     downThrusters = true;
     fuel--;
@@ -3827,22 +3937,27 @@ void checkForFuelPlatformsExtraLives()
     }
     if(i >= 4 && i <= 9)
     {
-      // Deliver passenger
-      if(targetPlatform == (i - 3))
+      // Disembarking / Deliver passenger
+      if(targetPlatform == (i - 3) && !taxiParks)
       {
-        remainingPassengersToFinishLevel--;
-        targetPlatform = 0;
+        for(byte j = 0; j < platformCounter; j++)
+        {
+          if(platformColor[j] == i - 3)
+          {
+            taxiParks = true;
+            platformDisembarkingStatus[j] = 1;
+          }
+        }
       }
-      // Pickup passenger      
+      // Bording / Pickup passenger      
       else if(targetPlatform == 0)
       {
         for(byte j = 0; j < platformCounter; j++)
         {
-          if((platformColor[j] == i - 3) && platformStatus[j] == 2)
+          if((platformColor[j] == i - 3) && platformBordingStatus[j] == 2)
           {
-            platformStatus[j] = 3;
-            targetPlatform = platformColor[random(platformCounter)];
-            numberOfWaitingPassengers--;            
+            taxiParks = true;
+            platformBordingStatus[j] = 3;
           }
         }
       }
@@ -3879,7 +3994,7 @@ void showStatus()
     if(changed)
     {
       // Frame
-      matrix.setTextColor(matrix.Color333(0,3,0));
+      matrix.setTextColor(matrix.Color333(4,2,0));
       // Game ends because of no more lives or last level completed (in this case a full screen frame is drawn)
       if(lives < 1 || level == numberOfLevels + 1)
       {
@@ -3889,21 +4004,28 @@ void showStatus()
       // Status after loosing live
       else
       {
-        matrix.fillRect(2, 6, 28, 19, matrix.Color333(0,0,0));
-        matrix.drawRect(2, 6, 28, 19, matrix.Color333(1,0,0));
+        matrix.fillRect(1, 6, 29, 19, matrix.Color333(0,0,0));
+        matrix.drawRect(1, 6, 29, 19, matrix.Color333(3,2,1));
       }
       // Lives
-      matrix.drawPixel(4, 9, matrix.Color333(5, 2, 0));
-      matrix.drawPixel(4, 10, matrix.Color333(3, 0, 0));
-      matrix.drawPixel(5, 10, matrix.Color333(5, 0, 0));
-      matrix.drawPixel(4, 11, matrix.Color333(3, 0, 0));
-      matrix.drawPixel(4, 12, matrix.Color333(0, 3, 0));
-      matrix.setCursor(7, 8);
+      matrix.drawPixel(3, 10, matrix.Color333(0, 5, 2));
+      matrix.drawPixel(4, 10, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(5, 10, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(6, 10, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(3, 11, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(4,11, matrix.Color333(0, 0, 2));
+      matrix.drawPixel(5, 11, matrix.Color333(0, 0, 3));
+      matrix.drawPixel(6, 111, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(3, 12, matrix.Color333(0, 5, 2));
+      matrix.drawPixel(4, 12, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(5, 12, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(6, 12, matrix.Color333(0, 5, 2));
+      matrix.setCursor(8, 8);
       matrix.print(lives);
       // Level
-      matrix.drawLine(13, 9, 13, 13, matrix.Color333(3, 3, 3));
-      matrix.drawLine(13, 13, 15, 13, matrix.Color333(3, 3, 3));
-      matrix.setCursor(17, 8);
+      matrix.drawLine(14, 9, 14, 13, matrix.Color333(3, 3, 3));
+      matrix.drawLine(14, 13, 16, 13, matrix.Color333(3, 3, 3));
+      matrix.setCursor(18, 8);
       if(level <= numberOfLevels)
       {
         matrix.print(level);
@@ -3913,10 +4035,11 @@ void showStatus()
         matrix.print("-");
       }
       // Passengers
-      matrix.drawLine(6, 17, 8, 17, matrix.Color333(3, 3, 3));
-      matrix.drawLine(5, 18, 7, 20, matrix.Color333(3, 3, 3));
-      matrix.drawLine(9, 18, 7, 20, matrix.Color333(3, 3, 3));
-      matrix.setCursor(11, 16);
+      matrix.drawLine(4, 17, 6, 17, matrix.Color333(3, 3, 3));
+      matrix.drawLine(4, 18, 4, 21, matrix.Color333(3, 3, 3));
+      matrix.drawLine(5, 19, 6, 19, matrix.Color333(3, 3, 3));
+      matrix.drawPixel(6, 18, matrix.Color333(3, 3, 3));
+      matrix.setCursor(8, 16);
       matrix.print(passengers);
       changed = false;
     }
@@ -4162,7 +4285,7 @@ void loop()
     // All lives lost (Game over sequence)
     if(lives < 1)
     {
-      matrix.setTextColor(matrix.Color333(3,0,3));
+      matrix.setTextColor(matrix.Color333(4,2,0));
       matrix.setCursor(4, 8);
       matrix.println("Game");
       matrix.setCursor(4, 16);
