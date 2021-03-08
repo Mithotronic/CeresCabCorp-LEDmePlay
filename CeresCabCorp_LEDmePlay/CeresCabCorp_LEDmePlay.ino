@@ -155,8 +155,8 @@ int buttonPause = 43;
 // Extra life:               10
 // Platform:                 20
 // Gas station:              30
-// Fireball flying left:     40
-// Fireball flying right:    50
+// Other taxi flying left:   40
+// Other taxi flying right:  50
 // Ufo:                      60
 // Crab:                     70
 // Fire:                     80
@@ -179,12 +179,12 @@ const byte numberOfLevels = 1;
 const uint8_t levels[] PROGMEM  = {
                                          16, 8, 3,
                                          1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-                                         0,   0,   1,  21,   1,   1,   0,   0,   0,   0,   1,   1,  21,   1,   0,  10,
-                                       120,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,   1,  21,   1,   1,   0,   0,   0,   0,   1,   1,  21,   1,   0,  10,                                      
+                                        50,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          1,  21,   1,   1,   0,   0,   0,   8,   7,   0,   0,   0,   1,   1,  21,   1,
                                          0,   0,   0,   0,   0,   0,   0,   7,   8,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,  31,   1,   1,   1,   0,   0,   0,   0,   1,  31,   1,   1,   0,   0,
-                                         0,   0,   0,   0,   0,   0,   0,   0, 120,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,   0,   0,   0,   0,   0,   0,  40,   0,   0,   0,   0,   0,   0,   0,
                                        241,   1,  21,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,  21,   1,   1                                         
                                   };
                                   
@@ -240,6 +240,7 @@ float playerXMapNew;        // New X position after movement
 float playerYMapNew;        // New Y position after movement
 float playerYVector;        // Counts down to define the maximal jump height
 boolean taxiParks;
+boolean footstepSound;
 
 byte playerAnimationPhase;  // Animation phase (0 or 1)
 
@@ -335,6 +336,7 @@ float x, y, z;
 boolean changed;       // Helper used in the status screen
 
 byte animationCounter; // Counts up till 255 and starts again with 0 (animations are synchronized to it)
+byte animationCounterSyncValue;
 byte audioOffUntil;    // If an extra life is collected, other sounds are muted in order to hear a longer "collected" sound.
 boolean reset;         // true if reset button has been set
 
@@ -891,7 +893,7 @@ void setupLevel()
     if(j == 4)
     {
       enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 3;
+      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 2;
       enemyType[enemyCounter] = 2;
       enemyMovement[enemyCounter] = 1;
       enemyStatus[enemyCounter] = 1;
@@ -901,7 +903,7 @@ void setupLevel()
     if(j == 5)
     {
       enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 3;
+      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 2;
       enemyType[enemyCounter] = 3;
       enemyMovement[enemyCounter] = 1;
       enemyStatus[enemyCounter] = 1;
@@ -1107,6 +1109,7 @@ void setupLevel()
   playerDirection = RIGHT;
   playerDirectionNew = RIGHT;
   taxiParks = false;
+  footstepSound = true;
   xSpeed = 0.0;
   ySpeed = 0.0;
   xStepCounter = 0.0;
@@ -1124,6 +1127,7 @@ void setupLevel()
   numberOfWaitingPassengers = 0;
 
   animationCounter = 0;
+  animationCounterSyncValue = 0;
   audioOffUntil = 0;
 }
 
@@ -1666,63 +1670,121 @@ void drawEnemies(byte i)
     }  
   }
 
-  // Fireball flying left
+  // Other taxi flying left
   if(enemyType[i] == 2)
   {
     // Remove enemy at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
-      matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 3, y1, matrix.Color333(0, 0, 0));
-      playfield[x1 + 8][y1 + 8] = 0;
-      playfield[x1 + 9][y1 + 8] = 0;
+      matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 2, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 3, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 4, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 1, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 2, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 3, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 1, y1 + 3, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 2, y1 + 3, matrix.Color333(0, 0, 0));
       playfield[x1 + 10][y1 + 8] = 0;
       playfield[x1 + 11][y1 + 8] = 0;
+      playfield[x1 + 9][y1 + 9] = 0;
+      playfield[x1 + 10][y1 + 9] = 0;
+      playfield[x1 + 11][y1 + 9] = 0;
+      playfield[x1 + 8][y1 + 10] = 0;
+      playfield[x1 + 9][y1 + 10] = 0;
+      playfield[x1 + 10][y1 + 10] = 0;
+      playfield[x1 + 11][y1 + 10] = 0;
     }
 
     // Draw enemy at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
-      matrix.drawPixel(x2, y2, matrix.Color333(7, 5, 0));
-      if(animationCounter % 2 == 1){ matrix.drawPixel(x2 + 1, y2, matrix.Color333(6, 4, 0)); }
-      if(animationCounter % 4 == 3){ matrix.drawPixel(x2 + 2, y2, matrix.Color333(5, 3, 0)); }
-      if(animationCounter % 8 == 5){ matrix.drawPixel(x2 + 3, y2, matrix.Color333(4, 2, 0)); }
-      playfield[x2 + 8][y2 + 8] = 2;
-      playfield[x2 + 9][y2 + 8] = 2;
+      matrix.drawPixel(x2 + 2, y2, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(x2 + 3, y2, matrix.Color333(0, 3, 0));
+      matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(0, 0, 3));
+      matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(0, 0, 1));
+      matrix.drawPixel(x2 + 3, y2 + 1, matrix.Color333(0, 1, 0));
+      if(animationCounter % 4 == 0){ matrix.drawPixel(x2 + 4, y2 + 1, matrix.Color333(random(3) + 2, random(3) + 2, 2)); }
+      matrix.drawPixel(x2, y2 + 2, matrix.Color333(0, 3, 0));
+      matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(x2 + 2, y2 + 2, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(x2 + 3, y2 + 2, matrix.Color333(0, 3, 0));
+      if(animationCounter % 8)
+      {
+        matrix.drawPixel(x2 + 1, y2 + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));
+        matrix.drawPixel(x2 + 2, y2 + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));
+      }
       playfield[x2 + 10][y2 + 8] = 2;
-      playfield[x2 + 11][y2 + 8] = 0;
+      playfield[x2 + 11][y2 + 8] = 2;
+      playfield[x2 + 9][y2 + 9] = 2;
+      playfield[x2 + 10][y2 + 9] = 2;
+      playfield[x2 + 11][y2 + 9] = 2;
+      playfield[x2 + 8][y2 + 10] = 2;
+      playfield[x2 + 9][y2 + 10] = 2;
+      playfield[x2 + 10][y2 + 10] = 2;
+      playfield[x2 + 11][y2 + 10] = 2;
     }
   }
 
-  // Fireball flying right
+  // Other taxi flying right
   if(enemyType[i] == 3)
   {
     // Remove enemy at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
-      matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 3, y1, matrix.Color333(0, 0, 0));
-      playfield[x1 + 8][y1 + 8] = 0;
+      matrix.drawPixel(x1, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 2, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 3, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 1, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 2, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 3, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 4, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 2, y1 + 3, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 3, y1 + 3, matrix.Color333(0, 0, 0));
       playfield[x1 + 9][y1 + 8] = 0;
       playfield[x1 + 10][y1 + 8] = 0;
-      playfield[x1 + 11][y1 + 8] = 0;
+      playfield[x1 + 9][y1 + 9] = 0;
+      playfield[x1 + 10][y1 + 9] = 0;
+      playfield[x1 + 11][y1 + 9] = 0;
+      playfield[x1 + 9][y1 + 10] = 0;
+      playfield[x1 + 10][y1 + 10] = 0;
+      playfield[x1 + 11][y1 + 10] = 0;
+      playfield[x1 + 12][y1 + 10] = 0;
     }
 
     // Draw enemy at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
-      if(animationCounter % 8 == 5){ matrix.drawPixel(x2, y2, matrix.Color333(4, 2, 0)); }
-      if(animationCounter % 4 == 3){ matrix.drawPixel(x2 + 1, y2, matrix.Color333(5, 3, 0)); }
-      if(animationCounter % 2 == 1){ matrix.drawPixel(x2 + 2, y2, matrix.Color333(6, 4, 0));
-      matrix.drawPixel(x2 + 3, y2, matrix.Color333(7, 5, 0)); }
-      playfield[x2 + 8][y2 + 8] = 0;
+      matrix.drawPixel(x2 + 1, y2, matrix.Color333(0, 3, 0));
+      matrix.drawPixel(x2 + 2, y2, matrix.Color333(0, 1, 0));
+      if(animationCounter % 4 == 0){ matrix.drawPixel(x2, y2 + 1, matrix.Color333(random(3) + 2, random(3) + 2, 2)); }
+      matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(0, 0, 1));
+      matrix.drawPixel(x2 + 3, y2 + 1, matrix.Color333(0, 0, 3));
+      matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(0, 3, 0));
+      matrix.drawPixel(x2 + 2, y2 + 2, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(x2 + 3, y2 + 2, matrix.Color333(0, 1, 0));
+      matrix.drawPixel(x2 + 4, y2 + 2, matrix.Color333(0, 3, 0));
+      if(animationCounter % 8 == 0)
+      {
+        matrix.drawPixel(x2 + 2, y2 + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));
+        matrix.drawPixel(x2 + 3, y2 + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));
+      }
       playfield[x2 + 9][y2 + 8] = 2;
       playfield[x2 + 10][y2 + 8] = 2;
-      playfield[x2 + 11][y2 + 8] = 2;
+      playfield[x2 + 9][y2 + 9] = 2;
+      playfield[x2 + 10][y2 + 9] = 2;
+      playfield[x2 + 11][y2 + 9] = 2;
+      playfield[x2 + 9][y2 + 10] = 2;
+      playfield[x2 + 10][y2 + 10] = 2;
+      playfield[x2 + 11][y2 + 10] = 2;
+      playfield[x2 + 12][y2 + 10] = 2;
     }
   }
 
@@ -2458,7 +2520,7 @@ void moveEnemies()
       { 
         if(enemyXMap[i] > -4)
         {
-          enemyXMap[i] = enemyXMap[i] - 0.5;
+          enemyXMap[i] = enemyXMap[i] - 0.25;
         }
         else
         {
@@ -2471,7 +2533,7 @@ void moveEnemies()
       { 
         if(enemyXMap[i] < mapWidth)
         {
-          enemyXMap[i] = enemyXMap[i] + 0.5;
+          enemyXMap[i] = enemyXMap[i] + 0.25;
         }
         else
         {
@@ -3140,25 +3202,25 @@ void drawPlatforms()
           if((animationCounter / 4) > 55 || (animationCounter / 4) == 0){ matrix.drawPixel(x1 + 7, y1 - 2, matrix.Color333(0, 0, 0)); }
           matrix.drawPixel(x1 + 7, y1 - 1, matrix.Color333(0, 0, 0));
           matrix.drawPixel(x1 + 7, y1, matrix.Color333(0, 0, 0));
-          platformBordingStatus[i] = 4;              
+          platformBordingStatus[i] = 4;
         }
         else if(platformBordingStatus[i] == 4)
         {
           matrix.drawPixel(x1 + 6, y1 - 2, matrix.Color333(0, 0, 0));
           matrix.drawPixel(x1 + 6, y1 - 1, matrix.Color333(0, 0, 0));
-          if(animationCounter % 32 == 0){ platformBordingStatus[i] = 5; }
+          if(animationCounter % 32 == animationCounterSyncValue){ platformBordingStatus[i] = 5; footstepSound = true; }
         }          
         else if(platformBordingStatus[i] == 5)
         {
           matrix.drawPixel(x1 + 5, y1 - 2, matrix.Color333(0, 0, 0));
           matrix.drawPixel(x1 + 5, y1 - 1, matrix.Color333(0, 0, 0));              
-          if(animationCounter % 32 == 0){ platformBordingStatus[i] = 6; }
+          if(animationCounter % 32 == animationCounterSyncValue){ platformBordingStatus[i] = 6; footstepSound = true; }
         }          
         else if(platformBordingStatus[i] == 6)
         {
           matrix.drawPixel(x1 + 4, y1 - 2, matrix.Color333(0, 0, 0));
           matrix.drawPixel(x1 + 4, y1 - 1, matrix.Color333(0, 0, 0));              
-          if(animationCounter % 32 == 0)
+          if(animationCounter % 32 == animationCounterSyncValue)
           { 
             // New target platform
             do
@@ -3177,25 +3239,25 @@ void drawPlatforms()
         {
           matrix.drawPixel(x1 + 3, y1 - 2, matrix.Color333(0, 0, 0));
           matrix.drawPixel(x1 + 3, y1 - 1, matrix.Color333(0, 0, 0));                          
-          if(animationCounter % 32 == 0){ platformDisembarkingStatus[i] = 2; }
+          if(animationCounter % 32 == animationCounterSyncValue){ platformDisembarkingStatus[i] = 2; footstepSound = true; }
         }
         else if(platformDisembarkingStatus[i] == 2)
         {
           matrix.drawPixel(x1 + 2, y1 - 2, matrix.Color333(0, 0, 0));
           matrix.drawPixel(x1 + 2, y1 - 1, matrix.Color333(0, 0, 0));                          
-          if(animationCounter % 32 == 0){ platformDisembarkingStatus[i] = 3; }
+          if(animationCounter % 32 == animationCounterSyncValue){ platformDisembarkingStatus[i] = 3; footstepSound = true; }
         }
         else if(platformDisembarkingStatus[i] == 3)
         {
           matrix.drawPixel(x1 + 1, y1 - 2, matrix.Color333(0, 0, 0));
           matrix.drawPixel(x1 + 1, y1 - 1, matrix.Color333(0, 0, 0));                          
-          if(animationCounter % 32 == 0){ platformDisembarkingStatus[i] = 4; }
+          if(animationCounter % 32 == animationCounterSyncValue){ platformDisembarkingStatus[i] = 4; footstepSound = true; }
         }
         else if(platformDisembarkingStatus[i] == 4)
         {
           matrix.drawPixel(x1, y1 - 1, matrix.Color333(0, 0, 0));
           matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));                          
-          if(animationCounter % 32 == 0)
+          if(animationCounter % 32 == animationCounterSyncValue)
           { 
             targetPlatform = 0;
             platformDisembarkingStatus[i] = 0;
@@ -3270,16 +3332,19 @@ void drawPlatforms()
           {
             matrix.drawPixel(x2 + 6, y2 - 2, matrix.Color333(5, 2, 0));
             matrix.drawPixel(x2 + 6, y2 - 1, matrix.Color333(3, 0, 0));
+            if(footstepSound){ tone(audio, 512, 10); footstepSound = false; }
           }          
           else if(platformBordingStatus[i] == 5)
           {
             matrix.drawPixel(x2 + 5, y2 - 2, matrix.Color333(5, 2, 0));
             matrix.drawPixel(x2 + 5, y2 - 1, matrix.Color333(3, 0, 0));              
+            if(footstepSound){ tone(audio, 256, 10); footstepSound = false; }
           }          
           else if(platformBordingStatus[i] == 6)
           {
             matrix.drawPixel(x2 + 4, y2 - 2, matrix.Color333(5, 2, 0));
             matrix.drawPixel(x2 + 4, y2 - 1, matrix.Color333(3, 0, 0));              
+            if(footstepSound){ tone(audio, 512, 10); footstepSound = false; }
           }
 
           // Passenger leaves taxi
@@ -3287,21 +3352,25 @@ void drawPlatforms()
           {
             matrix.drawPixel(x2 + 3, y2 - 2, matrix.Color333(5, 2, 0));
             matrix.drawPixel(x2 + 3, y2 - 1, matrix.Color333(3, 0, 0));                          
+            if(footstepSound){ tone(audio, 512, 10); footstepSound = false; }
           }
           else if(platformDisembarkingStatus[i] == 2)
           {
             matrix.drawPixel(x2 + 2, y2 - 2, matrix.Color333(5, 2, 0));
             matrix.drawPixel(x2 + 2, y2 - 1, matrix.Color333(3, 0, 0));                          
+            if(footstepSound){ tone(audio, 256, 10); footstepSound = false; }
           }
           else if(platformDisembarkingStatus[i] == 3)
           {
             matrix.drawPixel(x2 + 1, y2 - 2, matrix.Color333(5, 2, 0));
             matrix.drawPixel(x2 + 1, y2 - 1, matrix.Color333(3, 0, 0));                          
+            if(footstepSound){ tone(audio, 512, 10); footstepSound = false; }
           }
           else if(platformDisembarkingStatus[i] == 4)
           {
             matrix.drawPixel(x2, y2 - 1, matrix.Color333(5, 2, 0));
             matrix.drawPixel(x2, y2, matrix.Color333(3, 0, 0));                          
+            if(footstepSound){ tone(audio, 256, 10); footstepSound = false; }
           }
         }
       }  
@@ -3945,6 +4014,8 @@ void checkForFuelPlatformsExtraLives()
           if(platformColor[j] == i - 3)
           {
             taxiParks = true;
+            footstepSound = true;              
+            animationCounterSyncValue = animationCounter % 32;
             platformDisembarkingStatus[j] = 1;
           }
         }
@@ -3957,6 +4028,8 @@ void checkForFuelPlatformsExtraLives()
           if((platformColor[j] == i - 3) && platformBordingStatus[j] == 2)
           {
             taxiParks = true;
+            footstepSound = true;              
+            animationCounterSyncValue = animationCounter % 32;
             platformBordingStatus[j] = 3;
           }
         }
