@@ -150,11 +150,11 @@ int buttonPause = 43;
 // 3rd value: Level color: 0 == Invisible, 1 == Blue, 2 == Green, 3 == Turquoise, 4 == Red, 5 == Violet, 6 == Yellow, 7 == White
 //
 // The remaining numbers encode the tiles, extra lives, platforms, and enemies.
-// Add tile type value (0 - 6)
+// Add tile type value (0 - 8)
 // to values of
 // Extra life:               10
 // Platform:                 20
-// Gas station:              30
+// Extra gas station:        30
 // Other taxi flying left:   40
 // Other taxi flying right:  50
 // Ufo:                      60
@@ -183,9 +183,9 @@ const uint8_t levels[] PROGMEM  = {
                                         50,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          1,  21,   1,   1,   0,   0,   0,   8,   7,   0,   0,   0,   1,   1,  21,   1,
                                          0,   0,   0,   0,   0,   0,   0,   7,   8,   0,   0,   0,   0,   0,   0,   0,
-                                         0,   0,  31,   1,   1,   1,   0,   0,   0,   0,   1,  31,   1,   1,   0,   0,
+                                         0,   0, 241,   1,   1,   1,   0,   0,   0,   0,   1,  31,   1,   1,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,  40,   0,   0,   0,   0,   0,   0,   0,
-                                       241,   1,  21,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,  21,   1,   1                                         
+                                         1,   1,  21,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,  21,   1,   1                                         
                                   };
                                   
 byte levelMap[128]; // Contains the current level after loading from PROGMEM
@@ -807,10 +807,10 @@ void setupLevel()
     // Set starting position of player
     if(j == 24)
     {
-      playerXMap = ((i % tileNumberX) * 8) + 3;
-      playerYMap = ((i / tileNumberX) * 8) + 4;
-      playerXScreen = 15;
-      playerYScreen = 14;
+      playerXMap = ((i % tileNumberX) * 8) + 2;
+      playerYMap = ((i / tileNumberX) * 8) + 2;
+      playerXScreen = 14;
+      playerYScreen = 15;
 
       if(playerXMap > 14)
       {
@@ -868,7 +868,7 @@ void setupLevel()
     }
 
     // Set gas station
-    if(j == 3)
+    if(j == 3 || j == 24) // Player always starts at a gas station platform
     {
       gasStationXMap[gasStationCounter] = ((i % tileNumberX) * 8) + 1;
       gasStationYMap[gasStationCounter] = ((i / tileNumberX) * 8) + 5;
@@ -1129,6 +1129,130 @@ void setupLevel()
   animationCounter = 0;
   animationCounterSyncValue = 0;
   audioOffUntil = 0;
+}
+
+void drawMiniMap()
+{
+  matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
+  byte k = 0;
+  byte xOffset = (32 - (tileNumberX * 2)) / 2;
+  byte yOffset = (32 - (tileNumberY * 2)) / 2; 
+
+  for(byte j = 0; j < tileNumberY; j++)
+  {
+    for(byte i = 0; i < tileNumberX; i++)
+    {
+      switch(levelMap[k])
+      {
+        case 0:
+          break; 
+        case 1:
+          matrix.drawPixel((i * 2) + 0 + xOffset, (j * 2) + 1 + yOffset, matrix.Color333(1, 1, 1));
+          matrix.drawPixel((i * 2) + 1 + xOffset, (j * 2) + 1 + yOffset, matrix.Color333(1, 1, 1));
+          break; 
+        case 2:
+          matrix.drawPixel((i * 2) + 0 + xOffset, (j * 2) + 0 + yOffset, matrix.Color333(1, 1, 1));
+          matrix.drawPixel((i * 2) + 1 + xOffset, (j * 2) + 0 + yOffset, matrix.Color333(1, 1, 1));
+          break; 
+        case 3:
+          matrix.drawPixel((i * 2) + 0 + xOffset, (j * 2) + 0 + yOffset, matrix.Color333(1, 1, 1));
+          matrix.drawPixel((i * 2) + 0 + xOffset, (j * 2) + 1 + yOffset, matrix.Color333(1, 1, 1));
+          break; 
+        case 4:
+          matrix.drawPixel((i * 2) + 1 + xOffset, (j * 2) + 0 + yOffset, matrix.Color333(1, 1, 1));
+          matrix.drawPixel((i * 2) + 1 + xOffset, (j * 2) + 1 + yOffset, matrix.Color333(1, 1, 1));
+          break; 
+        case 5:
+          matrix.drawPixel((i * 2) + 0 + xOffset, (j * 2) + 0 + yOffset, matrix.Color333(1, 1, 1));
+          matrix.drawPixel((i * 2) + 0 + xOffset, (j * 2) + 1 + yOffset, matrix.Color333(1, 1, 1));
+          matrix.drawPixel((i * 2) + 1 + xOffset, (j * 2) + 1 + yOffset, matrix.Color333(1, 1, 1));
+          break; 
+        case 6:
+          matrix.drawPixel((i * 2) + 1 + xOffset, (j * 2) + 0 + yOffset, matrix.Color333(1, 1, 1));
+          matrix.drawPixel((i * 2) + 0 + xOffset, (j * 2) + 1 + yOffset, matrix.Color333(1, 1, 1));
+          matrix.drawPixel((i * 2) + 1 + xOffset, (j * 2) + 1 + yOffset, matrix.Color333(1, 1, 1));
+          break; 
+        case 7:
+          matrix.drawPixel((i * 2) + 0 + xOffset, (j * 2) + 0 + yOffset, matrix.Color333(1, 1, 1));
+          matrix.drawPixel((i * 2) + 1 + xOffset, (j * 2) + 1 + yOffset, matrix.Color333(1, 1, 1));
+          break; 
+        case 8:
+          matrix.drawPixel((i * 2) + 1 + xOffset, (j * 2) + 0 + yOffset, matrix.Color333(1, 1, 1));
+          matrix.drawPixel((i * 2) + 0 + xOffset, (j * 2) + 1 + yOffset, matrix.Color333(1, 1, 1));
+          break; 
+        default:
+          break; 
+      }
+      k++;
+    }
+  }
+
+  for(byte i = 0; i < platformCounter; i++)
+  {
+    switch(platformColor[i])
+    {
+      case RED:
+        matrix.drawPixel((platformXMap[i] / 4) + 0 + xOffset, (platformYMap[i] / 4) + yOffset, matrix.Color333(4, 0, 0));
+        matrix.drawPixel((platformXMap[i] / 4) + 1 + xOffset, (platformYMap[i] / 4) + yOffset, matrix.Color333(4, 0, 0));
+        break;
+      case GREEN:
+        matrix.drawPixel((platformXMap[i] / 4) + 0 + xOffset, (platformYMap[i] / 4) + yOffset, matrix.Color333(0, 4, 0));
+        matrix.drawPixel((platformXMap[i] / 4) + 1 + xOffset, (platformYMap[i] / 4) + yOffset, matrix.Color333(0, 4, 0));
+        break;
+      case BLUE:
+        matrix.drawPixel((platformXMap[i] / 4) + 0 + xOffset, (platformYMap[i] / 4) + yOffset, matrix.Color333(0, 0, 4));
+        matrix.drawPixel((platformXMap[i] / 4) + 1 + xOffset, (platformYMap[i] / 4) + yOffset, matrix.Color333(0, 0, 4));
+        break;
+      case YELLOW:
+        matrix.drawPixel((platformXMap[i] / 4) + 0 + xOffset, (platformYMap[i] / 4) + yOffset, matrix.Color333(4, 4, 0));
+        matrix.drawPixel((platformXMap[i] / 4) + 1 + xOffset, (platformYMap[i] / 4) + yOffset, matrix.Color333(4, 4, 0));
+        break;
+      case VIOLET:
+        matrix.drawPixel((platformXMap[i] / 4) + 0 + xOffset, (platformYMap[i] / 4) + yOffset, matrix.Color333(4, 0, 4));
+        matrix.drawPixel((platformXMap[i] / 4) + 1 + xOffset, (platformYMap[i] / 4) + yOffset, matrix.Color333(4, 0, 4));
+        break;
+      case TURQUOISE:
+        matrix.drawPixel((platformXMap[i] / 4) + 0 + xOffset, (platformYMap[i] / 4) + yOffset, matrix.Color333(0, 4, 4));
+        matrix.drawPixel((platformXMap[i] / 4) + 1 + xOffset, (platformYMap[i] / 4) + yOffset, matrix.Color333(0, 4, 4));
+        break;
+      default:
+        break;
+    }
+  }
+
+  byte counter = 0;
+  do
+  {
+    if(counter < 128)
+    {
+      matrix.drawPixel((playerXMap / 4) + 0 + xOffset, (playerYMap / 4) + 0 + yOffset, matrix.Color333(7, 7, 7));
+      matrix.drawPixel((playerXMap / 4) + 1 + xOffset, (playerYMap / 4) + 0 + yOffset, matrix.Color333(7, 7, 7));       
+    }
+    else
+    {
+      matrix.drawPixel((playerXMap / 4) + 0 + xOffset, (playerYMap / 4) + 0 + yOffset, matrix.Color333(0, 0, 0));
+      matrix.drawPixel((playerXMap / 4) + 1 + xOffset, (playerYMap / 4) + 0 + yOffset, matrix.Color333(0, 0, 0));       
+    }
+    for(byte i = 0; i < gasStationCounter; i++)
+    {
+      if(counter % 2 == 0)
+      {
+        matrix.drawPixel((gasStationXMap[i] / 4) + 0 + xOffset, (gasStationYMap[i] / 4) + yOffset, matrix.Color333(4, 4, 4));
+        matrix.drawPixel((gasStationXMap[i] / 4) + 1 + xOffset, (gasStationYMap[i] / 4) + yOffset, matrix.Color333(4, 4, 4));
+      }
+      else
+      {
+        matrix.drawPixel((gasStationXMap[i] / 4) + 0 + xOffset, (gasStationYMap[i] / 4) + yOffset, matrix.Color333(1, 1, 1));
+        matrix.drawPixel((gasStationXMap[i] / 4) + 1 + xOffset, (gasStationYMap[i] / 4) + yOffset, matrix.Color333(1, 1, 1));
+      }      
+    }
+    delay(1);
+    counter++;
+  }
+  while(!joy1Fire()); 
+  tone(audio,1024,20);
+  delay(200);
+  matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
 }
 
 // Set RGB-values depending on level color
@@ -1712,7 +1836,7 @@ void drawEnemies(byte i)
       matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(0, 1, 0));
       matrix.drawPixel(x2 + 2, y2 + 2, matrix.Color333(0, 1, 0));
       matrix.drawPixel(x2 + 3, y2 + 2, matrix.Color333(0, 3, 0));
-      if(animationCounter % 8)
+      if(animationCounter % 8 == 0)
       {
         matrix.drawPixel(x2 + 1, y2 + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));
         matrix.drawPixel(x2 + 2, y2 + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));
@@ -4249,6 +4373,8 @@ void loop()
     {
       showStatus();
       setupLevel();
+      drawMiniMap();
+      
       reset = false; // Set reset indicator to false
       matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
 
