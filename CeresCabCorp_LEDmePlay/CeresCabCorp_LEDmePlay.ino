@@ -152,40 +152,50 @@ int buttonPause = 43;
 // The remaining numbers encode the tiles, extra lives, platforms, and enemies.
 // Add tile type value (0 - 8)
 // to values of
-// Extra life:               10
-// Platform:                 20
-// Extra gas station:        30
-// Other taxi flying left:   40
-// Other taxi flying right:  50
-// Ufo:                      60
-// Mech:                     70
-// Fire:                     80
-// Twister:                  90
-// Devil:                   100
-// Vulcano:                 110
-// Hornet:                  120
-// Plasma floor:            130
-// Laser left:              140
-// Laset right:             150
-// Vertical moving laser    160
-// Horizontal moving laser  170
-// Comet                    180
+// Extra life:               10 //
+// Platform:                 20 //
+// Extra gas station:        30 //
+// Other taxi flying left:   40 //
+// Other taxi flying right:  50 //
+// Ufo --> Container         60
+// Mech:                     70 //
+// Fire:                     80 //
+// Twister --> Gripper       90
+// Devil --> Pirat          100
+// Vulcano --> Missile      110
+// Hornet --> Drone         120
+// Plasma floor:            130 //
+// Sports glider left:      140 //
+// Sports glider right:     150 //
+// Vertical moving laser --> Plasma Wall    160
+// Railcar with steel       170 //
+// Comet --> Asteroid       180
 //
 // Play start position      240
 //
 // Example: Tile 1 with mech (value 70) is encoded by 71.
 //
-const byte numberOfLevels = 1;
+const byte numberOfLevels = 2;
 const uint8_t levels[] PROGMEM  = {
+                                         8, 8, 6,
+                                        40,   0,   0,   0,   0,   0,   0,   0,
+                                         1,  21,   0,   0,   0,   0,  21,   1,
+                                         0,   0,   0,   0,   0,   0,   0,  50,
+                                         0,   0,   0, 241,   1,   0,   0,   0,
+                                        40,   0,   0,   0,   0,   0,   0,   0,
+                                        21,   0,   0,   0,   0,   0,   0,  21,
+                                         3,   0,   0,   0,   0,   0,   0,   4,
+                                         5,   1,   1,  71,   1,   1,   1,  16,
+
                                          16, 8, 3,
-                                         1,   1,   1,   1,   1,   1,   1,  71,   1,   1,   1,   1,   1,   1,   1,   1,
+                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,   1,  21,   1,   1,   0,   0,   0,   0,   1,   1,  21,   1,   0,  10,                                      
-                                        50,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+                                       150,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          1,  21,   1,   1,   0,   0,   0,   8,   7,   0,   0,   0,   1,   1,  21,   1,
                                          0,   0,   0,   0,   0,   0,   0,   7,   8,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0, 241, 130,   1,   1,   0,   0,   0,   0,   1,  31,   1,  81,   0,   0,
-                                         0,   0,   0,   0,   0,   0,   0,   0,  40,   0,   0,   0,   0,   0,   0,   0,
-                                         1,   1,  21,   1,   1,  71,   1,   1,   1,   1,   1,   1,   1,  21,   1,   1                                         
+                                         0,   0,   0,   0,   0,   0,   0,   0, 140,   0,   0,   0,   0,   0,   0,   0,
+                                         1,   1,  21,   1,   1, 171,   1,   1,   1,   1,   1,   1,   1,  21,   1,   1                                         
                                   };
                                   
 byte levelMap[128]; // Contains the current level after loading from PROGMEM
@@ -1005,21 +1015,21 @@ void setupLevel()
       enemyStatus[enemyCounter] = 1;
     }
             
-    // Set enemy: Laser left
+    // Set enemy: Sports glider flying left
     if(j == 14)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8);
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8);
+      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
+      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 2;
       enemyType[enemyCounter] = 12;
       enemyMovement[enemyCounter] = 1;
       enemyStatus[enemyCounter] = 1;
     }
 
-    // Set enemy: Laser right
+    // Set enemy: Sports glider flying right
     if(j == 15)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 7;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8);
+      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
+      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 2;
       enemyType[enemyCounter] = 13;
       enemyMovement[enemyCounter] = 1;
       enemyStatus[enemyCounter] = 1;
@@ -1038,12 +1048,12 @@ void setupLevel()
       enemyY2[enemyCounter] = i / tileNumberX;
       enemyStatus[enemyCounter] = 1;
     }
-    // Set enemy: Horizontal moving laser
-
+    
+    // Set enemy: Railcar with steel
     if(j == 17)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8);
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8);
+      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
+      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 1;
       enemyType[enemyCounter] = 15;
       enemyMovement[enemyCounter] = 1;
       enemyX1[enemyCounter] = i % tileNumberX;
@@ -1134,9 +1144,12 @@ void setupLevel()
 void drawMiniMap()
 {
   matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
+  
   byte k = 0;
   byte xOffset = (32 - (tileNumberX * 2)) / 2;
   byte yOffset = (32 - (tileNumberY * 2)) / 2; 
+
+  matrix.drawRect(xOffset - 1, yOffset - 1, (tileNumberX * 2) + 2, (tileNumberY * 2) + 2, matrix.Color333(3, 2, 1));
 
   for(byte j = 0; j < tileNumberY; j++)
   {
@@ -2166,7 +2179,9 @@ void drawEnemies(byte i)
         playfield[x2 + 10][y2 + 11] = 2;
         playfield[x2 + 11][y2 + 11] = 2;
         playfield[x2 + 9][y2 + 12] = 2;
-        playfield[x2 + 10][y2 + 12] = 2;        
+        playfield[x2 + 10][y2 + 12] = 2;
+        // SOUND: Fire
+        tone(audio, 50 + random(350), 5);        
       }
       matrix.drawPixel(x2 + 1, y2 + 5, matrix.Color333(1, 0, 3));
       matrix.drawPixel(x2 + 2, y2 + 5, matrix.Color333(1, 0, 3));
@@ -2457,106 +2472,98 @@ void drawEnemies(byte i)
       }
     }
   }
-  
-  // Laser left
+
+  // Sports glider flying left
   if(enemyType[i] == 12)
   {
     // Remove enemy at old position
-    if(x1 > -8 && x1 < 32 && y1 > -8 && y1 < 32)
+    if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
-      matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 3, y1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 2, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 3, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 4, y1 + 1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1, y1 + 2, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1, y1 + 3, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1, y1 + 4, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1, y1 + 5, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1, y1 + 6, matrix.Color333(0, 0, 0));
-      playfield[x1 + 8][y1 + 8] = 0;
-      playfield[x1 + 8][y1 + 9] = 0;
+      matrix.drawPixel(x1 + 1, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 2, y1 + 2, matrix.Color333(0, 0, 0));
+      playfield[x1 + 11][y1 + 8] = 0;
+      playfield[x1 + 9][y1 + 9] = 0;
+      playfield[x1 + 10][y1 + 9] = 0;
+      playfield[x1 + 11][y1 + 9] = 0;
+      playfield[x1 + 12][y1 + 9] = 0;
       playfield[x1 + 8][y1 + 10] = 0;
-      playfield[x1 + 8][y1 + 11] = 0;
-      playfield[x1 + 8][y1 + 12] = 0;
-      playfield[x1 + 8][y1 + 13] = 0;
-      playfield[x1 + 8][y1 + 14] = 0;
+      playfield[x1 + 9][y1 + 10] = 0;
+      playfield[x1 + 10][y1 + 10] = 0;
     }
 
     // Draw enemy at new position
-    if(x2 > -8 && x2 < 32 && y2 > -8 && y2 < 32)
+    if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
-      if(animationCounter < 64 || (animationCounter > 127 && animationCounter < 192))
-      {
-        if(animationCounter % 4 == 0)
-        {
-          matrix.drawPixel(x2, y2, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2, y2 + 1, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2, y2 + 2, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2, y2 + 3, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2, y2 + 4, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2, y2 + 5, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2, y2 + 6, matrix.Color333(3, 3, 3));
-          // Sound: Laser on screen
-          tone(audio, 100, 5);
-        }
-        playfield[x2 + 8][y2 + 8] = 2;
-        playfield[x2 + 8][y2 + 9] = 2;
-        playfield[x2 + 8][y2 + 10] = 2;
-        playfield[x2 + 8][y2 + 11] = 2;
-        playfield[x2 + 8][y2 + 12] = 2;
-        playfield[x2 + 8][y2 + 13] = 2;
-        playfield[x2 + 8][y2 + 14] = 2;
-      }
+      matrix.drawPixel(x2 + 3, y2, matrix.Color333(3, 0, 0));
+      matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(0, 0, 3));
+      matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(3, 0, 0));
+      matrix.drawPixel(x2 + 3, y2 + 1, matrix.Color333(1, 0, 0));
+      if(animationCounter % 2 == 0){ matrix.drawPixel(x2 + 4, y2 + 1, matrix.Color333(random(5) + 1, random(5) + 1, 1)); }
+      matrix.drawPixel(x2, y2 + 2, matrix.Color333(3, 0, 0));
+      matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(3, 0, 0));
+      matrix.drawPixel(x2 + 2, y2 + 2, matrix.Color333(1, 0, 0));
+      playfield[x2 + 11][y2 + 8] = 2;
+      playfield[x2 + 9][y2 + 9] = 2;
+      playfield[x2 + 10][y2 + 9] = 2;
+      playfield[x2 + 11][y2 + 9] = 2;
+      playfield[x2 + 12][y2 + 9] = 2;
+      playfield[x2 + 8][y2 + 10] = 2;
+      playfield[x2 + 9][y2 + 10] = 2;
+      playfield[x2 + 10][y2 + 10] = 2;
     }
   }
-  
-  // Laser right
+
+  // Sports glider flying right
   if(enemyType[i] == 13)
   {
     // Remove enemy at old position
-    if(x1 > -8 && x1 < 32 && y1 > -8 && y1 < 32)
+    if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
-      matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1, y1 + 1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1, y1 + 2, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1, y1 + 3, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1, y1 + 4, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1, y1 + 5, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1, y1 + 6, matrix.Color333(0, 0, 0));
-      playfield[x1 + 8][y1 + 8] = 0;
+      matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 2, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 3, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 +2, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 3, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 4, y1 + 2, matrix.Color333(0, 0, 0));
+      playfield[x1 + 9][y1 + 8] = 0;
       playfield[x1 + 8][y1 + 9] = 0;
-      playfield[x1 + 8][y1 + 10] = 0;
-      playfield[x1 + 8][y1 + 11] = 0;
-      playfield[x1 + 8][y1 + 12] = 0;
-      playfield[x1 + 8][y1 + 13] = 0;
-      playfield[x1 + 8][y1 + 14] = 0;
+      playfield[x1 + 9][y1 + 9] = 0;
+      playfield[x1 + 10][y1 + 9] = 0;
+      playfield[x1 + 11][y1 + 9] = 0;
+      playfield[x1 + 10][y1 + 10] = 0;
+      playfield[x1 + 11][y1 + 10] = 0;
+      playfield[x1 + 12][y1 + 10] = 0;
     }
 
     // Draw enemy at new position
-    if(x2 > -8 && x2 < 32 && y2 > -8 && y2 < 32)
+    if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
-      if(animationCounter < 64 || (animationCounter > 127 && animationCounter < 192))
-      {
-        if(animationCounter % 4 == 0)
-        {
-          matrix.drawPixel(x2, y2, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2, y2 + 1, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2, y2 + 2, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2, y2 + 3, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2, y2 + 4, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2, y2 + 5, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2, y2 + 6, matrix.Color333(3, 3, 3));
-          // Sound: Laser on screen
-          tone(audio, 100, 5);
-        }
-        playfield[x2 + 8][y2 + 8] = 2;
-        playfield[x2 + 8][y2 + 9] = 2;
-        playfield[x2 + 8][y2 + 10] = 2;
-        playfield[x2 + 8][y2 + 11] = 2;
-        playfield[x2 + 8][y2 + 12] = 2;
-        playfield[x2 + 8][y2 + 13] = 2;
-        playfield[x2 + 8][y2 + 14] = 2;
-      }
+      matrix.drawPixel(x2 + 1, y2, matrix.Color333(3, 0, 0));
+      if(animationCounter % 2 == 0){ matrix.drawPixel(x2, y2 + 1, matrix.Color333(random(5) + 1, random(5) + 1, 1)); }
+      matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(1, 0, 0));
+      matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(3, 0, 0));
+      matrix.drawPixel(x2 + 3, y2 + 1, matrix.Color333(0, 0, 3));
+      matrix.drawPixel(x2 +2, y2 + 2, matrix.Color333(1, 0, 0));
+      matrix.drawPixel(x2 + 3, y2 + 2, matrix.Color333(3, 0, 0));
+      matrix.drawPixel(x2 + 4, y2 + 2, matrix.Color333(3, 0, 0));
+      playfield[x2 + 9][y2 + 8] = 2;
+      playfield[x2 + 8][y2 + 9] = 2;
+      playfield[x2 + 9][y2 + 9] = 2;
+      playfield[x2 + 10][y2 + 9] = 2;
+      playfield[x2 + 11][y2 + 9] = 2;
+      playfield[x2 + 10][y2 + 10] = 2;
+      playfield[x2 + 11][y2 + 10] = 2;
+      playfield[x2 + 12][y2 + 10] = 2;
     }
-  }
+  }  
   
   // Vertical moving laser
   if(enemyType[i] == 14)
@@ -2612,61 +2619,113 @@ void drawEnemies(byte i)
     }
   }
   
-  // Horizontal moving laser
+  // Railcar with steel
   if(enemyType[i] == 15)
   {
     // Remove enemy at old position
-    if(x1 > -8 && x1 < 32 && y1 > -8 && y1 < 32)
+    if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
-      matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1 + 2, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1 + 3, matrix.Color333(0, 0, 0));
+      if(animationCounter < 129)
+      {
+        matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1, y1 + 1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 2, y1 + 1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 3, y1 + 1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1, y1 + 2, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 1, y1 + 2, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 2, y1 + 2, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 3, y1 + 2, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1, y1 + 3, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 1, y1 + 3, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 2, y1 + 3, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 3, y1 + 3, matrix.Color333(0, 0, 0));
+        playfield[x1 + 9][y1 + 8] = 0;
+        playfield[x1 + 10][y1 + 8] = 0;
+        playfield[x1 + 8][y1 + 9] = 0;
+        playfield[x1 + 9][y1 + 9] = 0;
+        playfield[x1 + 10][y1 + 9] = 0;
+        playfield[x1 + 11][y1 + 9] = 0;
+        playfield[x1 + 8][y1 + 10] = 0;
+        playfield[x1 + 9][y1 + 10] = 0;
+        playfield[x1 + 10][y1 + 10] = 0;
+        playfield[x1 + 11][y1 + 10] = 0;
+        playfield[x1 + 8][y1 + 11] = 0;
+        playfield[x1 + 9][y1 + 11] = 0;
+        playfield[x1 + 10][y1 + 11] = 0;
+        playfield[x1 + 11][y1 + 11] = 0;
+      }
+      matrix.drawPixel(x1, y1 + 4, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1 + 4, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 2, y1 + 4, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 3, y1 + 4, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1, y1 + 5, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1 + 5, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1 + 6, matrix.Color333(0, 0, 0));
-      playfield[x1 + 8][y1 + 8] = 0;
-      playfield[x1 + 9][y1 + 8] = 0;
-      playfield[x1 + 10][y1 + 8] = 0;
-      playfield[x1 + 9][y1 + 9] = 0;
-      playfield[x1 + 9][y1 + 10] = 0;
-      playfield[x1 + 9][y1 + 11] = 0;
+      matrix.drawPixel(x1 + 2, y1 + 5, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 3, y1 + 5, matrix.Color333(0, 0, 0));
+      playfield[x1 + 8][y1 + 12] = 0;
       playfield[x1 + 9][y1 + 12] = 0;
+      playfield[x1 + 10][y1 + 12] = 0;
+      playfield[x1 + 11][y1 + 12] = 0;
+      playfield[x1 + 8][y1 + 13] = 0;
       playfield[x1 + 9][y1 + 13] = 0;
-      playfield[x1 + 9][y1 + 14] = 0;
+      playfield[x1 + 10][y1 + 13] = 0;
+      playfield[x1 + 11][y1 + 13] = 0;
     }
 
     // Draw enemy at new position
-    if(x2 > -8 && x2 < 32 && y2 > -8 && y2 < 32)
-    {
-      matrix.drawPixel(x2, y2, matrix.Color333(3, 0, 3));
-      matrix.drawPixel(x2 + 1, y2, matrix.Color333(3, 0, 3));
-      matrix.drawPixel(x2 + 2, y2, matrix.Color333(3, 0, 3));
-      playfield[x2 + 8][y2 + 8] = 2;
-      playfield[x2 + 9][y2 + 8] = 2;
-      playfield[x2 + 10][y2 + 8] = 2;
-      if(animationCounter < 64 || (animationCounter > 127 && animationCounter < 192))
+    if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
+    { 
+      if(animationCounter < 128)
       {
-        if(animationCounter % 4 == 0)
-        {
-          matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2 + 1, y2 + 3, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2 + 1, y2 + 4, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2 + 1, y2 + 5, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2 + 1, y2 + 6, matrix.Color333(3, 0, 3));
-          // Sound: Laser on screen
-          tone(audio, 100, 5);
-        }
+        if(random(100) < 15){ matrix.drawPixel(x2 + 1, y2, matrix.Color333(1, 1, 0)); }
+        if(random(100) < 15){ matrix.drawPixel(x2 + 2, y2, matrix.Color333(1, 1, 0)); }
+        if(random(100) < 15){ matrix.drawPixel(x2, y2 + 1, matrix.Color333(1, 1, 0)); }
+        if(random(100) < 20){ matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(2, 2, 0)); }
+        if(random(100) < 20){ matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(2, 2, 0)); }
+        if(random(100) < 15){ matrix.drawPixel(x2 + 3, y2 + 1, matrix.Color333(1, 1, 0)); }
+        if(random(100) < 20){ matrix.drawPixel(x2, y2 + 2, matrix.Color333(2, 2, 0)); }
+        if(random(100) < 25){ matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(3, 3, 1)); }
+        if(random(100) < 25){ matrix.drawPixel(x2 + 2, y2 + 2, matrix.Color333(3, 3, 1)); }
+        if(random(100) < 20){ matrix.drawPixel(x2 + 3, y2 + 2, matrix.Color333(2, 2, 0)); }
+        if(random(100) < 25){ matrix.drawPixel(x2, y2 + 3, matrix.Color333(1, 1, 0)); }
+        if(random(100) < 30){ matrix.drawPixel(x2 + 1, y2 + 3, matrix.Color333(4, 4, 1)); }
+        if(random(100) < 30){ matrix.drawPixel(x2 + 2, y2 + 3, matrix.Color333(4, 4, 1)); }
+        if(random(100) < 25){ matrix.drawPixel(x2 + 3, y2 + 3, matrix.Color333(1, 1, 0)); }
+        playfield[x2 + 9][y2 + 8] = 2;
+        playfield[x2 + 10][y2 + 8] = 2;
+        playfield[x2 + 8][y2 + 9] = 2;
         playfield[x2 + 9][y2 + 9] = 2;
+        playfield[x2 + 10][y2 + 9] = 2;
+        playfield[x2 + 11][y2 + 9] = 2;
+        playfield[x2 + 8][y2 + 10] = 2;
         playfield[x2 + 9][y2 + 10] = 2;
+        playfield[x2 + 10][y2 + 10] = 2;
+        playfield[x2 + 11][y2 + 10] = 2;
+        playfield[x2 + 8][y2 + 11] = 2;
         playfield[x2 + 9][y2 + 11] = 2;
-        playfield[x2 + 9][y2 + 12] = 2;
-        playfield[x2 + 9][y2 + 13] = 2;
-        playfield[x2 + 9][y2 + 14] = 2;
+        playfield[x2 + 10][y2 + 11] = 2;
+        playfield[x2 + 11][y2 + 11] = 2;
+        // SOUND: Fire
+        tone(audio, 50 + random(350), 5);        
       }
+      matrix.drawPixel(x2, y2 + 4, matrix.Color333(0, 0, 3));
+      matrix.drawPixel(x2 + 1, y2 + 4, matrix.Color333(0, 0, 1));
+      matrix.drawPixel(x2 + 2, y2 + 4, matrix.Color333(0, 0, 1));
+      matrix.drawPixel(x2 + 3, y2 + 4, matrix.Color333(0, 0, 3));
+      matrix.drawPixel(x2, y2 + 5, matrix.Color333(2, 2, 2));
+      matrix.drawPixel(x2 + 1, y2 + 5, matrix.Color333(0, 0, 2));
+      matrix.drawPixel(x2 + 2, y2 + 5, matrix.Color333(0, 0, 2));
+      matrix.drawPixel(x2 + 3, y2 + 5, matrix.Color333(2, 2, 2));
+      playfield[x2 + 8][y2 + 12] = 2;
+      playfield[x2 + 9][y2 + 12] = 2;
+      playfield[x2 + 10][y2 + 12] = 2;
+      playfield[x2 + 11][y2 + 12] = 2;
+      playfield[x2 + 8][y2 + 13] = 2;
+      playfield[x2 + 9][y2 + 13] = 2;
+      playfield[x2 + 10][y2 + 13] = 2;
+      playfield[x2 + 11][y2 + 13] = 2;
     }
   }
   
@@ -2833,7 +2892,7 @@ void moveEnemies()
         {
           if(enemyXMap[i] > enemyX1[i])
           {
-            enemyXMap[i] = enemyXMap[i] - 0.15;
+            enemyXMap[i] = enemyXMap[i] - 0.2;
           }
           else
           {
@@ -2844,7 +2903,7 @@ void moveEnemies()
         {
           if(enemyXMap[i] < enemyX2[i])
           {
-            enemyXMap[i] = enemyXMap[i] + 0.15;
+            enemyXMap[i] = enemyXMap[i] + 0.2;
           }
           else
           {
@@ -2978,17 +3037,31 @@ void moveEnemies()
         // Do nothing
       } 
 
-      // Laser left
+      // Sports glider flying left
       if(enemyType[i] == 12)
-      {
-        // Do nothing
-      } 
+      { 
+        if(enemyXMap[i] > -4)
+        {
+          enemyXMap[i] = enemyXMap[i] - 0.4;
+        }
+        else
+        {
+          enemyXMap[i] = mapWidth - 1;
+        }      
+      }
 
-      // Laser right
+      // Sports glider flying right
       if(enemyType[i] == 13)
-      {
-        // Do nothing
-      } 
+      { 
+        if(enemyXMap[i] < mapWidth)
+        {
+          enemyXMap[i] = enemyXMap[i] + 0.4;
+        }
+        else
+        {
+          enemyXMap[i] = -3;
+        }      
+      }
 
       // Vertical moving laser
       if(enemyType[i] == 14)
@@ -3019,7 +3092,7 @@ void moveEnemies()
         }  
       } 
 
-      // Horizontal moving laser
+      // Railcar with steel
       if(enemyType[i] == 15)
       {
         // Moving left
@@ -3027,7 +3100,7 @@ void moveEnemies()
         {
           if(enemyXMap[i] > enemyX1[i])
           {
-            enemyXMap[i] = enemyXMap[i] - 0.25;
+            enemyXMap[i] = enemyXMap[i] - 0.15;
           }
           else
           {
@@ -3038,7 +3111,7 @@ void moveEnemies()
         {
           if(enemyXMap[i] < enemyX2[i])
           {
-            enemyXMap[i] = enemyXMap[i] + 0.25;
+            enemyXMap[i] = enemyXMap[i] + 0.15;
           }
           else
           {
