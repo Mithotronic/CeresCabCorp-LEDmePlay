@@ -157,26 +157,36 @@ int buttonPause = 43;
 // Extra gas station:        30 //
 // Other taxi flying left:   40 //
 // Other taxi flying right:  50 //
-// Ufo --> Container         60
+// Container                 60 //
 // Mech:                     70 //
 // Fire:                     80 //
 // Twister --> Gripper       90
 // Devil --> Pirat          100
 // Vulcano --> Missile      110
-// Hornet --> Drone         120
+// Drone                    120 //
 // Plasma floor:            130 //
 // Sports glider left:      140 //
 // Sports glider right:     150 //
 // Vertical moving laser --> Plasma Wall    160
 // Railcar with steel       170 //
-// Comet --> Asteroid       180
+// Meteor                 180 //
 //
 // Play start position      240
 //
 // Example: Tile 1 with mech (value 70) is encoded by 71.
 //
-const byte numberOfLevels = 2;
+const byte numberOfLevels = 3;
 const uint8_t levels[] PROGMEM  = {
+                                         8, 8, 3,
+                                       120,   0,   0,  60,   0,   0, 180,   0,
+                                         0,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,   0,   0,  60,   0,   0,   0,
+                                         0,   0,  21,   0,   0,  21,   0,   0,
+                                       241,   0,   0,   0,   0,   0,   0,   0,
+                                         1,   1,   1,   1,   1,   1,   1,   1,
+
                                          8, 8, 6,
                                         40,   0,   0,   0,   0,   0,   0,   0,
                                          1,  21,   0,   0,   0,   0,  21,   1,
@@ -889,16 +899,6 @@ void setupLevel()
       }
     }
 
-//    // Set enemy: Bird
-//    if(j == 3)
-//    {
-//      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
-//      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 3;
-//      enemyType[enemyCounter] = 1;
-//      enemyMovement[enemyCounter] = 1;
-//      enemyStatus[enemyCounter] = 1;
-//    }
-
     // Set enemy: Other taxi flying left
     if(j == 4)
     {
@@ -919,11 +919,11 @@ void setupLevel()
       enemyStatus[enemyCounter] = 1;
     }
 
-    // Set enemy: Ufo
+    // Set enemy: Container
     if(j == 6)
     {
       enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 3;
+      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 2;
       enemyType[enemyCounter] = 4;
       enemyMovement[enemyCounter] = 1;
       enemyX1[enemyCounter] = i % tileNumberX;
@@ -991,7 +991,7 @@ void setupLevel()
       enemyStatus[enemyCounter] = 1;
     }
 
-    // Set enemy: Hornet
+    // Set enemy: Drone
     if(j == 12)
     {
       enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
@@ -1063,13 +1063,13 @@ void setupLevel()
       enemyStatus[enemyCounter] = 1;
     }
 
-    // Set enemy: Comet
+    // Set enemy: Meteor
     if(j == 18)
     {
       enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 3;
       enemyYMap[enemyCounter] = ((i / tileNumberX) * 8);
       enemyType[enemyCounter] = 16;
-      enemyMovement[enemyCounter] = 1;
+      enemyMovement[enemyCounter] = random(21);
       enemyStatus[enemyCounter] = 1;
     }
 
@@ -1763,50 +1763,6 @@ void drawEnemies(byte i)
   x2 = enemyXScreenNew[i];
   y2 = enemyYScreenNew[i];
 
-  // Bird
-  if(enemyType[i] == 1)
-  {
-    // Remove enemy at old position
-    if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
-    {   
-      matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1, y1 + 1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 2, y1 + 1, matrix.Color333(0, 0, 0));
-      playfield[x1 + 8][y1 + 8] = 0;
-      playfield[x1 + 9][y1 + 8] = 0;
-      playfield[x1 + 10][y1 + 8] = 0;
-      playfield[x1 + 8][y1 + 9] = 0;
-      playfield[x1 + 9][y1 + 9] = 0;
-      playfield[x1 + 10][y1 + 9] = 0;
-    }
-  
-    // Draw enemy at new position
-    if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
-    {   
-      if(animationCounter % 16 < 8)
-      {
-        matrix.drawPixel(x2, y2, matrix.Color333(0, 3, 0));
-        matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(0, 0, int((animationCounter % 32) / 4)));
-        matrix.drawPixel(x2 + 2, y2, matrix.Color333(0, 3, 0));
-        playfield[x2 + 8][y2 + 8] = 2;
-        playfield[x2 + 9][y2 + 9] = 2;
-        playfield[x2 + 10][y2 + 8] = 2;
-      }
-      else
-      {
-        matrix.drawPixel(x2, y2 + 1, matrix.Color333(0, 3, 0));
-        matrix.drawPixel(x2 + 1, y2, matrix.Color333(0, 0, int((animationCounter % 32) / 4)));
-        matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(0, 3, 0));
-        playfield[x2 + 8][y2 + 9] = 2;
-        playfield[x2 + 9][y2 + 8] = 2;
-        playfield[x2 + 10][y2 + 9] = 2;
-      }
-    }  
-  }
-
   // Other taxi flying left
   if(enemyType[i] == 2)
   {
@@ -1925,38 +1881,56 @@ void drawEnemies(byte i)
     }
   }
 
-  // Ufo
+  // Container
   if(enemyType[i] == 4)
   {
     // Remove enemy at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
+      matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 3, y1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1, y1 + 1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 2, y1 + 1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 3, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 1, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 2, y1 + 2, matrix.Color333(0, 0, 0));
+      playfield[x1 + 8][y1 + 8] = 0;
       playfield[x1 + 9][y1 + 8] = 0;
       playfield[x1 + 10][y1 + 8] = 0;
+      playfield[x1 + 11][y1 + 8] = 0;
       playfield[x1 + 8][y1 + 9] = 0;
       playfield[x1 + 9][y1 + 9] = 0;
       playfield[x1 + 10][y1 + 9] = 0;
       playfield[x1 + 11][y1 + 9] = 0;
+      playfield[x1 + 9][y1 + 10] = 0;
+      playfield[x1 + 10][y1 + 10] = 0;
     }
 
     // Draw enemy at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
-      matrix.drawPixel(x2 + 1, y2, matrix.Color333(0, 1, 1));
-      matrix.drawPixel(x2 + 2, y2, matrix.Color333(0, 1, 1));
-      matrix.drawPixel(x2, y2 + 1, matrix.Color333(0, 1, 1));
-      matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(0, 3, 3));
-      matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(0, 3, 3));
-      matrix.drawPixel(x2 + 3, y2 + 1, matrix.Color333(0, 1, 1));
-      matrix.drawPixel(x2 + (animationCounter % 16) / 4, y2 + 1, matrix.Color333(3, 3, 0));
+      matrix.drawPixel(x2, y2, matrix.Color333(4, 4, 1));
+      matrix.drawPixel(x2 + 1, y2, matrix.Color333(random(7), 0, 0));
+      matrix.drawPixel(x2 + 2, y2, matrix.Color333(random(7), 0, 0));
+      matrix.drawPixel(x2 + 3, y2, matrix.Color333(3, 3, 1));
+      matrix.drawPixel(x2, y2 + 1, matrix.Color333(3, 3, 1));
+      matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(4, 4, 1));
+      matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(2, 2, 1));
+      matrix.drawPixel(x2 + 3, y2 + 1, matrix.Color333(2, 2, 1));
+      if(enemyMovement[i] == 0 && animationCounter % 4 == 0)
+      {
+        matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(random(3) + 2, random(3) + 2, 2));
+        matrix.drawPixel(x2 + 2, y2 + 2, matrix.Color333(random(3) + 2, random(3) + 2, 2));
+        playfield[x2 + 9][y2 + 10] = 2;
+        playfield[x2 + 10][y2 + 10] = 2;
+      }
+      playfield[x2 + 8][y2 + 8] = 2;
       playfield[x2 + 9][y2 + 8] = 2;
       playfield[x2 + 10][y2 + 8] = 2;
+      playfield[x2 + 11][y2 + 8] = 2;
       playfield[x2 + 8][y2 + 9] = 2;
       playfield[x2 + 9][y2 + 9] = 2;
       playfield[x2 + 10][y2 + 9] = 2;
@@ -2360,47 +2334,37 @@ void drawEnemies(byte i)
     }
   }
 
-  // Hornet
+  // Drone
   if(enemyType[i] == 10)
   {
     // Remove enemy at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
-      matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 3, y1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1, y1 + 1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 2, y1 + 1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 3, y1 + 1, matrix.Color333(0, 0, 0));
-      playfield[x1 + 8][y1 + 8] = 0;
-      playfield[x1 + 11][y1 + 8] = 0;
+      matrix.drawPixel(x1 + 1, y1 + 2, matrix.Color333(0, 0, 0));
+      playfield[x1 + 9][y1 + 8] = 0;
       playfield[x1 + 8][y1 + 9] = 0;
       playfield[x1 + 9][y1 + 9] = 0;
       playfield[x1 + 10][y1 + 9] = 0;
-      playfield[x1 + 11][y1 + 9] = 0;
+      playfield[x1 + 9][y1 + 10] = 0;
     }
 
     // Draw enemy at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
-      if(animationCounter % 16 < 8)
-      {
-        matrix.drawPixel(x2, y2, matrix.Color333(3, 3, 0));
-        matrix.drawPixel(x2 + 3, y2, matrix.Color333(3, 3, 0));
-        playfield[x2 + 8][y2 + 8] = 2;
-        playfield[x2 + 11][y2 + 8] = 2;
-      }
-      else
-      {
-        matrix.drawPixel(x2, y2 + 1, matrix.Color333(3, 3, 0));
-        matrix.drawPixel(x2 + 3, y2 + 1, matrix.Color333(3, 3, 0));
-        playfield[x2 + 8][y2 + 9] = 2;
-        playfield[x2 + 11][y2 + 9] = 2;
-      }
-      matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(0, 3, 3));
-      matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(0, 3, 3));
+      matrix.drawPixel(x2 + 1, y2, matrix.Color333(0, 0, 3));
+      matrix.drawPixel(x2, y2 + 1, matrix.Color333(0, 0, 3));
+      matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(int((animationCounter % 32) / 4), 0, 0));
+      matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(0, 0, 3));
+      matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(0, 0, 3));
+      playfield[x2 + 9][y2 + 8] = 2;
+      playfield[x2 + 8][y2 + 9] = 2;
       playfield[x2 + 9][y2 + 9] = 2;
       playfield[x2 + 10][y2 + 9] = 2;
+      playfield[x2 + 9][y2 + 10] = 2;
     }
   }
 
@@ -2729,20 +2693,20 @@ void drawEnemies(byte i)
     }
   }
   
-  // Comet
+  // Meteor
   if(enemyType[i] == 16)
   {
     // Remove enemy at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
+      matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1, y1 + 1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 2, y1 + 1, matrix.Color333(0, 0, 0));
+      playfield[x1 + 8][y1 + 8] = 0;
       playfield[x1 + 9][y1 + 8] = 0;
-      playfield[x1 + 10][y1 + 8] = 0;
+      playfield[x1 + 8][y1 + 9] = 0;
       playfield[x1 + 9][y1 + 9] = 0;
-      playfield[x1 + 10][y1 + 9] = 0;
     }
 
     // Draw enemy at new position
@@ -2750,18 +2714,18 @@ void drawEnemies(byte i)
     {
       if(animationCounter % 4 == 3)
       {
-        matrix.drawPixel(x2 + 1, y2, matrix.Color333(3, 3, 0));
-        matrix.drawPixel(x2 + 2, y2, matrix.Color333(3, 3, 0));
+        matrix.drawPixel(x2, y2, matrix.Color333(4, 4, 1));
+        matrix.drawPixel(x2 + 1, y2, matrix.Color333(3, 3, 1));
       }
       if(animationCounter % 2 == 1)
       {
-        matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(3, 3, 0));
-        matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(3, 3, 0));
+        matrix.drawPixel(x2, y2 + 1, matrix.Color333(3, 3, 1));
+        matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(2, 2, 1));
       }
+      playfield[x2 + 8][y2 + 8] = 2;
       playfield[x2 + 9][y2 + 8] = 2;
-      playfield[x2 + 10][y2 + 8] = 2;
+      playfield[x2 + 8][y2 + 9] = 2;
       playfield[x2 + 9][y2 + 9] = 2;
-      playfield[x2 + 10][y2 + 9] = 2;
     }
   }
   
@@ -2776,59 +2740,6 @@ void moveEnemies()
   {
     if(enemyStatus[i] > 0)
     {
-      // Bird
-      if(enemyType[i] == 1)
-      {  
-        if(enemyMovement[i] == 1)
-        {
-          if(enemyXMap[i] < (mapWidth - 2) && enemyYMap[i] > 0)
-          {
-            enemyXMap[i] = enemyXMap[i] + 0.25;
-            enemyYMap[i] = enemyYMap[i] - 0.25;
-          }
-          else
-          {
-            enemyMovement[i] = byte(random(4)) + 1;
-          }
-        }
-        else if(enemyMovement[i] == 2)
-        {
-          if(enemyXMap[i] < (mapWidth - 2) && enemyYMap[i] < (mapHeight - 1))
-          {
-            enemyXMap[i] = enemyXMap[i] + 0.25;
-            enemyYMap[i] = enemyYMap[i] + 0.25;
-          }
-          else
-          {
-            enemyMovement[i] = byte(random(4)) + 1;
-          }
-        }
-        else if(enemyMovement[i] == 3)
-        {
-          if(enemyXMap[i] > 0 && enemyYMap[i] < (mapHeight - 1))
-          {
-            enemyXMap[i] = enemyXMap[i] - 0.25;
-            enemyYMap[i] = enemyYMap[i] + 0.25;
-          }
-          else
-          {
-            enemyMovement[i] = byte(random(4)) + 1;
-          }
-        }
-        else if(enemyMovement[i] == 4)
-        {
-          if(enemyXMap[i] > 0 && enemyYMap[i] > 0)
-          {
-            enemyXMap[i] = enemyXMap[i] - 0.25;
-            enemyYMap[i] = enemyYMap[i] - 0.25;
-          }
-          else
-          {
-            enemyMovement[i] = byte(random(4)) + 1;
-          }
-        }
-      }
-        
       // Other taxi flying left
       if(enemyType[i] == 2)
       { 
@@ -2855,7 +2766,7 @@ void moveEnemies()
         }      
       }
       
-      // Ufo
+      // Container
       if(enemyType[i] == 4)
       { 
         // Moving up
@@ -2863,7 +2774,7 @@ void moveEnemies()
         {
           if(enemyYMap[i] > enemyY1[i])
           {
-            enemyYMap[i] = enemyYMap[i] - 0.25;
+            enemyYMap[i] = enemyYMap[i] - 0.15;
           }
           else
           {
@@ -2875,7 +2786,7 @@ void moveEnemies()
         {
           if(enemyYMap[i] < enemyY2[i])
           {
-            enemyYMap[i] = enemyYMap[i] + 0.25;
+            enemyYMap[i] = enemyYMap[i] + 0.45;
           }
           else
           {
@@ -3003,30 +2914,55 @@ void moveEnemies()
         // Do nothing
       } 
 
-      // Hornet
+      // Drone
       if(enemyType[i] == 10)
       {
-        // Moving left
-        if(enemyMovement[i] == 0)
+        if(enemyMovement[i] == 1)
         {
-          if(enemyXMap[i] > enemyX1[i])
+          if(enemyXMap[i] < (mapWidth - 2) && enemyYMap[i] > 0)
           {
-            enemyXMap[i] = enemyXMap[i] - 0.5;
+            enemyXMap[i] = enemyXMap[i] + 0.25;
+            enemyYMap[i] = enemyYMap[i] - 0.25;
           }
           else
           {
-            enemyMovement[i] = 1;
+            enemyMovement[i] = byte(random(4)) + 1;
           }
         }
-        else
+        else if(enemyMovement[i] == 2)
         {
-          if(enemyXMap[i] < enemyX2[i])
+          if(enemyXMap[i] < (mapWidth - 2) && enemyYMap[i] < (mapHeight - 1))
           {
-            enemyXMap[i] = enemyXMap[i] + 0.5;
+            enemyXMap[i] = enemyXMap[i] + 0.25;
+            enemyYMap[i] = enemyYMap[i] + 0.25;
           }
           else
           {
-            enemyMovement[i] = 0;
+            enemyMovement[i] = byte(random(4)) + 1;
+          }
+        }
+        else if(enemyMovement[i] == 3)
+        {
+          if(enemyXMap[i] > 0 && enemyYMap[i] < (mapHeight - 1))
+          {
+            enemyXMap[i] = enemyXMap[i] - 0.25;
+            enemyYMap[i] = enemyYMap[i] + 0.25;
+          }
+          else
+          {
+            enemyMovement[i] = byte(random(4)) + 1;
+          }
+        }
+        else if(enemyMovement[i] == 4)
+        {
+          if(enemyXMap[i] > 0 && enemyYMap[i] > 0)
+          {
+            enemyXMap[i] = enemyXMap[i] - 0.25;
+            enemyYMap[i] = enemyYMap[i] - 0.25;
+          }
+          else
+          {
+            enemyMovement[i] = byte(random(4)) + 1;
           }
         }      
       } 
@@ -3120,23 +3056,10 @@ void moveEnemies()
         }      
       } 
 
-      // Comet
+      // Meteor
       if(enemyType[i] == 16)
       {
-        if(random(100) < 50)
-        {
-          if(enemyXMap[i] > -1)
-          {
-            enemyXMap[i] = enemyXMap[i] - double(random(5)) / 10;
-          }
-        }
-        else
-        {
-          if(enemyXMap[i] < mapWidth - 1)
-          {
-            enemyXMap[i] = enemyXMap[i] + double(random(5)) / 10;
-          }
-        }
+        enemyXMap[i] = enemyXMap[i] - (float(enemyMovement[i]) - 10.0) / 40.0;
         if(enemyYMap[i] < mapHeight)
         {
           enemyYMap[i] = enemyYMap[i] + 0.5;
@@ -3144,6 +3067,7 @@ void moveEnemies()
         else
         {
           enemyYMap[i] = -1;
+          enemyMovement[i] = random(21);
         }      
       }
 
@@ -3160,13 +3084,7 @@ void initializeEnemyMovement()
   for(i = 0; i < 16; i++)
   {
     if(enemyStatus[i] > 0)
-    {
-      // Bird
-      if(enemyType[i] == 1)
-      {  
-        // Nothing to do
-      }
-      
+    {      
       // Other taxi flying left
       if(enemyType[i] == 2)
       {  
@@ -3179,7 +3097,7 @@ void initializeEnemyMovement()
         // Nothing to do
       }
       
-      // Ufo
+      // Container
       if(enemyType[i] == 4)
       {
         j = enemyX1[i];
@@ -3292,37 +3210,10 @@ void initializeEnemyMovement()
       {  
       }
       
-      // Hornet
+      // Drone
       if(enemyType[i] == 10)
       {  
-        j = enemyX1[i];
-        k = enemyY1[i];
-        while(j > 0 && (levelMap[(tileNumberX * k) + j] == 0 || levelMap[(tileNumberX * k) + j] == 1))
-        {
-          j--;
-        }
-        if(j == 0 && (levelMap[(tileNumberX * k) + j] == 0 || levelMap[(tileNumberX * k) + j] == 1))
-        {
-          enemyX1[i] = j * 8;
-        }
-        else
-        {
-          enemyX1[i] = (j + 1) * 8;
-        }
-        j = enemyX2[i];
-        k = enemyY2[i];
-        while(j < tileNumberX && (levelMap[(tileNumberX * k) + j] == 0 || levelMap[(tileNumberX * k) + j] == 1))
-        {
-          j++;
-        }
-        if(levelMap[(tileNumberX * k) + j] == 4)
-        {
-          enemyX2[i] = (j * 8) + 3;
-        }
-        else
-        {
-          enemyX2[i] = ((j - 1) * 8) + 4;
-        }
+        // Nothing to do
       }
       
       // Vertical moving laser
