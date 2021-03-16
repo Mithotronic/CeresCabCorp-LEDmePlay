@@ -160,16 +160,16 @@ int buttonPause = 43;
 // Container                 60 //
 // Mech:                     70 //
 // Fire:                     80 //
-// Twister --> Gripper       90
+// Gripper:                  90 //
 // Devil --> Pirat          100
 // Vulcano --> Missile      110
-// Drone                    120 //
+// Drone:                   120 //
 // Plasma floor:            130 //
 // Sports glider left:      140 //
 // Sports glider right:     150 //
 // Vertical moving laser --> Plasma Wall    160
-// Railcar with steel       170 //
-// Meteor                 180 //
+// Railcar with steel:      170 //
+// Meteor:                  180 //
 //
 // Play start position      240
 //
@@ -178,9 +178,9 @@ int buttonPause = 43;
 const byte numberOfLevels = 3;
 const uint8_t levels[] PROGMEM  = {
                                          8, 8, 3,
-                                       120,   0,   0,  60,   0,   0, 180,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,
-                                         0,   0,   0,   0,   0,   0,   0,   0,
+                                         1,  91,   1,   1,   1,   1,   1,   1,
+                                         0,  90,   0,   0,   0,   0,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,   0,   0,  60,   0,   0,   0,
                                          0,   0,  21,   0,   0,  21,   0,   0,
@@ -957,11 +957,11 @@ void setupLevel()
       enemyStatus[enemyCounter] = 1;
     }
 
-    // Set enemy: Twister
+    // Set enemy: Gripper
     if(j == 9)
     {
       enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 3;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 3;
+      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8);
       enemyType[enemyCounter] = 7;
       enemyMovement[enemyCounter] = 1;
       enemyX1[enemyCounter] = i % tileNumberX;
@@ -2164,49 +2164,49 @@ void drawEnemies(byte i)
     }
   }
 
-  // Twister  
+  // Gripper  
   if(enemyType[i] == 7)
   {
     // Remove enemy at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
-      matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
+      if(enemyMovement[i] > 2 && enemyMovement[i] < 14){ matrix.drawPixel(x1 + 1, y1 - 1, matrix.Color333(0, 0, 0)); playfield[x1 + 9][y1 + 7] = 0; }
+      if(enemyMovement[i] > 4 && enemyMovement[i] < 12){ matrix.drawPixel(x1 + 1, y1 - 2, matrix.Color333(0, 0, 0)); playfield[x1 + 9][y1 + 6] = 0; }
+      if(enemyMovement[i] > 6 && enemyMovement[i] < 10){ matrix.drawPixel(x1 + 1, y1 - 3, matrix.Color333(0, 0, 0)); playfield[x1 + 9][y1 + 5] = 0; }
+      
       matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1, y1 + 1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1, y1 + 2, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 2, y1 + 2, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1, y1 + 3, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1 + 3, matrix.Color333(0, 0, 0));
-      playfield[x1 + 8][y1 + 8] = 0;
+      matrix.drawPixel(x1 + 2, y1 + 3, matrix.Color333(0, 0, 0));
       playfield[x1 + 9][y1 + 8] = 0;
-      playfield[x1 + 8][y1 + 9] = 0;
       playfield[x1 + 9][y1 + 9] = 0;
       playfield[x1 + 8][y1 + 10] = 0;
-      playfield[x1 + 9][y1 + 10] = 0;
+      playfield[x1 + 10][y1 + 10] = 0;
       playfield[x1 + 8][y1 + 11] = 0;
-      playfield[x1 + 9][y1 + 11] = 0;
+      playfield[x1 + 10][y1 + 11] = 0;
     }
 
     // Draw enemy at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
-      if(animationCounter % 16 < 8){ matrix.drawPixel(x2, y2, matrix.Color333(0, 0, 7)); }
-      else { matrix.drawPixel(x2 + 1, y2, matrix.Color333(0, 0, 7)); }
-      if(animationCounter % 16 > 7){ matrix.drawPixel(x2, y2 + 1, matrix.Color333(0, 0, 5)); }
-      else { matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(0, 0, 5)); }
-      if(animationCounter % 16 > 7){ matrix.drawPixel(x2, y2 + 2, matrix.Color333(0, 0, 3)); }
-      else { matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(0, 0, 3)); }
-      if(animationCounter % 16 < 8){ matrix.drawPixel(x2, y2 + 3, matrix.Color333(0, 0, 1)); }
-      else { matrix.drawPixel(x2 + 1, y2 + 3, matrix.Color333(0, 0, 1)); }
-      playfield[x2 + 8][y2 + 8] = 2;
+      if(enemyMovement[i] > 2 && enemyMovement[i] < 12){ matrix.drawPixel(x2 + 1, y2 - 1, matrix.Color333(1, 1, 1)); playfield[x2 + 9][y2 + 7] = 2; }
+      if(enemyMovement[i] > 4 && enemyMovement[i] < 10){ matrix.drawPixel(x2 + 1, y2 - 2, matrix.Color333(1, 1, 1)); playfield[x2 + 9][y2 + 6] = 2; }
+      if(enemyMovement[i] > 6 && enemyMovement[i] < 8){ matrix.drawPixel(x2 + 1, y2 - 3, matrix.Color333(1, 1, 1)); playfield[x2 + 9][y2 + 5] = 2; }
+   
+      matrix.drawPixel(x2 + 1, y2, matrix.Color333(1, 1, 1));
+      matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(1, 1, 1));
+      matrix.drawPixel(x2, y2 + 2, matrix.Color333(1, 1, 1));
+      matrix.drawPixel(x2 + 2, y2 + 2, matrix.Color333(1, 1, 1));  
+      matrix.drawPixel(x2, y2 + 3, matrix.Color333(3, 3, 3));
+      matrix.drawPixel(x2 + 2, y2 + 3, matrix.Color333(3, 3, 3));    
       playfield[x2 + 9][y2 + 8] = 2;
-      playfield[x2 + 8][y2 + 9] = 2;
       playfield[x2 + 9][y2 + 9] = 2;
       playfield[x2 + 8][y2 + 10] = 2;
-      playfield[x2 + 9][y2 + 10] = 2;
+      playfield[x2 + 10][y2 + 10] = 2;
       playfield[x2 + 8][y2 + 11] = 2;
-      playfield[x2 + 9][y2 + 11] = 2;
+      playfield[x2 + 10][y2 + 11] = 2;
     }
   }
 
@@ -2829,22 +2829,22 @@ void moveEnemies()
         // Do nothing
       } 
 
-      // Twister
+      // Gripper
       if(enemyType[i] == 7)
       {
-        // Moving down
+        // Gripper is raised
         if(enemyMovement[i] > 7)
-        {
-          enemyYMap[i]++;
-          enemyMovement[i] = enemyMovement[i] + 2;
-        }
-        // Moving up
-        if(enemyMovement[i] > 1 && enemyMovement[i] < 8)
         {
           enemyYMap[i]--;
           enemyMovement[i] = enemyMovement[i] + 2;
         }
-        // Jump ends
+        // Gripper lowers down
+        if(enemyMovement[i] > 1 && enemyMovement[i] < 8)
+        {
+          enemyYMap[i]++;
+          enemyMovement[i] = enemyMovement[i] + 2;
+        }
+        // Gripper back in standard position
         if(enemyMovement[i] > 13)
         {
           enemyMovement[i] = enemyMovement[i] - 14;
@@ -2854,7 +2854,7 @@ void moveEnemies()
         {
           if(enemyXMap[i] > enemyX1[i])
           {
-            enemyXMap[i] = enemyXMap[i] - 0.4;
+            enemyXMap[i] = enemyXMap[i] - 0.2;
           }
           else
           {
@@ -2865,14 +2865,14 @@ void moveEnemies()
         {
           if(enemyXMap[i] < enemyX2[i])
           {
-            enemyXMap[i] = enemyXMap[i] + 0.4;
+            enemyXMap[i] = enemyXMap[i] + 0.2;
           }
           else
           {
             enemyMovement[i] = enemyMovement[i] - 1;
           }
         }
-        // Start a jump
+        // Start to lower gripper
         if(enemyMovement[i] < 2 && random(100) < 5)
         {
           enemyMovement[i] = enemyMovement[i] + 2;
@@ -3166,16 +3166,16 @@ void initializeEnemyMovement()
         // Nothing to do
       }
       
-      // Twister
+      // Gripper
       if(enemyType[i] == 7)
       {  
         j = enemyX1[i];
         k = enemyY1[i];
-        while(j > 0 && levelMap[(tileNumberX * k) + j] == 1)
+        while(j > 0 && levelMap[(tileNumberX * (k - 1)) + j] == 1)
         {
           j--;
         }
-        if(j == 0 && levelMap[(tileNumberX * k) + j] == 1)
+        if(j == 0 && levelMap[(tileNumberX * (k - 1)) + j] == 1)
         {
           enemyX1[i] = j * 8;
         }
@@ -3185,7 +3185,7 @@ void initializeEnemyMovement()
         }
         j = enemyX2[i];
         k = enemyY2[i];
-        while(j < tileNumberX && levelMap[(tileNumberX * k) + j] == 1)
+        while(j < tileNumberX && levelMap[(tileNumberX * (k - 1)) + j] == 1)
         {
           j++;
         }
