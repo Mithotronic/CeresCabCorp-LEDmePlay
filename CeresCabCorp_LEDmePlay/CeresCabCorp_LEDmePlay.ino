@@ -149,6 +149,16 @@ int buttonPause = 43;
 // 2nd value: Number of tiles in y-direction
 // 3rd value: Level color: 0 == Invisible, 1 == Blue, 2 == Green, 3 == Turquoise, 4 == Red, 5 == Violet, 6 == Yellow, 7 == White
 //
+//   type 0     type 1     type 2     type 3     type 4     type 5     type 6     type 7     type 8
+//   --------   --------   --------   O-------   -------O   O-------   -------O   O-------   -------O
+//   --------   --------   --------   O-------   -------O   O-------   -------O   -O------   ------O-
+//   --------   --------   --------   O-------   -------O   O-------   -------O   --O-----   -----O--
+//   --------   --------   OOOOOOOO   O-------   -------O   O-------   -------O   ---O----   ----O---
+//   --------   --------   --------   O-------   -------O   O-------   -------O   ----O---   ---O----
+//   --------   --------   --------   O-------   -------O   O-------   -------O   -----O--   --O-----
+//   --------   --------   --------   O-------   -------O   O-------   -------O   ------O-   -O------
+//   --------   OOOOOOOO   --------   O-------   -------O   OOOOOOOO   OOOOOOOO   -------O   O-------
+//
 // The remaining numbers encode the tiles, extra lives, platforms, and enemies.
 // Add tile type value (0 - 8)
 // to values of
@@ -175,9 +185,32 @@ int buttonPause = 43;
 //
 // Example: Tile 1 with mech (value 70) is encoded by 71.
 //
-const byte numberOfLevels = 3;
+const byte numberOfLevels = 5;
 const uint8_t levels[] PROGMEM  = {
-                                         8, 8, 3,
+                                         // Freeway
+                                         15, 6, 7,
+                                         3,  21,   4,   1,   1,   1,   3,  31,   4,   1,   1,   1,   3,  21,   4,
+                                        40,   0,   0,   0,   0,   0,   0,  40,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   1,   1, 141,   1,   1,   1,   1,   1,   1, 141,   1,   1,   1,   0,
+                                         0,   0,   0,   0, 150,   0,   0,   0,   0,   0,   0, 150,   0,   0,   0,
+                                         0,   1,   0,  51,   1,   1,   0,   1,   0,   1,  51,   1,   0,   1,   0,
+                                         5,  21,   6,   0,   0,   0,   5, 241,   6,   0,   0,   0,   5,  21,   6,
+
+                                         // Metal Works
+                                         12, 12, 4,
+                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+                                         1,  21,   0,   0,   0, 241,   1,   0, 100,   0,  21,   1,
+                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,   1,   1,   1,   0,   0,   1,   1,   1,   1,   1,
+                                         0,   1,   1,  90,   0,   0,   0,   0,  90,   0,   0,  21,
+                                         0,   0,   0,   0,   1,   1,   1,   1,   0,   0,   0,   0,
+                                        21,   1,   0,   0,  60,   0,   0,   0,   0,   0,   1,  31,
+                                         0,   4,   0,   0,   0,  60,   0,   0,   0,   0,   3,   0,
+                                        21,   4,   1,   1,   0,   0,  60,   0,   1,   1,   3,  11,
+                                       171,   1,   1,   1,   0,   0,   0,  60,  81,   0,  81,   1,
+                                         3,   0,   4,   1,   3,   0,   0,   4,   4,   0,   3,   0,
+                                         5,  31,   1,  81,   1,   1,   1,   6,   4,  21,   3,   0,
+                                         
                                          1,   1,   1,   1,   1,   0,   0,   1,
                                          0,  90,   0,   0,   0,   0,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,
@@ -208,7 +241,7 @@ const uint8_t levels[] PROGMEM  = {
                                          1,   1,  21,   1,   1, 171,   1,   1,   1,   1,   1,   1,   1,  21,   1,   1                                         
                                   };
                                   
-byte levelMap[128]; // Contains the current level after loading from PROGMEM
+byte levelMap[256]; // Contains the current level after loading from PROGMEM
 
 byte tileNumberX; // Number of tiles in X-direction of the current map
 byte tileNumberY; // Number of tiles in Y-direction of the current map
@@ -752,23 +785,23 @@ void setupLevel()
     }
     extraLifeCounter = 0;
     remainingPassengersToFinishLevel = 5;
+  
+    for(i = 0; i < 6; i++)
+    {
+      platformXScreen[i] = 0;
+      platformYScreen[i] = 0;
+      platformXScreenNew[i] = 0;
+      platformYScreenNew[i] = 0;
+      platformXMap[i] = 0.0;
+      platformYMap[i] = 0.0;
+      platformColor[i] = 0;
+      platformBordingStatus[i] = 0;
+      platformDisembarkingStatus[i] = 0;    
+    }
+    platformCounter = 0;
   }
-
-  for(i = 0; i < 6; i++)
-  {
-    platformXScreen[i] = 0;
-    platformYScreen[i] = 0;
-    platformXScreenNew[i] = 0;
-    platformYScreenNew[i] = 0;
-    platformXMap[i] = 0.0;
-    platformYMap[i] = 0.0;
-    platformColor[i] = 0;
-    platformBordingStatus[i] = 0;
-    platformDisembarkingStatus[i] = 0;    
-  }
-  platformCounter = 0;
   targetPlatform = 0;
-
+  
   for(i = 0; i < 4; i++)
   {
     gasStationXScreen[i] = 0;
@@ -828,7 +861,7 @@ void setupLevel()
     if(j == 24)
     {
       playerXMap = ((i % tileNumberX) * 8) + 3;
-      playerYMap = ((i / tileNumberX) * 8) + 1;
+      playerYMap = ((i / tileNumberX) * 8) + 2;
       playerXScreen = 14;
       playerYScreen = 15;
 
@@ -876,7 +909,7 @@ void setupLevel()
     }
     
     // Set platform
-    if(j == 2)
+    if(j == 2 && initializeNewLevel)
     {
       platformXMap[platformCounter] = ((i % tileNumberX) * 8);
       platformYMap[platformCounter] = ((i / tileNumberX) * 8) + 5;
@@ -1080,19 +1113,22 @@ void setupLevel()
     }
   }
 
-  for(i = 0; i < platformCounter; i++)
+  if(initializeNewLevel)
   {
-    boolean colorDuplicate;
-    do
-    {   
-      platformColor[i] = random(6) + 1;
-      colorDuplicate = false;
-      for(j = 0; j < i; j++)
-      {
-        if(platformColor[i] == platformColor[j]){ colorDuplicate = true; }
+    for(i = 0; i < platformCounter; i++)
+    {
+      boolean colorDuplicate;
+      do
+      {   
+        platformColor[i] = random(6) + 1;
+        colorDuplicate = false;
+        for(j = 0; j < i; j++)
+        {
+          if(platformColor[i] == platformColor[j]){ colorDuplicate = true; }
+        }
       }
+      while(colorDuplicate);
     }
-    while(colorDuplicate);
   }
 
   // Initialize enemy movement
@@ -1237,7 +1273,7 @@ void drawMiniMap()
   byte counter = 0;
   do
   {
-    if(counter < 128)
+    if(counter < 256)
     {
       matrix.drawPixel((playerXMap / 4) + 0 + xOffset, (playerYMap / 4) + 0 + yOffset, matrix.Color333(7, 7, 7));
       matrix.drawPixel((playerXMap / 4) + 1 + xOffset, (playerYMap / 4) + 0 + yOffset, matrix.Color333(7, 7, 7));       
@@ -2908,7 +2944,7 @@ void moveEnemies()
         if(enemyYMap[i] > -5)
         {
           enemyYMap[i] = enemyYMap[i] - (float(enemyMovement[i]) / 200.0);
-          if(enemyMovement[i] < 200){ enemyMovement[i]++; }
+          if(enemyMovement[i] < 255){ enemyMovement[i]++; }
         }        
         else
         {
@@ -4324,6 +4360,7 @@ void showStatus()
       matrix.drawPixel(6, 12, matrix.Color333(0, 5, 2));
       matrix.setCursor(8, 8);
       matrix.print(lives);
+      
       // Level
       matrix.drawLine(14, 9, 14, 13, matrix.Color333(3, 3, 3));
       matrix.drawLine(14, 13, 16, 13, matrix.Color333(3, 3, 3));
@@ -4399,59 +4436,44 @@ void endSequence()
 {
   matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
   matrix.setTextColor(matrix.Color333(3,0,0));
-  matrix.setCursor(2, 0);
+  matrix.setCursor(1, 0);
   matrix.println("Done!");
   matrix.setTextColor(matrix.Color333(0,3,0));
-  matrix.setCursor(7, 8);
-  matrix.println("She");
+  matrix.setCursor(1, 8);
+  matrix.println("Done!");
   matrix.setTextColor(matrix.Color333(0,0,3));
-  matrix.setCursor(4, 16);
-  matrix.println("said");
+  matrix.setCursor(1, 16);
+  matrix.println("Done!");
   matrix.setTextColor(matrix.Color333(3,3,3));
-  matrix.setCursor(5, 24);
-  matrix.println("YES!");
-  for(i = 0; i < 3; i++)
+  matrix.setCursor(1, 24);
+  matrix.println("Done!");
+  for(i = 0; i < 6; i++)
   {
-    tone(audio, NOTE_C5, 100);
-    delay(100);
-    tone(audio, NOTE_E5, 100);
-    delay(100);
-    tone(audio, NOTE_G5, 100);
-    delay(100);        
+    tone(audio, NOTE_C5, 50);
+    delay(50);
+    tone(audio, NOTE_E5, 50);
+    delay(50);
+    tone(audio, NOTE_G5, 50);
+    delay(50);        
   }
   tone(audio,1047,400);
   delay(4000);
   
   // End screen
   matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
-  matrix.drawRect(0, 0, 32, 32, matrix.Color333(1,1,1));
-  
-  // Heart
-  matrix.drawCircle(12,6,3,matrix.Color333(3,0,0));  
-  matrix.drawCircle(19,6,3,matrix.Color333(3,0,0));  
-  matrix.fillRect(9,7,16,4,matrix.Color333(0,0,0));
-  matrix.drawLine(9,7,15,13,matrix.Color333(3,0,0));
-  matrix.drawLine(22,7,16,13,matrix.Color333(3,0,0));
-  
-  // Kenny
-  matrix.drawPixel(9, 15, matrix.Color333(5, 2, 0));
-  matrix.drawPixel(9, 16, matrix.Color333(3, 0, 0));
-  matrix.drawPixel(10, 16, matrix.Color333(5, 0, 0));
-  matrix.drawPixel(9, 17, matrix.Color333(3, 0, 0));
-  matrix.drawPixel(9, 18, matrix.Color333(0, 3, 0));
-  
-  // Lucy
-  matrix.drawPixel(22, 15, matrix.Color333(5, 2, 0));
-  matrix.drawPixel(21, 16, matrix.Color333(5, 0, 5));
-  matrix.drawPixel(22, 16, matrix.Color333(3, 0, 3));
-  //matrix.drawPixel(23, 16, matrix.Color333(5, 2, 0));
-  matrix.drawPixel(22, 17, matrix.Color333(3, 0, 3));
-  matrix.drawPixel(22, 18, matrix.Color333(0, 3, 0));
-  
-  // Rings
-  matrix.drawCircle(13,24,4,matrix.Color333(1,1,4));  
-  matrix.drawCircle(18,24,4,matrix.Color333(1,1,7));  
-  
+  matrix.setTextColor(matrix.Color333(3,0,0));
+  matrix.setCursor(4, 0);
+  matrix.println("Best");
+  matrix.setTextColor(matrix.Color333(0,3,0));
+  matrix.setCursor(1, 8);
+  matrix.println("Ceres");
+  matrix.setTextColor(matrix.Color333(0,0,3));
+  matrix.setCursor(1, 16);
+  matrix.println(" Cab ");
+  matrix.setTextColor(matrix.Color333(3,3,3));
+  matrix.setCursor(1, 24);
+  matrix.println("Pilot");
+    
   delay(500);
   
   do
