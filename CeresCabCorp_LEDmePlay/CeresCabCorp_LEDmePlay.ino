@@ -182,7 +182,7 @@ int buttonPause = 43;
 // Plasma floor:            130 //
 // Sports glider left:      140 //
 // Sports glider right:     150 //
-// Vertical moving laser --> Plasma Wall    160
+// Plasma ufo:              160 //
 // Railcar with steel:      170 //
 // Meteor:                  180 //
 //
@@ -190,19 +190,32 @@ int buttonPause = 43;
 //
 // Example: Tile 1 with mech (value 70) is encoded by 71.
 //
-const byte numberOfLevels = 7;
+const byte numberOfLevels = 10;
 const uint8_t levels[] PROGMEM  = {
+                                         // Abyss
+                                         6, 11, 7,
+                                         0,   0,   0,   0,   0, 100,
+                                       241,   0,   0,   0,   0,   1,
+                                         4,   0,   0,   0,  21,   3,
+                                         4,   0,   0,   0,   0,   3,
+                                         4,   0,  21,   0,   0,   3,
+                                         4,   0,   0,   0, 160,   3,
+                                         4,   0,   0,  21,   0,   3,
+                                         4,   0,   0,   0,   0,   3,
+                                         4,  21,   0,   0,   0,   3,
+                                         4,  10,   0,   1,   0,   3,
+                                         4,  71,   1,   1,  31,   3,
+                                         
                                          // Missile attack
                                          11, 7, 5, 
-                                         0, 110,   0,   0,   0,   0,   0,  21,   0,   0,   0,
-                                       120,   0, 110,   0,   0,   0,   0,   0,   0,   0,  31,
-                                        21,   0,   0,   0, 110,   0,   0,   0,   0,   0,   0,
-                                         0,   0,   0,  21,   0, 110,   0,   0,   0,   0, 120,
+                                         0, 110,   0,   0,   0,   0,   0,   0,   0,   0,  31,
+                                       120,   0, 110,  21,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,   0,   0, 110,   0,   0,  21,   0,   0,   0,
+                                        21,   0,   0,   0,   0, 110,   0,   0,   0,   0, 120,
                                          0,   0,   0,   0,   0,   0, 110,  31,   0,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0, 110,   0,  21,
                                        241,   0,   0,  21,   0,   0,   0,   1,   0, 110,   1,
                                                                            
-
                                          // Mechs
                                          9, 7, 3,
                                          0,   0,   0,   3, 241,   4,   0,   0,   0,
@@ -1111,7 +1124,7 @@ void setupLevel()
       enemyStatus[enemyCounter] = 1;
     }
 
-    // Set enemy: Vertical moving laser
+    // Set enemy: Plasma ufo
     if(j == 16)
     {
       enemyXMap[enemyCounter] = ((i % tileNumberX) * 8);
@@ -2604,57 +2617,101 @@ void drawEnemies(byte i)
     }
   }  
   
-  // Vertical moving laser
+  // Plasma ufo
   if(enemyType[i] == 14)
   {
     // Remove enemy at old position
     if(x1 > -8 && x1 < 32 && y1 > -8 && y1 < 32)
     {   
-      matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 3, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 4, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 5, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 6, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 7, y1, matrix.Color333(0, 0, 0));
-      playfield[x1 + 8][y1 + 8] = 0;
+      matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 1, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1, y1 + 3, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 1, y1 + 3, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 2, y1 + 3, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1, y1 + 4, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 1, y1 + 4, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 2, y1 + 4, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 1, y1 + 5, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 1, y1 + 6, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 1, y1 + 7, matrix.Color333(0, 0, 0));
       playfield[x1 + 9][y1 + 8] = 0;
-      playfield[x1 + 10][y1 + 8] = 0;
-      playfield[x1 + 11][y1 + 8] = 0;
-      playfield[x1 + 12][y1 + 8] = 0;
-      playfield[x1 + 13][y1 + 8] = 0;
-      playfield[x1 + 14][y1 + 8] = 0;
-      playfield[x1 + 15][y1 + 8] = 0;
+      playfield[x1 + 9][y1 + 9] = 0;
+      playfield[x1 + 9][y1 + 10] = 0;
+      playfield[x1 + 8][y1 + 11] = 0;
+      playfield[x1 + 9][y1 + 11] = 0;
+      playfield[x1 + 10][y1 + 11] = 0;
+      playfield[x1 + 8][y1 + 12] = 0;
+      playfield[x1 + 9][y1 + 12] = 0;
+      playfield[x1 + 10][y1 + 12] = 0;
+      playfield[x1 + 9][y1 + 13] = 0;
+      playfield[x1 + 9][y1 + 14] = 0;
+      playfield[x1 + 9][y1 + 15] = 0;
     }
 
     // Draw enemy at new position
     if(x2 > -8 && x2 < 32 && y2 > -8 && y2 < 32)
     {
-      matrix.drawPixel(x2, y2, matrix.Color333(3, 0, 3));
-      matrix.drawPixel(x2 + 7, y2, matrix.Color333(3, 0, 3));
-      playfield[x2 + 8][y2 + 8] = 2;
-      playfield[x2 + 15][y2 + 8] = 2;
       if(animationCounter < 64 || (animationCounter > 127 && animationCounter < 192))
       {
         if(animationCounter % 4 == 0)
         {
-          matrix.drawPixel(x2 + 1, y2, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2 + 2, y2, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2 + 3, y2, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2 + 4, y2, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2 + 5, y2, matrix.Color333(3, 3, 3));
-          matrix.drawPixel(x2 + 6, y2, matrix.Color333(3, 3, 3));
-          // Sound: Laser on screen
+          matrix.drawPixel(x2 + 1, y2 + 3, matrix.Color333(7, 7, 3));
+          matrix.drawPixel(x2 + 1, y2 + 4, matrix.Color333(7, 7, 3));
+          playfield[x2 + 9][y2 + 11] = 2;
+          playfield[x2 + 9][y2 + 12] = 2;
+          // Sound: Plasma on screen
+          tone(audio, 800, 5);
+        }
+        if(animationCounter % 4 == 1)
+        {
+          matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(5, 5, 2));
+          matrix.drawPixel(x2 + 1, y2 + 5, matrix.Color333(5, 5, 2));
+          playfield[x2 + 9][y2 + 10] = 2;
+          playfield[x2 + 9][y2 + 13] = 2;
+          // Sound: Plasma on screen
+          tone(audio, 400, 5);
+        }
+        if(animationCounter % 4 == 2)
+        {
+          matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(3, 3, 1));
+          matrix.drawPixel(x2 + 1, y2 + 6, matrix.Color333(3, 3, 1));
+          playfield[x2 + 9][y2 + 9] = 2;
+          playfield[x2 + 9][y2 + 14] = 2;
+          // Sound: Plasma on screen
+          tone(audio, 200, 5);
+        }
+        if(animationCounter % 4 == 3)
+        {
+          matrix.drawPixel(x2 + 1, y2, matrix.Color333(1, 1, 0));
+          matrix.drawPixel(x2 + 1, y2 + 7, matrix.Color333(1, 1, 0));
+          playfield[x2 + 9][y2 + 8] = 2;
+          playfield[x2 + 9][y2 + 15] = 2;
+          // Sound: Plasma on screen
           tone(audio, 100, 5);
         }
-        playfield[x2 + 9][y2 + 8] = 2;
-        playfield[x2 + 10][y2 + 8] = 2;
-        playfield[x2 + 11][y2 + 8] = 2;
-        playfield[x2 + 12][y2 + 8] = 2;
-        playfield[x2 + 13][y2 + 8] = 2;
-        playfield[x2 + 14][y2 + 8] = 2;
       }
+      else
+      {
+        if(animationCounter / 32 < 4)
+        {
+          matrix.drawPixel(x2 + 1, y2 + 3, matrix.Color333(3, 3, 3));
+          playfield[x2 + 9][y2 + 11] = 2;
+        }
+        else
+        {
+          matrix.drawPixel(x2 + 1, y2 + 4, matrix.Color333(3, 3, 3));
+          playfield[x2 + 9][y2 + 12] = 2;          
+        }    
+      }
+      matrix.drawPixel(x2, y2 + 3, matrix.Color333(3, 0, 0));
+      matrix.drawPixel(x2 + 2, y2 + 3, matrix.Color333(3, 0, 0));
+      matrix.drawPixel(x2, y2 + 4, matrix.Color333(3, 0, 0));
+      matrix.drawPixel(x2 + 2, y2 + 4, matrix.Color333(3, 0, 0));
+      playfield[x2 + 8][y2 + 11] = 2;
+      playfield[x2 + 10][y2 + 11] = 2;
+      playfield[x2 + 8][y2 + 12] = 2;
+      playfield[x2 + 10][y2 + 12] = 2;
     }
   }
   
@@ -2963,8 +3020,8 @@ void moveEnemies()
         y = (double(playerYMap + 2.0) - (enemyYMap[i] + 1.5));
         // Calculate length of directional vector to normalize the shot speed
         z = sqrt(sq(x) + sq(y));
-        enemyXMap[i] = enemyXMap[i] + ((x / z) / 15.0);
-        enemyYMap[i] = enemyYMap[i] + ((y / z) / 15.0);
+        enemyXMap[i] = enemyXMap[i] + ((x / z) / 20.0);
+        enemyYMap[i] = enemyYMap[i] + ((y / z) / 20.0);
         if(enemyXMap[i] < 0)
         {
           enemyXMap[i] = 0;
@@ -3083,33 +3140,32 @@ void moveEnemies()
         }      
       }
 
-      // Vertical moving laser
+      // Plasma ufo
       if(enemyType[i] == 14)
       {
-        // Moving up
+        // Moving left
         if(enemyMovement[i] == 0)
         {
-          if(enemyYMap[i] > enemyY1[i])
+          if(enemyXMap[i] > enemyX1[i])
           {
-            enemyYMap[i] = enemyYMap[i] - 0.25;
+            enemyXMap[i] = enemyXMap[i] - 0.25;
           }
           else
           {
             enemyMovement[i] = 1;
           }
         }
-        // Moving down
         else
         {
-          if(enemyYMap[i] < enemyY2[i])
+          if(enemyXMap[i] < enemyX2[i])
           {
-            enemyYMap[i] = enemyYMap[i] + 0.25;
+            enemyXMap[i] = enemyXMap[i] + 0.25;
           }
           else
           {
             enemyMovement[i] = 0;
           }
-        }  
+        }        
       } 
 
       // Railcar with steel
@@ -3302,40 +3358,40 @@ void initializeEnemyMovement()
         // Nothing to do
       }
       
-      // Vertical moving laser
+      // Plasma ufo
       if(enemyType[i] == 14)
       {  
         j = enemyX1[i];
         k = enemyY1[i];
-        while(k > 0 && levelMap[(tileNumberX * k) + j] == 0)
+        while(j > 0 && (levelMap[(tileNumberX * k) + j] == 0 || levelMap[(tileNumberX * k) + j] == 1))
         {
-          k--;
+          j--;
         }
-        if(levelMap[(tileNumberX * k) + j] == 0)
+        if(j == 0 && (levelMap[(tileNumberX * k) + j] == 0 || levelMap[(tileNumberX * k) + j] == 1))
         {
-          enemyY1[i] = k * 8;
+          enemyX1[i] = j * 8;
         }
         else
         {
-          enemyY1[i] = (k + 1) * 8;
+          enemyX1[i] = (j + 1) * 8;
         }
         j = enemyX2[i];
         k = enemyY2[i];
-        while(k < tileNumberY && levelMap[(tileNumberX * k) + j] == 0)
+        while(j < tileNumberX && (levelMap[(tileNumberX * k) + j] == 0 || levelMap[(tileNumberX * k) + j] == 1))
         {
-          k++;
+          j++;
         }
-        if(levelMap[(tileNumberX * k) + j] == 1)
+        if(levelMap[(tileNumberX * k) + j] == 4)
         {
-          enemyY2[i] = (k * 8) + 6;
+          enemyX2[i] = (j * 8) + 3;
         }
         else
         {
-          enemyY2[i] = ((k - 1) * 8) + 7;
+          enemyX2[i] = ((j - 1) * 8) + 4;
         }
       }      
       
-      // Horizontal moving laser
+      // Railcar with steel
       if(enemyType[i] == 15)
       {  
         j = enemyX1[i];
