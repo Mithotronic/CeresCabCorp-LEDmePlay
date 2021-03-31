@@ -190,8 +190,36 @@ int buttonPause = 43;
 //
 // Example: Tile 1 with mech (value 70) is encoded by 71.
 //
-const byte numberOfLevels = 10;
+const byte numberOfLevels = 12;
 const uint8_t levels[] PROGMEM  = {
+                                         // First challenge
+                                         6, 6, 1,
+                                         0,   0,   0,   0,   0,   0,
+                                        21,   0,   0,   0,   0,  21,
+                                        50,   0,   0,   0,   0,   0,
+                                         0,   0,   1,   1,   0,   0,
+                                         0,   0,   0,   0,   0,  40,
+                                       241,   1,   1,   1,   1,  21,
+                                         
+                                         // Container harbor
+                                         7, 5, 2,
+                                         3,   0,  60,   0,  60,   0,   4,
+                                         3,   0,   0,  21,   0,   0,   4,
+                                        50,   0,   0,   0,   0,   0,   0,
+                                         3,   0,   0, 241,   0,   0,   4,
+                                         5,  21,   1,   1,   1,  21,   6,
+
+                                         // Cave
+                                         8, 8, 3,
+                                         0,   0,   0,   0,   0,   0,   0,   0, 
+                                         0,   0,   0,   0,   0,   0,   1,  41, 
+                                       241,   0,   0,   0,  21,   8,  60,  31, 
+                                         0,   0,   0,   0,   8,   0,   0,   0, 
+                                         0,   0,  21,   8,  60,  21,   0,   1, 
+                                         0,   0,   8,   0,   0,   0,   0,   0, 
+                                         0,   8,   0,  21,   0,   1,   0,   1,                                           
+                                         1,   1,   1,  71,   1,   1,   1,  11,
+                                         
                                          // Abyss
                                          6, 11, 7,
                                          0,   0,   0,   0,   0, 100,
@@ -235,15 +263,6 @@ const uint8_t levels[] PROGMEM  = {
                                          4,   0,   3,   4,   0,   3,   4,   0,   3,
                                          4,  21,   3,   4,  21,   3,   4,  21,   3,
                                          
-                                         // Introduction
-                                         6, 6, 1,
-                                         0,   0,   0,   0,   0,   0,
-                                        21,   0,   0,   0,   0,  21,
-                                        50,   0,   0,   0,   0,   0,
-                                         0,   0,   1,   1,   0,   0,
-                                         0,   0,   0,   0,   0,  40,
-                                       241,   1,   1,   1,   1,  21,
-                                         
                                          // Freeway
                                          15, 6, 7,
                                          3,  21,   4,   1,   1,   1,   3,  31,   4,   1,   1,   1,   3,  21,   4,
@@ -267,7 +286,8 @@ const uint8_t levels[] PROGMEM  = {
                                        171,   1,   1,   1,   0,   0,   0,  60,  81,   0,  81,   1,
                                          3,   0,   4,   1,   3,   0,   0,   4,   4,   0,   3,   0,
                                          5,  31,   1,  81,   1,   1,   1,   6,   4,  21,   3,   0,
-                                         
+
+                                         8, 8, 5,
                                          1,   1,   1,   1,   1,   0,   0,   1,
                                          0,  90,   0,   0,   0,   0,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,
@@ -575,6 +595,16 @@ boolean joy1Fire()
   if(digitalRead(buttonFire1) == LOW || (digitalRead(buttonU1) == LOW && digitalRead(buttonD1) == LOW)){ return true; }
   return false;
 }
+boolean joy1FireA()
+{
+  if(digitalRead(buttonFire1) == LOW){ return true; }
+  return false;
+}
+boolean joy1FireB()
+{
+  if(digitalRead(buttonU1) == LOW && digitalRead(buttonD1) == LOW){ return true; }
+  return false;
+}
 boolean joy2Up()
 {
   if((digitalRead(buttonU2) == LOW && digitalRead(buttonD2) != LOW) || (digitalRead(buttonL2) == LOW && digitalRead(buttonR2) == LOW && analogRead(analogY2) > (512 + sensitivity))){ return true; }
@@ -598,6 +628,16 @@ boolean joy2Right()
 boolean joy2Fire()
 {
   if(digitalRead(buttonFire2) == LOW || (digitalRead(buttonU2) == LOW && digitalRead(buttonD2) == LOW)){ return true; }
+  return false;
+}
+boolean joy2FireA()
+{
+  if(digitalRead(buttonFire2)){ return true; }
+  return false;
+}
+boolean joy2FireB()
+{
+  if(digitalRead(buttonU2) == LOW && digitalRead(buttonD2) == LOW){ return true; }
   return false;
 }
 
@@ -1327,6 +1367,7 @@ void drawMiniMap()
   }
 
   byte counter = 0;
+  boolean buttonReleased = false;
   do
   {
     if(counter < 256)
@@ -1354,10 +1395,11 @@ void drawMiniMap()
     }
     delay(1);
     counter++;
+    if(!joy1Fire()){ buttonReleased = true; }
   }
-  while(!joy1Fire()); 
+  while(!(joy1Fire() && buttonReleased)); 
   tone(audio,1024,20);
-  delay(200);
+  delay(500);
   matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
 }
 
@@ -4123,7 +4165,7 @@ void movePlayer()
   }
 
   // Up
-  if((joy1Up() || joy1Fire()) && fuel > 0 && !taxiParks)
+  if((joy1Up() || joy1FireB()) && fuel > 0 && !taxiParks)
   {
     hoverThrusters = true;
     fuel = fuel - 2;
@@ -4142,6 +4184,12 @@ void movePlayer()
     tone(audio, 100 + random(40), 10);
     ySpeed = ySpeed + 0.05;
     if(ySpeed > 1.0){ ySpeed = 1.0; }    
+  }
+
+  // Mini Map
+  if(joy1FireA())
+  {
+    drawMiniMap();
   }
 
   // SOUND: Gas low
