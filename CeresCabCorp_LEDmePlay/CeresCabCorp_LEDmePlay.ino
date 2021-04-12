@@ -190,7 +190,7 @@ int buttonPause = 43;
 //
 // Example: Tile 1 with mech (value 70) is encoded by 71.
 //
-const byte numberOfLevels = 16;
+const byte numberOfLevels = 17;
 const uint8_t levels[] PROGMEM  = {
                                          // Level 1: First challenge
                                          6, 6, 1,
@@ -220,7 +220,16 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   8,   0,  21,   0,   1,   0,   1,                                           
                                          1,   1,   1,  71,   1,   1,   1,  11,
 
-                                         // Level 4: Around and around
+                                         // Level 4: Three Stations
+                                         14, 6, 6,
+                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,   0,   0,   0,   0, 150,   0,   0,   0,   0,   0,   0, 150,
+                                         0,   0,  21,   8,   7,   0,  21,   8,   7,   0,  21,   8,   7,   0,
+                                       241,   0,   0,   7,   8,   0,   0,   7,   8,   0,   0,   7,   8,   0,
+                                         140,   0,   0,   0,   0,   0,   0, 140,   0,   0,   0,   0,   0,   0,
+                                         1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
+                                     
+                                         // Level 5: Around and around
                                          10, 10, 4,                                         
                                          3,   0,   5,   1,   1,   1,   1,   6,   0,   4,
                                          3,  60,   0,   0,   0,   0,  90,   0,   0,   4,
@@ -233,25 +242,27 @@ const uint8_t levels[] PROGMEM  = {
                                          3,   0,   0,  90,   0,   0,   0,   0,  60,   4,
                                          5,   1,  21,   5,   1,  21,   6,  31,   1,   6,
 
-                                         // Level 5: Three Stations
-                                         14, 6, 5,
-                                         0,  60,   0,   0,   0,  60,   0,   0,   0,  60,   0,   0,   0,  60,
-                                         0,   0,   0,   0,   0,   0, 150,   0,   0,   0,   0,   0,   0,   0,
-                                         0,   0,  21,   8,   7,   0,  21,   8,   7,   0,  21,   8,   7,   0,
-                                       241,   0,   0,   7,   8,   0,   0,   7,   8,   0,   0,   7,   8,   0,
-                                         0,   0,   0,   0,   0,   0,   0, 140,   0,   0,   0,   0,   0,   0,
-                                         1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-                                     
                                          // Level 6: Mech Warrior
-                                         9, 7, 3,
+                                         9, 7, 5,
                                          0,   0,   0,   3, 241,   4,   0,   0,   0,
                                          0,  21,  71,   1,   1,   1,   1,  21,   0,
                                          1,   0,   0,   1,   0,   1,   0,  90,   1,
                                          1,   1,   1,   1, 130,   1,   1,   1,   1,
-                                         3,   0,  81,   1,   1,   1,  81,   0,   4,
+                                         3,   0,   1,   1,   1,   1,   1,   0,   4,
                                          3,   0,   0,   1,  31,   1,   0,   0,   4,
                                          5,  21,   1,  71,  11,   1,   1,  21,   6,
-                                         
+
+                                         // Level 6.5: Electric Fire
+                                         8, 8, 1,
+                                         0,   0,   0,   0,   0,   0,   0,   0,
+                                        21,   0,   0, 241,   1,   0,   0,  21,
+                                         0,   0,   0,   3,   4,   0,   0,   0,
+                                       160,   0,   0,   3,   4, 160,   0,   0,
+                                         0, 160,   0,   3,   4,   0, 160,   0,
+                                         0,   0,   0,   5,   6,   0,   0,   0,
+                                         0,   0,   0,   0,   0,   0,   0,   0,
+                                         1,  21,   1,   2,   2,   1,  21,   1,
+                                                                              
                                          // Level 7: Freeway
                                          15, 6, 7,
                                          3,  21,   4,   1,   1,   1,   3,  31,   4,   1,   1,   1,   3,  21,   4,
@@ -261,8 +272,22 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   1,   0,  51,   1,   1,   0,   1,   0,   1,  51,   1,   0,   1,   0,
                                          5,  21,   6,   0,   0,   0,   5, 241,   6,   0,   0,   0,   5,  21,   6,
 
-                                         // Level 8: Metal Works
-                                         9, 8, 7,
+                                         // Level 8: Abyss
+                                         6, 11, 3,
+                                         0,   0,   0,   0,   0, 100,
+                                       241,   0,   0,   0,   0,   1,
+                                         4,   0,   0,   0,  21,   3,
+                                         4,   0,   0,   0,   0,   3,
+                                         4,   0,  21,   0,   0,   3,
+                                         4,   0,   0,   0, 160,   3,
+                                         4,   0,   0,  21,   0,   3,
+                                         4,   0,   0,   0,   0,   3,
+                                         4,  21,   0,   0,   0,   3,
+                                         4,  10,   0,   1,   0,   3,
+                                         4,  71,   1,   1,  31,   3,
+                                         
+                                         // Level 9: Metal Works
+                                         9, 8, 4,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,  21,   1,   1,   1, 171,   0,   1,
                                        241,   1,   0,   0,   0,   0,   0,   1,  11,
@@ -272,8 +297,8 @@ const uint8_t levels[] PROGMEM  = {
                                         21,   4,   1,   1,   0,   0,   0,   1,  31, 
                                        171,   1,   1,   1,   1,   1,   1,   1,  21,
                                         
-                                         // Level 9: Frogger
-                                         9, 16, 6,
+                                         // Level 10: Frogger
+                                         9, 16, 2,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          0,  21,   0,   0,   0,   0,   0,  21,   0,
                                          0,   0,   0,   0,  31,   0,   0,   0,   0,
@@ -291,20 +316,6 @@ const uint8_t levels[] PROGMEM  = {
                                          0,  21,   0,   0,   0,   0,   0,  21,   0,
                                          1,   1,   1,   1,   1,   1,   1,   1,   1,
                                          
-                                         // Level 10: Abyss
-                                         6, 11, 7,
-                                         0,   0,   0,   0,   0, 100,
-                                       241,   0,   0,   0,   0,   1,
-                                         4,   0,   0,   0,  21,   3,
-                                         4,   0,   0,   0,   0,   3,
-                                         4,   0,  21,   0,   0,   3,
-                                         4,   0,   0,   0, 160,   3,
-                                         4,   0,   0,  21,   0,   3,
-                                         4,   0,   0,   0,   0,   3,
-                                         4,  21,   0,   0,   0,   3,
-                                         4,  10,   0,   1,   0,   3,
-                                         4,  71,   1,   1,  31,   3,
-                                         
                                          // Level 11: Missile attack
                                          11, 7, 5, 
                                          0, 110,   0,   0,   0,   0,   0,   0,   0,   0,  21,
@@ -316,7 +327,7 @@ const uint8_t levels[] PROGMEM  = {
                                         21,   0,   0,   1,   0,   0,   0,   1,   0, 110,   1,
                                                                            
                                          // Level 12: Holes
-                                        13, 7, 6,
+                                        13, 7, 1,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 140,
                                          0,   0, 241,   0,   0,   0,  21,   0,   0,   0,  31,   0,   0,
                                        151, 130,   1,   1, 130,   1,   1,   1, 130,   1,   1, 130,   1,
@@ -326,7 +337,7 @@ const uint8_t levels[] PROGMEM  = {
                                          4,  21,   3,   4,  21,   1,  81,   1,  21,   3,   4,  21,   3,
 
                                          // Level 13: Meteor Storm
-                                         16, 8, 6,
+                                         16, 8, 7,
                                          0,   0,   0,   0,   0, 180,   0,   0, 180,   0, 180,   0, 180,   0,   0,  10,
                                        150,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 140,
@@ -342,7 +353,7 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   8,   7,   0,   0,   0,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,   8,  31,   0,   7,   0,   0,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   8,  21,   0,   1,   0,   7,   0,   0,   0,
-                                         0,   0,   0,   0,   0,   0,   8,   0,   0, 161,   0,   0,  21,   7,   0,   0,                                         
+                                         0,   0,   0,   0,   0,   0,   8,   0,   0,   1,   0,   0,  21,   7,   0,   0,                                         
                                          0,   0,   0, 180,   0,   8,  21,   0,   0, 160,   1,   0,   0,   0,   7,   0,
                                          0,   0,   0,   0,   8,   0,   0,   0,   0, 161,   0,   0,   0,   0,  21,   7,
                                        241,   1,   1,   1,   1,   1,   1,   1,   1,   1,   0,   1,   1,   1,   1,   6,
@@ -509,8 +520,8 @@ int gasStationXScreenNew[4];           // New X position after movement
 int gasStationYScreenNew[4];           // New Y position after movement
 float gasStationXMap[4];               // X position on map
 float gasStationYMap[4];               // Y position on map
-boolean gasStationStatus[4];          // false == inactive, true == active
-byte gasStationCounter;              // Number of gas stations
+boolean gasStationStatus[4];           // false == inactive, true == active
+byte gasStationCounter;                // Number of gas stations
 
 // Extra lives
 int extraLifeXScreen[16];              // X position on screen
@@ -522,7 +533,7 @@ float extraLifeYMap[16];               // Y position on map
 byte extraLifeStatus[16];              // 0 == inactive, 1 == active, 2 == just collected
 byte extraLifeCounter;                 // Number of extra lives in current level (16 is the maximum)
 
-boolean initializeNewLevel; // true, if a new level is initialized
+boolean initializeNewLevel;            // true, if a new level is initialized
 
 // Game synchronization
 unsigned long engineLoopStartPoint; // Contains millisconds since start of LEDmePlay at begin of each engine loop (every 20ms)
