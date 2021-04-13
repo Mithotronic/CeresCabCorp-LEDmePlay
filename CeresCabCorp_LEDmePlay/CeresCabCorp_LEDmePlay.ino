@@ -190,7 +190,7 @@ int buttonPause = 43;
 //
 // Example: Tile 1 with mech (value 70) is encoded by 71.
 //
-const byte numberOfLevels = 17;
+const byte numberOfLevels = 20;
 const uint8_t levels[] PROGMEM  = {
                                          // Level 1: First challenge
                                          6, 6, 1,
@@ -252,7 +252,7 @@ const uint8_t levels[] PROGMEM  = {
                                          3,   0,   0,   1,  31,   1,   0,   0,   4,
                                          5,  21,   1,  71,  11,   1,   1,  21,   6,
 
-                                         // Level 6.5: Electric Fire
+                                         // Level 7: Electric Fire
                                          8, 8, 1,
                                          0,   0,   0,   0,   0,   0,   0,   0,
                                         21,   0,   0, 241,   1,   0,   0,  21,
@@ -260,10 +260,10 @@ const uint8_t levels[] PROGMEM  = {
                                        160,   0,   0,   3,   4, 160,   0,   0,
                                          0, 160,   0,   3,   4,   0, 160,   0,
                                          0,   0,   0,   5,   6,   0,   0,   0,
-                                         0,   0,   0,   0,   0,   0,   0,   0,
-                                         1,  21,   1,   2,   2,   1,  21,   1,
+                                         0,   0,   0,   1,   1,   0,   0,   0,
+                                         1,  21,   1,   3,   4,   1,  21,   1,
                                                                               
-                                         // Level 7: Freeway
+                                         // Level 8: Freeway
                                          15, 6, 7,
                                          3,  21,   4,   1,   1,   1,   3,  31,   4,   1,   1,   1,   3,  21,   4,
                                         40,   0,   0,   0,   0,   0,   0,  40,   0,   0,   0,   0,   0,   0,   0,
@@ -272,7 +272,7 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   1,   0,  51,   1,   1,   0,   1,   0,   1,  51,   1,   0,   1,   0,
                                          5,  21,   6,   0,   0,   0,   5, 241,   6,   0,   0,   0,   5,  21,   6,
 
-                                         // Level 8: Abyss
+                                         // Level 9: Abyss
                                          6, 11, 3,
                                          0,   0,   0,   0,   0, 100,
                                        241,   0,   0,   0,   0,   1,
@@ -285,8 +285,24 @@ const uint8_t levels[] PROGMEM  = {
                                          4,  21,   0,   0,   0,   3,
                                          4,  10,   0,   1,   0,   3,
                                          4,  71,   1,   1,  31,   3,
+
+                                         // Level 10: Drone Wars
+                                         13, 13, 6,
+                                         3, 120,   7,   0,   0,   8, 120,   7,   0,   0,   8, 120,   4,
+                                         3,   0,   0,   7,   8,   0,  31,   0,   7,   8,   0,   0,   4,
+                                        21,   0,   0,   0,   0,   8,   0,   7,   0,   0,   0,   0,  21,
+                                         0,   7,   0,   0,   0,   7,   1,   8,   0,   0,   0,   8,   0,
+                                         0,   8,   0,   0,   0,   0,   0,   0,   0,   0,   0,   7,   0,
+                                         8,   0,   8,   7,   0,   0,   0,   0,   0,   8,   7,   0,   7,
+                                         3,   4,   0,   0,   3,   0,   0,   0,   4,   0,   0,   3,   4,
+                                         7,   0,   7,   8,   0,   0,   0,   0,   0,   7,   8,   0,   8,
+                                         0,   7,   0,   0,   0,   0, 241,   0,   0,   0,   0,   8,   0,
+                                         0,   8,   0,   0,   0,   8,   0,   7,   0,   0,   0,   7,   0,
+                                         8,   0,   0,   0,   0,   7,   1,   8,   0,   0,   0,   0,   7,
+                                         3,   0,   0,   8,   7,   0,   0,   0,   8,   7,   0,   0,   4,
+                                         7,  21,   8,   0,   0,   7,   1,   8,   0,   0,   7,  21,   8,
                                          
-                                         // Level 9: Metal Works
+                                         // Level 11: Metal Works
                                          9, 8, 4,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,  21,   1,   1,   1, 171,   0,   1,
@@ -297,7 +313,7 @@ const uint8_t levels[] PROGMEM  = {
                                         21,   4,   1,   1,   0,   0,   0,   1,  31, 
                                        171,   1,   1,   1,   1,   1,   1,   1,  21,
                                         
-                                         // Level 10: Frogger
+                                         // Level 12: Frogger
                                          9, 16, 2,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          0,  21,   0,   0,   0,   0,   0,  21,   0,
@@ -315,8 +331,23 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   0,   0,   0, 241,   0,   0,   0,   0,
                                          0,  21,   0,   0,   0,   0,   0,  21,   0,
                                          1,   1,   1,   1,   1,   1,   1,   1,   1,
+
+                                         // Level 13: Donkey Kong
+                                         8, 12, 3,
+                                         0,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,   0,   71,  11,   0,   0,   0,
+                                         0,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,  71,   1,   1,  31,   0,   0,
+                                         0,   0,   0,   0,   0,   0,   0,   0,
+                                         0,  71,   1,   1,   1,   1,  21,   0,
+                                         0,   0,   0,   0,   0,   0,   0,   0,
+                                        71,  21,   1,   1,   1,   1,   1,   0,
+                                         1,   1,   0,   1, 161,   1,   1,   1,
+                                         1,   1,   1,   1,   1,   0,  21,   1,
+                                       161,   1,   0,   1,   1,   1,   1,   1,
+                                         1,  21,   1,   1,   1,   1, 241,   1,
                                          
-                                         // Level 11: Missile attack
+                                         // Level 14: Missile attack
                                          11, 7, 5, 
                                          0, 110,   0,   0,   0,   0,   0,   0,   0,   0,  21,
                                        120,   0, 110,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -326,7 +357,7 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   0,   0,   0,   0,   0,   0,   0, 110,   0,   0,
                                         21,   0,   0,   1,   0,   0,   0,   1,   0, 110,   1,
                                                                            
-                                         // Level 12: Holes
+                                         // Level 15: Holes
                                         13, 7, 1,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 140,
                                          0,   0, 241,   0,   0,   0,  21,   0,   0,   0,  31,   0,   0,
@@ -336,7 +367,7 @@ const uint8_t levels[] PROGMEM  = {
                                          4,   0,   3,   4,   0,   5,   1,   6,   0,   3,   4,   0,   3,
                                          4,  21,   3,   4,  21,   1,  81,   1,  21,   3,   4,  21,   3,
 
-                                         // Level 13: Meteor Storm
+                                         // Level 16: Meteor Storm
                                          16, 8, 7,
                                          0,   0,   0,   0,   0, 180,   0,   0, 180,   0, 180,   0, 180,   0,   0,  10,
                                        150,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -347,7 +378,7 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   0,   7,  21,   8,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
 
-                                         // Level 14: Pharao
+                                         // Level 17: Pharao
                                          16, 12, 6,
                                          0,   0, 180,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   8,   7,   0,   0,   0,   0,   0,
@@ -361,8 +392,21 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   4,   0,   3,   0,   0,   0,   0,
                                          0,   0,   0,   0,   0,   1,   1,   1,   1,   6,   0,   5,   1,   1,   1,   1,
                                          0,   0,   0,   0,   0,   5,  11,   1,   1,   1, 171,   1,   1,   1,  31,   6,
+
+                                         // Level 18: Outside
+                                         15, 10, 4,
+                                         0,   0, 180,   0,   0,   0, 100,   0,   0,   0, 180,   0,   0,   0,   0,  
+                                        21,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  
+                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  21,   1,   1,   0,  
+                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  
+                                         0,   0,   0,   1,   1,  21,   0,   0,   0,   0,   0,   0,   0,   0,   0,  
+                                       241,   1,   1, 180,   0,   0,   0,   0, 180,   0,   0,   0,   0,   0,  21,  
+                                         0,   0,   0,   7,   0,   0,   0,   0,   0,   0,   0,   0,   0,   8,   0,  
+                                         0,   0,   0,   0,   7,   0,   0,   0,   0, 110,   0,   0,   8,   0,   0,  
+                                         0,   0,   0,   0,   0,   7,   0,   0, 110,   0,   0,   8,   0,   0,   0,  
+                                         0,   0,   0,   0,   0,   0,   7, 110,   0,   0,   8,   0,   0,   0,   0,  
  
-                                         // Level 15: Factory
+                                         // Level 19: Factory
                                          12, 12, 3,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          0, 241,   1,   1,   1,   0,   0,   1,   1,   1,  21,   0,
@@ -377,7 +421,7 @@ const uint8_t levels[] PROGMEM  = {
                                         90,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
                                         21,   1, 171,   1,   1, 110,   0,   1,   1,   1,   1,  31,
                                          
-                                         // Level 16: Space Pirates
+                                         // Level 20: Space Pirates
                                          16, 16, 7,
                                          3, 100,   0, 120,   0,   0, 120,   0,   0, 120,   0,   0, 120,   0, 100,   4,
                                          3,   0,   0,   0,   0,  21,   0,   0,   0,   0,  31,   0,   0,   0,   0,   4,
@@ -1203,7 +1247,7 @@ void setupLevel()
     if(j == 12)
     {
       enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 3;
+      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 2;
       enemyType[enemyCounter] = 10;
       enemyMovement[enemyCounter] = 1;
       enemyX1[enemyCounter] = i % tileNumberX;
@@ -1603,10 +1647,10 @@ void drawTile(byte _type, int _x, int _y)
   {
     matrix.drawPixel(_x, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 1, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 2, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 3, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 4, _y + 7, matrix.Color333(red, green, blue));
-    matrix.drawPixel(_x + 5, _y + 7, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 2, _y + 7, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 3, _y + 7, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 4, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 5, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 6, _y + 7, matrix.Color333(red, green, blue));
     matrix.drawPixel(_x + 7, _y + 7, matrix.Color333(red, green, blue));
     playfield[_x + 8][_y + 15] = 1;
@@ -1622,10 +1666,10 @@ void drawTile(byte _type, int _x, int _y)
   {
     matrix.drawPixel(_x, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 1, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 2, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 3, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 4, _y + 3, matrix.Color333(red, green, blue));
-    matrix.drawPixel(_x + 5, _y + 3, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 2, _y + 3, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 3, _y + 3, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 4, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 5, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 6, _y + 3, matrix.Color333(red, green, blue));
     matrix.drawPixel(_x + 7, _y + 3, matrix.Color333(red, green, blue));
     playfield[_x + 8][_y + 11] = 1;
@@ -1641,10 +1685,10 @@ void drawTile(byte _type, int _x, int _y)
   {
     matrix.drawPixel(_x, _y, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x, _y + 1, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x, _y + 2, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x, _y + 4, matrix.Color333(red, green, blue));
-    matrix.drawPixel(_x, _y + 5, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x, _y + 2, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x, _y + 3, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x, _y + 4, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x, _y + 5, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x, _y + 6, matrix.Color333(red, green, blue));
     matrix.drawPixel(_x, _y + 7, matrix.Color333(red, green, blue));
     playfield[_x + 8][_y + 8] = 1;
@@ -1660,10 +1704,10 @@ void drawTile(byte _type, int _x, int _y)
   {
     matrix.drawPixel(_x + 7, _y, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 7, _y + 1, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 7, _y + 2, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 7, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 7, _y + 4, matrix.Color333(red, green, blue));
-    matrix.drawPixel(_x + 7, _y + 5, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 7, _y + 2, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 7, _y + 3, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 7, _y + 4, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 7, _y + 5, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 7, _y + 6, matrix.Color333(red, green, blue));
     matrix.drawPixel(_x + 7, _y + 7, matrix.Color333(red, green, blue));
     playfield[_x + 15][_y + 8] = 1;
@@ -1679,17 +1723,17 @@ void drawTile(byte _type, int _x, int _y)
   {
     matrix.drawPixel(_x, _y, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x, _y + 1, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x, _y + 2, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x, _y + 4, matrix.Color333(red, green, blue));
-    matrix.drawPixel(_x, _y + 5, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x, _y + 2, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x, _y + 3, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x, _y + 4, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x, _y + 5, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x, _y + 6, matrix.Color333(red, green, blue));
     matrix.drawPixel(_x, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 1, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 2, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 3, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 4, _y + 7, matrix.Color333(red, green, blue));
-    matrix.drawPixel(_x + 5, _y + 7, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 2, _y + 7, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 3, _y + 7, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 4, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 5, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 6, _y + 7, matrix.Color333(red, green, blue));
     matrix.drawPixel(_x + 7, _y + 7, matrix.Color333(red, green, blue));
     playfield[_x + 8][_y + 8] = 1;
@@ -1712,17 +1756,17 @@ void drawTile(byte _type, int _x, int _y)
   {
     matrix.drawPixel(_x + 7, _y, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 7, _y + 1, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 7, _y + 2, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 7, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 7, _y + 4, matrix.Color333(red, green, blue));
-    matrix.drawPixel(_x + 7, _y + 5, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 7, _y + 2, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 7, _y + 3, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 7, _y + 4, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 7, _y + 5, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 7, _y + 6, matrix.Color333(red, green, blue));
     matrix.drawPixel(_x, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 1, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 2, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 3, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 4, _y + 7, matrix.Color333(red, green, blue));
-    matrix.drawPixel(_x + 5, _y + 7, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 2, _y + 7, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 3, _y + 7, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 4, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 5, _y + 7, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 6, _y + 7, matrix.Color333(red, green, blue));
     matrix.drawPixel(_x + 7, _y + 7, matrix.Color333(red, green, blue));
     playfield[_x + 15][_y + 8] = 1;
@@ -1745,10 +1789,10 @@ void drawTile(byte _type, int _x, int _y)
   {
     matrix.drawPixel(_x, _y, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 1, _y + 1, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 2, _y + 2, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 3, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 4, _y + 4, matrix.Color333(red, green, blue));
-    matrix.drawPixel(_x + 5, _y + 5, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 2, _y + 2, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 3, _y + 3, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 4, _y + 4, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 5, _y + 5, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 6, _y + 6, matrix.Color333(red, green, blue));
     matrix.drawPixel(_x + 7, _y + 7, matrix.Color333(red, green, blue));
     playfield[_x + 8][_y + 8] = 1;
@@ -1764,10 +1808,10 @@ void drawTile(byte _type, int _x, int _y)
   {
     matrix.drawPixel(_x + 7, _y, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 6, _y + 1, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 5, _y + 2, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 4, _y + 3, matrix.Color333(red * 2, green * 2, blue * 2));
-    matrix.drawPixel(_x + 3, _y + 4, matrix.Color333(red, green, blue));
-    matrix.drawPixel(_x + 2, _y + 5, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 5, _y + 2, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 4, _y + 3, matrix.Color333(red, green, blue));
+    matrix.drawPixel(_x + 3, _y + 4, matrix.Color333(red * 2, green * 2, blue * 2));
+    matrix.drawPixel(_x + 2, _y + 5, matrix.Color333(red * 2, green * 2, blue * 2));
     matrix.drawPixel(_x + 1, _y + 6, matrix.Color333(red, green, blue));
     matrix.drawPixel(_x, _y + 7, matrix.Color333(red, green, blue));
     playfield[_x + 15][_y + 8] = 1;
@@ -2161,6 +2205,8 @@ void drawEnemies(byte i)
       // Moving left
       if(enemyMovement[i] == 0)
       {
+        matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1, y1 + 1, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
@@ -2187,6 +2233,8 @@ void drawEnemies(byte i)
       else
       {
         matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
+        matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1, y1 + 1, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 2, y1 + 1, matrix.Color333(0, 0, 0));
@@ -2549,31 +2597,43 @@ void drawEnemies(byte i)
     // Remove enemy at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
-      matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1, y1 + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 3, y1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 2, y1 + 1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1 + 2, matrix.Color333(0, 0, 0));
-      playfield[x1 + 9][y1 + 8] = 0;
-      playfield[x1 + 8][y1 + 9] = 0;
+      matrix.drawPixel(x1 + 2, y1 + 2, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1, y1 + 3, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(x1 + 3, y1 + 3, matrix.Color333(0, 0, 0));
+      playfield[x1 + 8][y1 + 8] = 0;
+      playfield[x1 + 11][y1 + 8] = 0;
       playfield[x1 + 9][y1 + 9] = 0;
       playfield[x1 + 10][y1 + 9] = 0;
       playfield[x1 + 9][y1 + 10] = 0;
+      playfield[x1 + 10][y1 + 10] = 0;
+      playfield[x1 + 8][y1 + 11] = 0;
+      playfield[x1 + 11][y1 + 11] = 0;
     }
 
     // Draw enemy at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
-      matrix.drawPixel(x2 + 1, y2, matrix.Color333(0, 0, 3));
-      matrix.drawPixel(x2, y2 + 1, matrix.Color333(0, 0, 3));
+      matrix.drawPixel(x2, y2, matrix.Color333(0, 0, 3));
+      matrix.drawPixel(x2 + 3, y2, matrix.Color333(0, 0, 3));
       matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(int((animationCounter % 32) / 4), 0, 0));
-      matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(0, 0, 3));
-      matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(0, 0, 3));
-      playfield[x2 + 9][y2 + 8] = 2;
-      playfield[x2 + 8][y2 + 9] = 2;
+      matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(int(((animationCounter + 8)% 32) / 4), 0, 0));
+      matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(int(((animationCounter + 16) % 32) / 4), 0, 0));
+      matrix.drawPixel(x2 + 2, y2 + 2, matrix.Color333(int(((animationCounter + 24) % 32) / 4), 0, 0));
+      matrix.drawPixel(x2, y2 + 3, matrix.Color333(0, 0, 3));
+      matrix.drawPixel(x2 + 3, y2 + 3, matrix.Color333(0, 0, 3));
+      playfield[x2 + 8][y2 + 8] = 2;
+      playfield[x2 + 11][y2 + 8] = 2;
       playfield[x2 + 9][y2 + 9] = 2;
       playfield[x2 + 10][y2 + 9] = 2;
       playfield[x2 + 9][y2 + 10] = 2;
+      playfield[x2 + 10][y2 + 10] = 2;
+      playfield[x2 + 8][y2 + 11] = 2;
+      playfield[x2 + 11][y2 + 11] = 2;
     }
   }
 
@@ -3181,7 +3241,7 @@ void moveEnemies()
       {
         if(enemyMovement[i] == 1)
         {
-          if(enemyXMap[i] < (mapWidth - 2) && enemyYMap[i] > 0)
+          if(enemyXMap[i] < (mapWidth - 5) && enemyYMap[i] > 2)
           {
             enemyXMap[i] = enemyXMap[i] + 0.15;
             enemyYMap[i] = enemyYMap[i] - 0.15;
@@ -3193,7 +3253,7 @@ void moveEnemies()
         }
         else if(enemyMovement[i] == 2)
         {
-          if(enemyXMap[i] < (mapWidth - 2) && enemyYMap[i] < (mapHeight - 1))
+          if(enemyXMap[i] < (mapWidth - 5) && enemyYMap[i] < (mapHeight - 5))
           {
             enemyXMap[i] = enemyXMap[i] + 0.15;
             enemyYMap[i] = enemyYMap[i] + 0.15;
@@ -3205,7 +3265,7 @@ void moveEnemies()
         }
         else if(enemyMovement[i] == 3)
         {
-          if(enemyXMap[i] > 0 && enemyYMap[i] < (mapHeight - 1))
+          if(enemyXMap[i] > 2 && enemyYMap[i] < (mapHeight - 5))
           {
             enemyXMap[i] = enemyXMap[i] - 0.15;
             enemyYMap[i] = enemyYMap[i] + 0.15;
@@ -3217,7 +3277,7 @@ void moveEnemies()
         }
         else if(enemyMovement[i] == 4)
         {
-          if(enemyXMap[i] > 0 && enemyYMap[i] > 0)
+          if(enemyXMap[i] > 2 && enemyYMap[i] > 2)
           {
             enemyXMap[i] = enemyXMap[i] - 0.15;
             enemyYMap[i] = enemyYMap[i] - 0.15;
