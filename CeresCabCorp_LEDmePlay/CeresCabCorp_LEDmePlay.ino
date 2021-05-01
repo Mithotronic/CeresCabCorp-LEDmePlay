@@ -306,10 +306,10 @@ const uint8_t levels[] PROGMEM  = {
                                          9, 8, 4,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,  21,   1,   1,   1, 171,   0,   1,
-                                       241,   1,   0,   0,   0,   0,   0,   1,  11,
-                                         0,   0,   0,   0,   0,   1,   1,   3,  21,
-                                         0,   0,   0,   0,   1,   1,   1,  81,   1, 
-                                         1,   1,   0,   0,   0,   0,   0,   0,   0,
+                                       241,   1,   0,  60,   0,   1,   1,   1,  11,
+                                         0,   0,   0,   0,   0,   1,   1,  90,   0,
+                                         0,   0,   0,   0,   1,   5,   6,   1,  21, 
+                                         1,   1,  60,   0,   0,  60,   0,   0,   0,
                                         21,   4,   1,   1,   0,   0,   0,   1,  31, 
                                        171,   1,   1,   1,   1,   1,   1,   1,  21,
                                         
@@ -335,17 +335,17 @@ const uint8_t levels[] PROGMEM  = {
                                          // Level 13: Donkey Kong
                                          8, 12, 3,
                                          0,   0,   0,   0,   0,   0,   0,   0,
-                                         0,   0,   0,   71,  11,   0,   0,   0,
+                                         0,   0,   0,  71,  11,   0,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,  71,   1,   1,  31,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,
                                          0,  71,   1,   1,   1,   1,  21,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,
-                                        71,  21,   1,   1,   1,   1,   1,   0,
+                                         1,  21,   1,   1,   1,   1,   1, 130,
                                          1,   1,   0,   1, 161,   1,   1,   1,
-                                         1,   1,   1,   1,   1,   0,  21,   1,
+                                         1,   1,   1,  81,   1,   0,  21,   1,
                                        161,   1,   0,   1,   1,   1,   1,   1,
-                                         1,  21,   1,   1,   1,   1, 241,   1,
+                                         1,  21,   1,   1,  81,   1, 241,   1,
                                          
                                          // Level 14: Missile attack
                                          11, 7, 5, 
@@ -357,28 +357,7 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   0,   0,   0,   0,   0,   0,   0, 110,   0,   0,
                                         21,   0,   0,   1,   0,   0,   0,   1,   0, 110,   1,
                                                                            
-                                         // Level 15: Holes
-                                        13, 7, 1,
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 140,
-                                         0,   0, 241,   0,   0,   0,  21,   0,   0,   0,  31,   0,   0,
-                                       151, 130,   1,   1, 130,   1,   1,   1, 130,   1,   1, 130,   1,
-                                         4,   0,   3,   4,   0,   3,   0,   4,   0,   3,   4,   0,   3,
-                                         4,   0,   3,   4,   0,   3,   0,   4,   0,   3,   4,   0,   3,
-                                         4,   0,   3,   4,   0,   5,   1,   6,   0,   3,   4,   0,   3,
-                                         4,  21,   3,   4,  21,   1,  81,   1,  21,   3,   4,  21,   3,
-
-                                         // Level 16: Meteor Storm
-                                         16, 8, 7,
-                                         0,   0,   0,   0,   0, 180,   0,   0, 180,   0, 180,   0, 180,   0,   0,  10,
-                                       150,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 140,
-                                         0,   0,   0,   0,   0,   0,   0,  21,   0,   0,   0,   0,   0,  21,   0,   0,
-                                       241,   0,   0,   0,   0,   0,   8,   0,   7,   0,   0,   0,   8,   0,   7,  21,
-                                         0,   7,   0,   0,   0,   8,   0,   0,   0,   7,  31,   8,   0,   0,   0,   0,
-                                         0,   0,   7,  21,   8,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-
-                                         // Level 17: Pharao
+                                         // Level 15: Pharao
                                          16, 12, 6,
                                          0,   0, 180,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   8,   7,   0,   0,   0,   0,   0,
@@ -393,13 +372,34 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   0,   0,   0,   0,   1,   1,   1,   1,   6,   0,   5,   1,   1,   1,   1,
                                          0,   0,   0,   0,   0,   5,  11,   1,   1,   1, 171,   1,   1,   1,  31,   6,
 
+                                         // Level 16: Holes
+                                        13, 7, 1,
+                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 140,
+                                         0,   0, 241,   0,   0,   0,  21,   0,   0,   0,  31,   0,   0,
+                                       151, 130,   1,   1, 130,   1,   1,   1, 130,   1,   1, 130,   1,
+                                         4,   0,   3,   4,   0,   3,   0,   4,   0,   3,   4,   0,   3,
+                                         4,   0,   3,   4,   0,   3,   0,   4,   0,   3,   4,   0,   3,
+                                         4,   0,   3,   4,   0,   5,   1,   6,   0,   3,   4,   0,   3,
+                                         4,  21,   3,   4,  21,   1,  81,   1,  21,   3,   4,  21,   3,
+
+                                         // Level 17: Meteor Storm
+                                         16, 8, 7,
+                                         0,   0,   0,   0,   0, 180,   0,   0, 180,   0, 180,   0, 180,   0,   0,  10,
+                                       150,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 140,
+                                         0,   0,   0,   0,   0,   0,   0,  21,   0,   0,   0,   0,   0,  21,   0,   0,
+                                       241,   0,   0,   0,   0,   0,   8,   0,   7,   0,   0,   0,   8,   0,   7,  21,
+                                         0,   7,   0,   0,   0,   8,   0,   0,   0,   7,  31,   8,   0,   0,   0,   0,
+                                         0,   0,   7,  21,   8,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+
                                          // Level 18: Outside
                                          15, 10, 4,
                                          0,   0, 180,   0,   0,   0, 100,   0,   0,   0, 180,   0,   0,   0,   0,  
-                                        21,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  
-                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  21,   1,   1,   0,  
+                                        21,  81,   1,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  
+                                         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  21,  81,   1,   0,  
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  
-                                         0,   0,   0,   1,   1,  21,   0,   0,   0,   0,   0,   0,   0,   0,   0,  
+                                         0,   0,   0,   1,  81,  21,   0,   0,   0,   0,   0,   0,   0,   0,   0,  
                                        241,   1,   1, 180,   0,   0,   0,   0, 180,   0,   0,   0,   0,   0,  21,  
                                          0,   0,   0,   7,   0,   0,   0,   0,   0,   0,   0,   0,   0,   8,   0,  
                                          0,   0,   0,   0,   7,   0,   0,   0,   0, 110,   0,   0,   8,   0,   0,  
@@ -2349,10 +2349,8 @@ void drawEnemies(byte i)
         matrix.drawPixel(x1 + 1, y1 + 2, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 2, y1 + 2, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 3, y1 + 2, matrix.Color333(0, 0, 0));
-        matrix.drawPixel(x1, y1 + 3, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 1, y1 + 3, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 2, y1 + 3, matrix.Color333(0, 0, 0));
-        matrix.drawPixel(x1 + 3, y1 + 3, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 1, y1 + 4, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 2, y1 + 4, matrix.Color333(0, 0, 0));
         playfield[x1 + 9][y1 + 8] = 0;
@@ -2365,10 +2363,8 @@ void drawEnemies(byte i)
         playfield[x1 + 9][y1 + 10] = 0;
         playfield[x1 + 10][y1 + 10] = 0;
         playfield[x1 + 11][y1 + 10] = 0;
-        playfield[x1 + 8][y1 + 11] = 0;
         playfield[x1 + 9][y1 + 11] = 0;
         playfield[x1 + 10][y1 + 11] = 0;
-        playfield[x1 + 11][y1 + 11] = 0;
         playfield[x1 + 9][y1 + 12] = 0;
         playfield[x1 + 10][y1 + 12] = 0;
 
@@ -2394,10 +2390,8 @@ void drawEnemies(byte i)
         if(random(100) < 25){ matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(3, 3, 1)); }
         if(random(100) < 25){ matrix.drawPixel(x2 + 2, y2 + 2, matrix.Color333(3, 3, 1)); }
         if(random(100) < 20){ matrix.drawPixel(x2 + 3, y2 + 2, matrix.Color333(2, 2, 0)); }
-        if(random(100) < 25){ matrix.drawPixel(x2, y2 + 3, matrix.Color333(1, 1, 0)); }
         if(random(100) < 30){ matrix.drawPixel(x2 + 1, y2 + 3, matrix.Color333(4, 4, 1)); }
         if(random(100) < 30){ matrix.drawPixel(x2 + 2, y2 + 3, matrix.Color333(4, 4, 1)); }
-        if(random(100) < 25){ matrix.drawPixel(x2 + 3, y2 + 3, matrix.Color333(1, 1, 0)); }
         if(random(100) < 35){ matrix.drawPixel(x2 + 1, y2 + 4, matrix.Color333(5, 5, 2)); }
         if(random(100) < 35){ matrix.drawPixel(x2 + 2, y2 + 4, matrix.Color333(5, 5, 2)); }
         playfield[x2 + 9][y2 + 8] = 2;
@@ -2410,10 +2404,8 @@ void drawEnemies(byte i)
         playfield[x2 + 9][y2 + 10] = 2;
         playfield[x2 + 10][y2 + 10] = 2;
         playfield[x2 + 11][y2 + 10] = 2;
-        playfield[x2 + 8][y2 + 11] = 2;
         playfield[x2 + 9][y2 + 11] = 2;
         playfield[x2 + 10][y2 + 11] = 2;
-        playfield[x2 + 11][y2 + 11] = 2;
         playfield[x2 + 9][y2 + 12] = 2;
         playfield[x2 + 10][y2 + 12] = 2;
         // SOUND: Fire
@@ -2906,32 +2898,20 @@ void drawEnemies(byte i)
       {
         matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
-        matrix.drawPixel(x1, y1 + 1, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 2, y1 + 1, matrix.Color333(0, 0, 0));
-        matrix.drawPixel(x1 + 3, y1 + 1, matrix.Color333(0, 0, 0));
-        matrix.drawPixel(x1, y1 + 2, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 1, y1 + 2, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 2, y1 + 2, matrix.Color333(0, 0, 0));
-        matrix.drawPixel(x1 + 3, y1 + 2, matrix.Color333(0, 0, 0));
-        matrix.drawPixel(x1, y1 + 3, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 1, y1 + 3, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 2, y1 + 3, matrix.Color333(0, 0, 0));
-        matrix.drawPixel(x1 + 3, y1 + 3, matrix.Color333(0, 0, 0));
         playfield[x1 + 9][y1 + 8] = 0;
         playfield[x1 + 10][y1 + 8] = 0;
-        playfield[x1 + 8][y1 + 9] = 0;
         playfield[x1 + 9][y1 + 9] = 0;
         playfield[x1 + 10][y1 + 9] = 0;
-        playfield[x1 + 11][y1 + 9] = 0;
-        playfield[x1 + 8][y1 + 10] = 0;
         playfield[x1 + 9][y1 + 10] = 0;
         playfield[x1 + 10][y1 + 10] = 0;
-        playfield[x1 + 11][y1 + 10] = 0;
-        playfield[x1 + 8][y1 + 11] = 0;
         playfield[x1 + 9][y1 + 11] = 0;
         playfield[x1 + 10][y1 + 11] = 0;
-        playfield[x1 + 11][y1 + 11] = 0;
       }
       matrix.drawPixel(x1, y1 + 4, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1 + 4, matrix.Color333(0, 0, 0));
@@ -2958,32 +2938,20 @@ void drawEnemies(byte i)
       {
         if(random(100) < 15){ matrix.drawPixel(x2 + 1, y2, matrix.Color333(1, 1, 0)); }
         if(random(100) < 15){ matrix.drawPixel(x2 + 2, y2, matrix.Color333(1, 1, 0)); }
-        if(random(100) < 15){ matrix.drawPixel(x2, y2 + 1, matrix.Color333(1, 1, 0)); }
         if(random(100) < 20){ matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(2, 2, 0)); }
         if(random(100) < 20){ matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(2, 2, 0)); }
-        if(random(100) < 15){ matrix.drawPixel(x2 + 3, y2 + 1, matrix.Color333(1, 1, 0)); }
-        if(random(100) < 20){ matrix.drawPixel(x2, y2 + 2, matrix.Color333(2, 2, 0)); }
         if(random(100) < 25){ matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(3, 3, 1)); }
         if(random(100) < 25){ matrix.drawPixel(x2 + 2, y2 + 2, matrix.Color333(3, 3, 1)); }
-        if(random(100) < 20){ matrix.drawPixel(x2 + 3, y2 + 2, matrix.Color333(2, 2, 0)); }
-        if(random(100) < 25){ matrix.drawPixel(x2, y2 + 3, matrix.Color333(1, 1, 0)); }
         if(random(100) < 30){ matrix.drawPixel(x2 + 1, y2 + 3, matrix.Color333(4, 4, 1)); }
         if(random(100) < 30){ matrix.drawPixel(x2 + 2, y2 + 3, matrix.Color333(4, 4, 1)); }
-        if(random(100) < 25){ matrix.drawPixel(x2 + 3, y2 + 3, matrix.Color333(1, 1, 0)); }
         playfield[x2 + 9][y2 + 8] = 2;
         playfield[x2 + 10][y2 + 8] = 2;
-        playfield[x2 + 8][y2 + 9] = 2;
         playfield[x2 + 9][y2 + 9] = 2;
         playfield[x2 + 10][y2 + 9] = 2;
-        playfield[x2 + 11][y2 + 9] = 2;
-        playfield[x2 + 8][y2 + 10] = 2;
         playfield[x2 + 9][y2 + 10] = 2;
         playfield[x2 + 10][y2 + 10] = 2;
-        playfield[x2 + 11][y2 + 10] = 2;
-        playfield[x2 + 8][y2 + 11] = 2;
         playfield[x2 + 9][y2 + 11] = 2;
         playfield[x2 + 10][y2 + 11] = 2;
-        playfield[x2 + 11][y2 + 11] = 2;
         // SOUND: Fire
         tone(audio, 50 + random(350), 5);        
       }
