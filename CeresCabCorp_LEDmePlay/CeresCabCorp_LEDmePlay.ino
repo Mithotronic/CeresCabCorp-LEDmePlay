@@ -236,24 +236,14 @@ const uint8_t levels[] PROGMEM  = {
                                          3,   0, 241,   5,  21,   1,   6,  21,   0,   4,
                                          5,   0,   3,   0,   0,   0,   0,   4,   0,   6,
                                          3,   0,   3,   0,   0,   0,   0,   4,   0,   4,
-                                         3,   0,   3,   0,   0,   0,   0,   4,   0,   4,
+                                         3,   0,   3,   0,  10,   0,   0,   0,   0,   4,
                                          5,   0,   3,   0,   0,   0,   0,   4,   0,   6,
                                          3,   0,   5,   1,   1,   1,   1,   6,   0,   4,
                                          3,   0,   0,  90,   0,   0,   0,   0,  60,   4,
                                          5,   1,  21,   5,   1,  21,   6,  31,   1,   6,
 
-                                         // Level 6: Mech Warrior
-                                         9, 7, 5,
-                                         0,   0,   0,   3, 241,   4,   0,   0,   0,
-                                         0,  21,  71,   1,   1,   1,   1,  21,   0,
-                                         1,   0,   0,   1,   0,   1,   0,  90,   1,
-                                         1,   1,   1,   1, 130,   1,   1,   1,   1,
-                                         3,   0,   1,   1,   1,   1,   1,   0,   4,
-                                         3,   0,   0,   1,  31,   1,   0,   0,   4,
-                                         5,  21,   1,  71,  11,   1,   1,  21,   6,
-
-                                         // Level 7: Electric Fire
-                                         8, 8, 1,
+                                         // Level 6: Electric Fire
+                                         8, 8, 5,
                                          0,   0,   0,   0,   0,   0,   0,   0,
                                         21,   0,   0, 241,   1,   0,   0,  21,
                                          0,   0,   0,   3,   4,   0,   0,   0,
@@ -263,6 +253,16 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   0,   0,   1,   1,   0,   0,   0,
                                          1,  21,   1,   3,   4,   1,  21,   1,
                                                                               
+                                         // Level 7: Mech Warrior
+                                         9, 7, 1,
+                                         0,   0,   0,   3, 241,   4,   0,   0,   0,
+                                         0,  21,  71,   1,   1,   1,   1,  21,   0,
+                                         1,   0,   0,   1,   0,   1,   0,  90,   1,
+                                         1,   1,   1,   1, 130,   1,   1,   1,   1,
+                                         3,   0,   1,   1,   1,   1,   1,   0,   4,
+                                         3,   0,   0,   1,  31,   1,   0,   0,   4,
+                                         5,  21,   1,  71,  11,   1,   1,  21,   6,
+
                                          // Level 8: Freeway
                                          15, 6, 7,
                                          3,  21,   4,   1,   1,   1,   3,  31,   4,   1,   1,   1,   3,  21,   4,
@@ -305,8 +305,8 @@ const uint8_t levels[] PROGMEM  = {
                                          // Level 11: Metal Works
                                          9, 8, 4,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,
-                                         0,   0,  21,   1,   1,   1, 171,   0,   1,
-                                       241,   1,   0,  60,   0,   1,   1,   1,  11,
+                                         0,   0,  21,   1,   1,   1, 171, 130,   1,
+                                       241, 130,   3,  60,   0,   1,   4,   1,  11,
                                          0,   0,   0,   0,   0,   1,   1,  90,   0,
                                          0,   0,   0,   0,   1,   5,   6,   1,  21, 
                                          1,   1,  60,   0,   0,  60,   0,   0,   0,
@@ -333,19 +333,21 @@ const uint8_t levels[] PROGMEM  = {
                                          1,   1,   1,   1,   1,   1,   1,   1,   1,
 
                                          // Level 13: Donkey Kong
-                                         8, 12, 3,
+                                         8, 14, 3,
                                          0,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,   0,  71,  11,   0,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,
-                                         0,   0,  71,   1,   1,  31,   0,   0,
+                                         0,   0,  81,  21,   1,  81,   0,   0,
+                                         0,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0,   1,   1,   1,  31,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,
                                          0,  71,   1,   1,   1,   1,  21,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,
-                                         1,  21,   1,   1,   1,   1,   1, 130,
+                                         1,  21,   1,   1,   1,   1,   1,   0,
                                          1,   1,   0,   1, 161,   1,   1,   1,
-                                         1,   1,   1,  81,   1,   0,  21,   1,
+                                         1,   1,   1,   1,   1,   0,  21,   1,
                                        161,   1,   0,   1,   1,   1,   1,   1,
-                                         1,  21,   1,   1,  81,   1, 241,   1,
+                                         1,  21,   1,   1,   1,   1, 241,   1,
                                          
                                          // Level 14: Missile attack
                                          11, 7, 5, 
@@ -400,7 +402,7 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  21,  81,   1,   0,  
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  
                                          0,   0,   0,   1,  81,  21,   0,   0,   0,   0,   0,   0,   0,   0,   0,  
-                                       241,   1,   1, 180,   0,   0,   0,   0, 180,   0,   0,   0,   0,   0,  21,  
+                                       241,   1,   1,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  21,  
                                          0,   0,   0,   7,   0,   0,   0,   0,   0,   0,   0,   0,   0,   8,   0,  
                                          0,   0,   0,   0,   7,   0,   0,   0,   0, 110,   0,   0,   8,   0,   0,  
                                          0,   0,   0,   0,   0,   7,   0,   0, 110,   0,   0,   8,   0,   0,   0,  
@@ -2337,7 +2339,7 @@ void drawEnemies(byte i)
     // Remove enemy at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
-      if(animationCounter > 127 || animationCounter == 0)
+      if(animationCounter > 128 || animationCounter == 0)
       {
         matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
@@ -2380,34 +2382,20 @@ void drawEnemies(byte i)
     { 
       if(animationCounter > 127)
       {
-        if(random(100) < 15){ matrix.drawPixel(x2 + 1, y2, matrix.Color333(1, 1, 0)); }
-        if(random(100) < 15){ matrix.drawPixel(x2 + 2, y2, matrix.Color333(1, 1, 0)); }
-        if(random(100) < 15){ matrix.drawPixel(x2, y2 + 1, matrix.Color333(1, 1, 0)); }
-        if(random(100) < 20){ matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(2, 2, 0)); }
-        if(random(100) < 20){ matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(2, 2, 0)); }
-        if(random(100) < 15){ matrix.drawPixel(x2 + 3, y2 + 1, matrix.Color333(1, 1, 0)); }
-        if(random(100) < 20){ matrix.drawPixel(x2, y2 + 2, matrix.Color333(2, 2, 0)); }
-        if(random(100) < 25){ matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(3, 3, 1)); }
-        if(random(100) < 25){ matrix.drawPixel(x2 + 2, y2 + 2, matrix.Color333(3, 3, 1)); }
-        if(random(100) < 20){ matrix.drawPixel(x2 + 3, y2 + 2, matrix.Color333(2, 2, 0)); }
-        if(random(100) < 30){ matrix.drawPixel(x2 + 1, y2 + 3, matrix.Color333(4, 4, 1)); }
-        if(random(100) < 30){ matrix.drawPixel(x2 + 2, y2 + 3, matrix.Color333(4, 4, 1)); }
-        if(random(100) < 35){ matrix.drawPixel(x2 + 1, y2 + 4, matrix.Color333(5, 5, 2)); }
-        if(random(100) < 35){ matrix.drawPixel(x2 + 2, y2 + 4, matrix.Color333(5, 5, 2)); }
-        playfield[x2 + 9][y2 + 8] = 2;
-        playfield[x2 + 10][y2 + 8] = 2;
-        playfield[x2 + 8][y2 + 9] = 2;
-        playfield[x2 + 9][y2 + 9] = 2;
-        playfield[x2 + 10][y2 + 9] = 2;
-        playfield[x2 + 11][y2 + 9] = 2;
-        playfield[x2 + 8][y2 + 10] = 2;
-        playfield[x2 + 9][y2 + 10] = 2;
-        playfield[x2 + 10][y2 + 10] = 2;
-        playfield[x2 + 11][y2 + 10] = 2;
-        playfield[x2 + 9][y2 + 11] = 2;
-        playfield[x2 + 10][y2 + 11] = 2;
-        playfield[x2 + 9][y2 + 12] = 2;
-        playfield[x2 + 10][y2 + 12] = 2;
+        if(random(100) < 15){ matrix.drawPixel(x2 + 1, y2, matrix.Color333(1, 1, 0)); playfield[x2 + 9][y2 + 8] = 2; }
+        if(random(100) < 15){ matrix.drawPixel(x2 + 2, y2, matrix.Color333(1, 1, 0)); playfield[x2 + 10][y2 + 8] = 2; }
+        if(random(100) < 15){ matrix.drawPixel(x2, y2 + 1, matrix.Color333(1, 1, 0)); playfield[x2 + 8][y2 + 9] = 2; }
+        if(random(100) < 20){ matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(2, 2, 0)); playfield[x2 + 9][y2 + 9] = 2; }
+        if(random(100) < 20){ matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(2, 2, 0)); playfield[x2 + 10][y2 + 9] = 2; }
+        if(random(100) < 15){ matrix.drawPixel(x2 + 3, y2 + 1, matrix.Color333(1, 1, 0)); playfield[x2 + 11][y2 + 9] = 2; }
+        if(random(100) < 20){ matrix.drawPixel(x2, y2 + 2, matrix.Color333(2, 2, 0)); playfield[x2 + 8][y2 + 10] = 2; }
+        if(random(100) < 25){ matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(3, 3, 1)); playfield[x2 + 9][y2 + 10] = 2; }
+        if(random(100) < 25){ matrix.drawPixel(x2 + 2, y2 + 2, matrix.Color333(3, 3, 1)); playfield[x2 + 10][y2 + 10] = 2; }
+        if(random(100) < 20){ matrix.drawPixel(x2 + 3, y2 + 2, matrix.Color333(2, 2, 0)); playfield[x2 + 11][y2 + 10] = 2; }
+        if(random(100) < 30){ matrix.drawPixel(x2 + 1, y2 + 3, matrix.Color333(4, 4, 1)); playfield[x2 + 9][y2 + 11] = 2; }
+        if(random(100) < 30){ matrix.drawPixel(x2 + 2, y2 + 3, matrix.Color333(4, 4, 1)); playfield[x2 + 10][y2 + 11] = 2; }
+        if(random(100) < 35){ matrix.drawPixel(x2 + 1, y2 + 4, matrix.Color333(5, 5, 2)); playfield[x2 + 9][y2 + 12] = 2; }
+        if(random(100) < 35){ matrix.drawPixel(x2 + 2, y2 + 4, matrix.Color333(5, 5, 2)); playfield[x2 + 10][y2 + 12] = 2; }
         // SOUND: Fire
         tone(audio, 50 + random(350), 5);        
       }
@@ -2635,22 +2623,37 @@ void drawEnemies(byte i)
     // Remove enemy at old position
     if(x1 > -8 && x1 < 32 && y1 > -8 && y1 < 32)
     {   
-      matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 3, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 4, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 5, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 6, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 7, y1, matrix.Color333(0, 0, 0));
-      playfield[x1 + 8][y1 + 8] = 0;
-      playfield[x1 + 9][y1 + 8] = 0;
-      playfield[x1 + 10][y1 + 8] = 0;
-      playfield[x1 + 11][y1 + 8] = 0;
-      playfield[x1 + 12][y1 + 8] = 0;
-      playfield[x1 + 13][y1 + 8] = 0;
-      playfield[x1 + 14][y1 + 8] = 0;
-      playfield[x1 + 15][y1 + 8] = 0;
+      if(animationCounter < 65 || (animationCounter > 128 && animationCounter < 193))
+      {
+        if((animationCounter - 1) % 4 == 0)
+        {
+          matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 7, y1, matrix.Color333(0, 0, 0));
+          playfield[x1 + 8][y1 + 8] = 0;
+          playfield[x1 + 15][y1 + 8] = 0;
+        }
+        else if((animationCounter - 1) % 4 == 1)
+        {
+          matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 6, y1, matrix.Color333(0, 0, 0));
+          playfield[x1 + 9][y1 + 8] = 0;
+          playfield[x1 + 14][y1 + 8] = 0;
+        }
+        else if((animationCounter - 1) % 4 == 2)
+        {
+          matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 5, y1, matrix.Color333(0, 0, 0));
+          playfield[x1 + 10][y1 + 8] = 0;
+          playfield[x1 + 13][y1 + 8] = 0;
+        }
+        else if((animationCounter - 1) % 4 == 3)
+        {
+          matrix.drawPixel(x1 + 3, y1, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 4, y1, matrix.Color333(0, 0, 0));
+          playfield[x1 + 11][y1 + 8] = 0;
+          playfield[x1 + 12][y1 + 8] = 0;
+        }
+      }
     }
 
     // Draw enemy at new position
@@ -2796,30 +2799,49 @@ void drawEnemies(byte i)
     // Remove enemy at old position
     if(x1 > -8 && x1 < 32 && y1 > -8 && y1 < 32)
     {   
-      matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1 + 2, matrix.Color333(0, 0, 0));
+      if(animationCounter < 65 || (animationCounter > 128 && animationCounter < 193))
+      {
+        if((animationCounter - 1) % 4 == 0)
+        {
+          matrix.drawPixel(x1 + 1, y1 + 3, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 1, y1 + 4, matrix.Color333(0, 0, 0));
+          playfield[x1 + 9][y1 + 11] = 0;
+          playfield[x1 + 9][y1 + 12] = 0;
+        }
+        if((animationCounter - 1) % 4 == 1)
+        {
+          matrix.drawPixel(x1 + 1, y1 + 2, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 1, y1 + 5, matrix.Color333(0, 0, 0));
+          playfield[x1 + 9][y1 + 10] = 0;
+          playfield[x1 + 9][y1 + 13] = 0;
+        }
+        if((animationCounter - 1) % 4 == 2)
+        {
+          matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 1, y1 + 6, matrix.Color333(0, 0, 0));
+          playfield[x1 + 9][y1 + 9] = 0;
+          playfield[x1 + 9][y1 + 14] = 0;
+        }
+        if((animationCounter - 1) % 4 == 3)
+        {
+          matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
+          matrix.drawPixel(x1 + 1, y1 + 7, matrix.Color333(0, 0, 0));
+          playfield[x1 + 9][y1 + 8] = 0;
+          playfield[x1 + 9][y1 + 15] = 0;
+        }
+      }
       matrix.drawPixel(x1, y1 + 3, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1 + 3, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 2, y1 + 3, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1, y1 + 4, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1 + 4, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 2, y1 + 4, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1 + 5, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1 + 6, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(x1 + 1, y1 + 7, matrix.Color333(0, 0, 0));
-      playfield[x1 + 9][y1 + 8] = 0;
-      playfield[x1 + 9][y1 + 9] = 0;
-      playfield[x1 + 9][y1 + 10] = 0;
       playfield[x1 + 8][y1 + 11] = 0;
       playfield[x1 + 9][y1 + 11] = 0;
       playfield[x1 + 10][y1 + 11] = 0;
       playfield[x1 + 8][y1 + 12] = 0;
       playfield[x1 + 9][y1 + 12] = 0;
       playfield[x1 + 10][y1 + 12] = 0;
-      playfield[x1 + 9][y1 + 13] = 0;
-      playfield[x1 + 9][y1 + 14] = 0;
-      playfield[x1 + 9][y1 + 15] = 0;
     }
 
     // Draw enemy at new position
