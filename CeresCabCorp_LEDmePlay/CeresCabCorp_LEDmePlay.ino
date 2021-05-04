@@ -15,9 +15,10 @@
 #include <avr/pgmspace.h> // Necessary in order to maintain the maze data in program memory
 
 // General settings
-const byte initialNumberOfLives = 3;            // Number of lives at game start
-const int fuelMax = 1024;                       // Maximal fuel (this is also the initial value)
-const byte numberOfPassengersToFinishLevel = 5; // Passengers per level
+const byte initialNumberOfLives = 3;             // Number of lives at game start
+const int fuelMax = 1024;                        // Maximal fuel (this is also the initial value)
+const byte numberOfPassengersToFinishLevel = 5;  // Passengers per level
+const byte maximalNumberOfWaitingPassengers = 3; // Maximal number of waiting passengers
 
 // Setup adafruit matrix
 #define CLK 50
@@ -226,8 +227,8 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   0,   0,   0,   0,   0, 150,   0,   0,   0,   0,   0,   0, 150,
                                          0,   0,  21,   8,   7,   0,  21,   8,   7,   0,  21,   8,   7,   0,
                                        241,   0,   0,   7,   8,   0,   0,   7,   8,   0,   0,   7,   8,   0,
-                                         140,   0,   0,   0,   0,   0,   0, 140,   0,   0,   0,   0,   0,   0,
-                                         1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
+                                       140,   0,   0,   0,   0,   0,   0, 140,   0,   0,   0,   0,   0,   0,
+                                         1,   1,   1,   1,   1,  81,   1,   1,   1,  81,   1,   1,   1,   1,
                                      
                                          // Level 5: Around and around
                                          10, 10, 4,                                         
@@ -250,7 +251,7 @@ const uint8_t levels[] PROGMEM  = {
                                        160,   0,   0,   3,   4, 160,   0,   0,
                                          0, 160,   0,   3,   4,   0, 160,   0,
                                          0,   0,   0,   5,   6,   0,   0,   0,
-                                         0,   0,   0,   1,   1,   0,   0,   0,
+                                         0,   0,   0,   1,  81,   0,   0,   0,
                                          1,  21,   1,   3,   4,   1,  21,   1,
                                                                               
                                          // Level 7: Mech Warrior
@@ -333,13 +334,11 @@ const uint8_t levels[] PROGMEM  = {
                                          1,   1,   1,   1,   1,   1,   1,   1,   1,
 
                                          // Level 13: Donkey Kong
-                                         8, 14, 3,
+                                         8, 12, 3,
                                          0,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,   0,  71,  11,   0,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,
-                                         0,   0,  81,  21,   1,  81,   0,   0,
-                                         0,   0,   0,   0,   0,   0,   0,   0,
-                                         0,   0,   1,   1,   1,  31,   0,   0,
+                                         0,   0,  71,   1,   1,  31,   0,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,
                                          0,  71,   1,   1,   1,   1,  21,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,
@@ -555,7 +554,6 @@ byte platformBordingStatus[6];         // 0 == inactive, 1 == empty, 2 == passen
 byte platformDisembarkingStatus[6];       // 0 == inactive, 1 == empty, 2 == passenger is waiting
 byte platformCounter;                  // Number of platforms in current level (6 is the maximum)
 byte numberOfWaitingPassengers;
-const byte maximalNumberOfWaitingPassengers = 3;
 byte remainingPassengersToFinishLevel; // Jump to next level if 0
 byte targetPlatform;                   // RED, GREEN, BLUE, YELLOW, VIOLOET, TURQUOISE
 
@@ -1134,7 +1132,6 @@ void setupLevel()
     {
       platformXMap[platformCounter] = ((i % tileNumberX) * 8);
       platformYMap[platformCounter] = ((i / tileNumberX) * 8) + 5;
-      platformBordingStatus[platformCounter] = 1;
       if(platformCounter < 6)
       {
         platformCounter++;
@@ -1392,6 +1389,11 @@ void setupLevel()
   heavyCollisionWithObstacle = false;
   taxiExplosion = false;
 
+  // Ensure that all platforms can be used by new passengers
+  for(byte i = 0; i < platformCounter; i++)
+  {
+    platformBordingStatus[i] = 1;
+  }
   numberOfWaitingPassengers = 0;
 
   animationCounter = 0;
@@ -3689,6 +3691,11 @@ void drawPlatforms()
   {
     if(platformBordingStatus[i] > 0)
     {
+//Serial.print(i);
+//Serial.print(": ");
+//Serial.print(platformBordingStatus[i]);
+//Serial.print(" / ");
+//Serial.println(numberOfWaitingPassengers);
       // Add another waiting passenger
       if(platformBordingStatus[i] == 1 && numberOfWaitingPassengers < maximalNumberOfWaitingPassengers && random(1000) < 10)
       {
