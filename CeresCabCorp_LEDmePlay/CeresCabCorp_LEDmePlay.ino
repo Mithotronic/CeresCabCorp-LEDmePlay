@@ -19,6 +19,7 @@ const byte initialNumberOfLives = 3;             // Number of lives at game star
 const int fuelMax = 1024;                        // Maximal fuel (this is also the initial value)
 const byte numberOfPassengersToFinishLevel = 5;  // Passengers per level
 const byte maximalNumberOfWaitingPassengers = 3; // Maximal number of waiting passengers
+const boolean hiddenLevelJumps = false;          // Allows to select any level by first moving left/right followed by pressing fire button
 
 // Setup adafruit matrix
 #define CLK 50
@@ -192,6 +193,7 @@ int buttonPause = 43;
 // Example: Tile 1 with mech (value 70) is encoded by 71.
 //
 const byte numberOfLevels = 20;
+byte maximalReachedLevel = 1;
 const uint8_t levels[] PROGMEM  = {
                                          // Level 1: First challenge
                                          6, 6, 1,
@@ -4611,44 +4613,74 @@ void checkForFuelPlatformsExtraLives()
 // Show status screen
 void showStatus()
 {
+
+  // If a new game is started, it is possible to jump to a higher level which has already been reached in a previous game.
+  boolean levelSelection = false;
+  if(level == 1 && maximalReachedLevel > 1)
+  {
+    levelSelection = true;
+  }
+
+  // Frame
+  matrix.setTextColor(matrix.Color333(4,2,0));
+  // Game ends because of no more lives or last level completed (in this case a full screen frame is drawn)
+  if(lives < 1 || level == numberOfLevels + 1)
+  {
+    matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
+    matrix.drawRect(0, 0, 32, 32, matrix.Color333(1,1,1));
+  }
+  // Status
+  else
+  {
+    if(!levelSelection)
+    {
+      matrix.fillRect(1, 6, 29, 19, matrix.Color333(0,0,0));
+      matrix.drawRect(1, 6, 29, 19, matrix.Color333(3,2,1));
+    }
+    // Start new game and level selection enabled
+    else
+    {
+      matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
+      matrix.drawLine(0, 0, 0, 32, matrix.Color333(1,1,1));
+      matrix.drawLine(31, 0, 31, 32, matrix.Color333(1,1,1));
+      matrix.setCursor(4, 0);
+      matrix.print("Jump");                    
+      matrix.setCursor(4, 24);
+      matrix.print("<  >");                    
+    }
+  }
+  // Lives
+  matrix.drawPixel(3, 10, matrix.Color333(0, 5, 2));
+  matrix.drawPixel(4, 10, matrix.Color333(0, 3, 1));
+  matrix.drawPixel(5, 10, matrix.Color333(0, 0, 0));
+  matrix.drawPixel(6, 10, matrix.Color333(0, 0, 0));
+  matrix.drawPixel(3, 11, matrix.Color333(0, 3, 1));
+  matrix.drawPixel(4,11, matrix.Color333(0, 0, 2));
+  matrix.drawPixel(5, 11, matrix.Color333(0, 0, 3));
+  matrix.drawPixel(6, 111, matrix.Color333(0, 0, 0));
+  matrix.drawPixel(3, 12, matrix.Color333(0, 5, 2));
+  matrix.drawPixel(4, 12, matrix.Color333(0, 3, 1));
+  matrix.drawPixel(5, 12, matrix.Color333(0, 3, 1));
+  matrix.drawPixel(6, 12, matrix.Color333(0, 5, 2));
+  matrix.setCursor(8, 8);
+  matrix.print(lives);
+  // Passengers
+  matrix.drawLine(4, 17, 6, 17, matrix.Color333(3, 3, 3));
+  matrix.drawLine(4, 18, 4, 21, matrix.Color333(3, 3, 3));
+  matrix.drawLine(5, 19, 6, 19, matrix.Color333(3, 3, 3));
+  matrix.drawPixel(6, 18, matrix.Color333(3, 3, 3));
+  matrix.setCursor(8, 16);
+  matrix.print(passengers);
+  
   changed = true;
   do
   {
     if(changed)
-    {
-      // Frame
-      matrix.setTextColor(matrix.Color333(4,2,0));
-      // Game ends because of no more lives or last level completed (in this case a full screen frame is drawn)
-      if(lives < 1 || level == numberOfLevels + 1)
-      {
-        matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
-        matrix.drawRect(0, 0, 32, 32, matrix.Color333(1,1,1));
-      }
-      // Status after loosing live
-      else
-      {
-        matrix.fillRect(1, 6, 29, 19, matrix.Color333(0,0,0));
-        matrix.drawRect(1, 6, 29, 19, matrix.Color333(3,2,1));
-      }
-      // Lives
-      matrix.drawPixel(3, 10, matrix.Color333(0, 5, 2));
-      matrix.drawPixel(4, 10, matrix.Color333(0, 3, 1));
-      matrix.drawPixel(5, 10, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(6, 10, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(3, 11, matrix.Color333(0, 3, 1));
-      matrix.drawPixel(4,11, matrix.Color333(0, 0, 2));
-      matrix.drawPixel(5, 11, matrix.Color333(0, 0, 3));
-      matrix.drawPixel(6, 111, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(3, 12, matrix.Color333(0, 5, 2));
-      matrix.drawPixel(4, 12, matrix.Color333(0, 3, 1));
-      matrix.drawPixel(5, 12, matrix.Color333(0, 3, 1));
-      matrix.drawPixel(6, 12, matrix.Color333(0, 5, 2));
-      matrix.setCursor(8, 8);
-      matrix.print(lives);
-      
+    {      
       // Level
       matrix.drawLine(14, 9, 14, 13, matrix.Color333(3, 3, 3));
       matrix.drawLine(14, 13, 16, 13, matrix.Color333(3, 3, 3));
+      matrix.fillRect(17, 8, 12, 7, matrix.Color333(0,0,0));
       if(level < 10){ matrix.setCursor(18, 8); }
       else{ matrix.setCursor(17, 8); }
       if(level <= numberOfLevels)
@@ -4659,17 +4691,10 @@ void showStatus()
       {
         matrix.print("-");
       }
-      // Passengers
-      matrix.drawLine(4, 17, 6, 17, matrix.Color333(3, 3, 3));
-      matrix.drawLine(4, 18, 4, 21, matrix.Color333(3, 3, 3));
-      matrix.drawLine(5, 19, 6, 19, matrix.Color333(3, 3, 3));
-      matrix.drawPixel(6, 18, matrix.Color333(3, 3, 3));
-      matrix.setCursor(8, 16);
-      matrix.print(passengers);
       changed = false;
     }
     
-    if(joy1Fire() && joy1Left() && level > 1 && lives > 0)
+    if((joy1Left() && levelSelection && level > 1 && lives > 0) || (hiddenLevelJumps && joy1Fire() && joy1Left() && level > 1 && lives > 0))
     {
       level--;
       initializeNewLevel = true;
@@ -4677,7 +4702,7 @@ void showStatus()
       tone(audio,1024,20);
       delay(100);  
     }
-    else if(joy1Fire() && joy1Right() && level < numberOfLevels && lives > 0)
+    else if((joy1Right() && levelSelection && level < maximalReachedLevel && lives > 0) || (hiddenLevelJumps && joy1Fire() && joy1Right() && level < numberOfLevels && lives > 0))
     {
       level++;
       initializeNewLevel = true;
@@ -4886,8 +4911,8 @@ void loop()
         }
         tone(audio,1047,400);
         delay(1000);
-        showStatus();
         level++;
+        if(level > maximalReachedLevel){ maximalReachedLevel = level; } // Update maximalReachedLevel
         initializeNewLevel = true;
         matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
       }
