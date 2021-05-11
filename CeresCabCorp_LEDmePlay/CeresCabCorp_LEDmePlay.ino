@@ -19,7 +19,7 @@ const byte initialNumberOfLives = 3;             // Number of lives at game star
 const int fuelMax = 1024;                        // Maximal fuel (this is also the initial value)
 const byte numberOfPassengersToFinishLevel = 5;  // Passengers per level
 const byte maximalNumberOfWaitingPassengers = 3; // Maximal number of waiting passengers
-const boolean hiddenLevelJumps = false;          // Allows to select any level by first moving left/right followed by pressing fire button
+const boolean hiddenLevelJumps = true;          // Allows to select any level by first moving left/right followed by pressing fire button
 
 // Setup adafruit matrix
 #define CLK 50
