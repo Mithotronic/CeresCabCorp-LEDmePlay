@@ -3,7 +3,7 @@
 //
 // www.mithotronic.de
 //
-// Version: 0.8.0
+// Version: 1.0.0
 // Authors: Michael Rosskopf (2021)
 // 
 // Release Notes:
@@ -19,7 +19,7 @@ const byte initialNumberOfLives = 3;             // Number of lives at game star
 const int fuelMax = 1024;                        // Maximal fuel (this is also the initial value)
 const byte numberOfPassengersToFinishLevel = 5;  // Passengers per level
 const byte maximalNumberOfWaitingPassengers = 3; // Maximal number of waiting passengers
-const boolean hiddenLevelJumps = true;          // Allows to select any level by first moving left/right followed by pressing fire button
+const boolean hiddenLevelJumps = true;           // Allows to select any level by first moving left/right followed by pressing fire button
 
 // Setup adafruit matrix
 #define CLK 50
@@ -166,7 +166,7 @@ int buttonPause = 43;
 //   --------   --------   --------   O-------   -------O   O-------   -------O   ------O-   -O------
 //   --------   OOOOOOOO   --------   O-------   -------O   OOOOOOOO   OOOOOOOO   -------O   O-------
 //
-// The remaining numbers encode the tiles, extra lives, platforms, and enemies.
+// The remaining numbers encode the tiles, extra lives, platforms, and dangers.
 // Add tile type value (0 - 8)
 // to values of
 // Extra life:               10 //
@@ -397,7 +397,7 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
 
                                          // Level 18: Outside
-                                         15, 10, 4,
+                                         15, 10, 2,
                                          0,   0, 180,   0,   0,   0, 100,   0,   0,   0, 180,   0,   0,   0,   0,  
                                         21,  81,   1,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  21,  81,   1,   0,  
@@ -410,7 +410,7 @@ const uint8_t levels[] PROGMEM  = {
                                          0,   0,   0,   0,   0,   0,   7, 110,   0,   0,   8,   0,   0,   0,   0,  
  
                                          // Level 19: Factory
-                                         12, 12, 3,
+                                         12, 12, 4,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          0, 241,   1,   1,   1,   0,   0,   1,   1,   1,  21,   0,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -425,7 +425,7 @@ const uint8_t levels[] PROGMEM  = {
                                         21,   1, 171,   1,   1, 110,   0,   1,   1,   1,   1,  31,
                                          
                                          // Level 20: Space Pirates
-                                         16, 16, 7,
+                                         16, 16, 5,
                                          3, 100,   0, 120,   0,   0, 120,   0,   0, 120,   0,   0, 120,   0, 100,   4,
                                          3,   0,   0,   0,   0,  21,   0,   0,   0,   0,  31,   0,   0,   0,   0,   4,
                                          3,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   4,
@@ -460,7 +460,7 @@ byte blue;
 // Playfield
 // 0: Nothing
 // 1: Obstacle
-// 2: Enemy
+// 2: Danger
 // 3: Gas station
 // 4-9: Platform
 // 10-: Extra lives
@@ -479,30 +479,27 @@ int upperLeftTileXOffset; // Number of pixels of upper left tile in X-direction 
 int upperLeftTileY;
 int upperLeftTileYOffset; // Number of pixels of upper left tile in Y-direction which are not visible (out of screen)
 
-// Player
-byte lives;                 // Remaining lives
-byte level;                 // Current level
-int fuel;                   // Remaining fuel
+// Taxi
+byte lives;               // Remaining lives
+byte level;               // Current level
+int fuel;                 // Remaining fuel
 boolean refuling;
-int passengers;             // Counts the delivered passengers
-int playerXScreen;          // X position on screen
-int playerYScreen;          // Y position on screen
-int playerXScreenNew;       // New X position after movement
-int playerYScreenNew;       // New Y position after movement
-float playerXMap;           // X position on map
-float playerYMap;           // Y position on map
-float playerXMapNew;        // New X position after movement
-float playerYMapNew;        // New Y position after movement
-float playerYVector;        // Counts down to define the maximal jump height
-boolean taxiParks;
-boolean footstepSound;
-
-byte playerAnimationPhase;  // Animation phase (0 or 1)
+int passengers;           // Counts the delivered passengers
+int taxiXScreen;          // X position on screen
+int taxiYScreen;          // Y position on screen
+int taxiXScreenNew;       // New X position after movement
+int taxiYScreenNew;       // New Y position after movement
+float taxiXMap;           // X position on map
+float taxiYMap;           // Y position on map
+float taxiXMapNew;        // New X position after movement
+float taxiYMapNew;        // New Y position after movement
+boolean taxiParks;        // true if taxi waits on a platform
+boolean footstepSound;    // Sound of embarking/disembarking passenger
 
 #define LEFT  0
 #define RIGHT 1
-boolean playerDirection;    // 0 == looking right, 1 == looking left
-boolean playerDirectionNew; // New direction after movement
+boolean taxiDirection;    // 0 == looking right, 1 == looking left
+boolean taxiDirectionNew; // New direction after movement
 
 float xSpeed;
 float ySpeed;
@@ -521,22 +518,22 @@ boolean taxiExplosion;
 float todesanimationX[5];
 float todesanimationY[5];
 
-// Enemies
-int enemyXScreen[16];    // X position on screen
-int enemyYScreen[16];    // Y position on screen
-int enemyXScreenNew[16]; // New X position after movement
-int enemyYScreenNew[16]; // New Y position after movement
-float enemyXMap[16];     // X position on map
-float enemyYMap[16];     // Y position on map
-byte enemyType[16];      // Enemy type (1 - 16)
-// Some enemies move between two points (X1, Y1) and (X2, Y2). The enemyMovement defines the direction (depends on enemy type).
-byte enemyMovement[16];
-int enemyX1[16];
-int enemyY1[16];
-int enemyX2[16];
-int enemyY2[16];
-byte enemyStatus[16]; // 0 == inactive, 1 == active
-byte enemyCounter;    // Number of enemies in current level (16 is the maximum)
+// Dangers
+int dangerXScreen[16];    // X position on screen
+int dangerYScreen[16];    // Y position on screen
+int dangerXScreenNew[16]; // New X position after movement
+int dangerYScreenNew[16]; // New Y position after movement
+float dangerXMap[16];     // X position on map
+float dangerYMap[16];     // Y position on map
+byte dangerType[16];      // Danger type (1 - 16)
+// Some dangers move between two points (X1, Y1) and (X2, Y2). The dangerMovement defines the direction (depends on danger type).
+byte dangerMovement[16];
+int dangerX1[16];
+int dangerY1[16];
+int dangerX2[16];
+int dangerY2[16];
+byte dangerStatus[16]; // 0 == inactive, 1 == active
+byte dangerCounter;    // Number of dangers in current level (16 is the maximum)
 
 // Platforms
 #define RED       1
@@ -553,7 +550,7 @@ float platformXMap[6];                 // X position on map
 float platformYMap[6];                 // Y position on map
 byte platformColor[6];                 // RED, GREEN, BLUE, YELLOW, VIOLOET, TURQUOISE
 byte platformBordingStatus[6];         // 0 == inactive, 1 == empty, 2 == passenger is waiting, 3 == start bording, 4-6 == bording animation
-byte platformDisembarkingStatus[6];       // 0 == inactive, 1 == empty, 2 == passenger is waiting
+byte platformDisembarkingStatus[6];    // 0 == inactive, 1 == empty, 2 == passenger is waiting
 byte platformCounter;                  // Number of platforms in current level (6 is the maximum)
 byte numberOfWaitingPassengers;
 byte remainingPassengersToFinishLevel; // Jump to next level if 0
@@ -625,23 +622,27 @@ void ledMePlay();
 void title();
 void setupGame();
 void setupLevel();
+void drawMiniMap();
 void updateLevelColors();
 void drawScreen();
 void drawTile(byte _type, int _x, int _y);
 void clearTile(byte _type, int _x, int _y);
-void drawEnemies(byte i);
-void moveEnemies();
-void initializeEnemyMovement();
+void drawDangers(byte i);
+void moveDangers();
+void initializeDangerMovement();
 void drawExtraLives();
-void drawPlayer();
+void drawPlatforms();
+void drawGasStations();
+void drawTaxi();
 boolean directionLeftFree();
 boolean directionRightFree();
 boolean directionUpFree();
 boolean directionDownFree();
-void movePlayer();
+void drawThrusters();
+void moveTaxi();
 byte collisionDetection();
 boolean checkForLosingLive();
-void checkForExtraLives();
+void checkForFuelPlatformsExtraLives();
 void showStatus();
 void taxiExplodes();
 void endSequence();
@@ -919,13 +920,13 @@ void ledMePlay()
   matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
 }
 
-// Ceres Cab Corp title screen
+// title: Ceres Cab Corp title screen
 void title()
 {
   // Clear screen
   matrix.fillScreen(matrix.Color333(0, 0, 0));
 
-  // Write 'Keen Kenny'
+  // Write 'Ceres Cab Corp.'
   matrix.setTextColor(matrix.Color333(4,2,0));
   matrix.setCursor(1, 0);
   matrix.println("Ceres");
@@ -979,7 +980,7 @@ void title()
   matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
 }
 
-// Setup a new game
+// setupGame: Setup a new game and initialize all variables
 void setupGame()
 {
   lives = initialNumberOfLives;
@@ -988,7 +989,7 @@ void setupGame()
   initializeNewLevel = true;
 }
 
-// Setup a new level
+// setupLevel: Setup a new level and initialize all variables
 void setupLevel()
 {
   // If a live has been lost, the level is not initialized with extra lives (only on level start).
@@ -1035,26 +1036,26 @@ void setupLevel()
   }
   gasStationCounter = 0;
     
-  // Reset enemies
+  // Reset dangers
   for(i = 0; i < 16; i++)
   {
-    enemyXScreen[i] = 0;
-    enemyYScreen[i] = 0;
-    enemyXScreenNew[i] = 0;
-    enemyYScreenNew[i] = 0;
-    enemyXMap[i] = 0;
-    enemyYMap[i] = 0;
-    enemyType[i] = 0;
-    enemyMovement[i] = 0;
-    enemyX1[i] = 0;
-    enemyY1[i] = 0;
-    enemyX2[i] = 0;
-    enemyY2[i] = 0;
-    enemyStatus[i] = 0;
+    dangerXScreen[i] = 0;
+    dangerYScreen[i] = 0;
+    dangerXScreenNew[i] = 0;
+    dangerYScreenNew[i] = 0;
+    dangerXMap[i] = 0;
+    dangerYMap[i] = 0;
+    dangerType[i] = 0;
+    dangerMovement[i] = 0;
+    dangerX1[i] = 0;
+    dangerY1[i] = 0;
+    dangerX2[i] = 0;
+    dangerY2[i] = 0;
+    dangerStatus[i] = 0;
   }
-  enemyCounter = 0;
+  dangerCounter = 0;
   
-  // Copy level map and enemies from progmem
+  // Copy level map and dangers from progmem
   k = 0;
   for(i = 0; i < level; i++)
   {
@@ -1076,44 +1077,44 @@ void setupLevel()
   {
     j = byte(pgm_read_byte_near(levels + 3 + i + k));
     levelMap[i] = j % 10; // Returns tile type
-    j = j / 10; // Returns start position, extra life, platform or enemy
+    j = j / 10; // Returns start position, extra life, platform or danger
     
-    // Set starting position of player
+    // Set starting position of taxi
     if(j == 24)
     {
-      playerXMap = ((i % tileNumberX) * 8) + 3;
-      playerYMap = ((i / tileNumberX) * 8) + 2;
-      playerXScreen = 14;
-      playerYScreen = 15;
+      taxiXMap = ((i % tileNumberX) * 8) + 3;
+      taxiYMap = ((i / tileNumberX) * 8) + 2;
+      taxiXScreen = 14;
+      taxiYScreen = 15;
 
-      if(playerXMap > 14)
+      if(taxiXMap > 14)
       {
-        screenX = playerXMap - 15;
+        screenX = taxiXMap - 15;
         if(screenX > mapWidth - 32)
         {
           screenX = mapWidth - 32;
-          playerXScreen = 32 - (mapWidth - playerXMap);
+          taxiXScreen = 32 - (mapWidth - taxiXMap);
         }
       }
       else
       {
         screenX = 0;
-        playerXScreen = playerXMap;
+        taxiXScreen = taxiXMap;
       }
       
-      if(playerYMap > 13)
+      if(taxiYMap > 13)
       {
-        screenY = playerYMap - 14;
+        screenY = taxiYMap - 14;
         if(screenY > mapHeight - 32)
         {
           screenY = mapHeight - 32;
-          playerYScreen = 32 - (mapHeight - playerYMap);
+          taxiYScreen = 32 - (mapHeight - taxiYMap);
         }
       }
       else
       {
         screenY = 0;
-        playerYScreen = playerYMap;
+        taxiYScreen = taxiYMap;
       }
     }
         
@@ -1141,7 +1142,7 @@ void setupLevel()
     }
 
     // Set gas station
-    if(j == 3 || j == 24) // Player always starts at a gas station platform
+    if(j == 3 || j == 24) // Taxi always starts at a gas station platform
     {
       gasStationXMap[gasStationCounter] = ((i % tileNumberX) * 8) + 1;
       gasStationYMap[gasStationCounter] = ((i / tileNumberX) * 8) + 5;
@@ -1152,184 +1153,184 @@ void setupLevel()
       }
     }
 
-    // Set enemy: Other taxi flying left
+    // Set danger: Other taxi flying left
     if(j == 4)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 2;
-      enemyType[enemyCounter] = 2;
-      enemyMovement[enemyCounter] = 1;
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8) + 2;
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8) + 2;
+      dangerType[dangerCounter] = 2;
+      dangerMovement[dangerCounter] = 1;
+      dangerStatus[dangerCounter] = 1;
     }
 
-    // Set enemy: Other taxi flying right
+    // Set danger: Other taxi flying right
     if(j == 5)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 2;
-      enemyType[enemyCounter] = 3;
-      enemyMovement[enemyCounter] = 1;
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8) + 2;
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8) + 2;
+      dangerType[dangerCounter] = 3;
+      dangerMovement[dangerCounter] = 1;
+      dangerStatus[dangerCounter] = 1;
     }
 
-    // Set enemy: Container
+    // Set danger: Container
     if(j == 6)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 2;
-      enemyType[enemyCounter] = 4;
-      enemyMovement[enemyCounter] = 1;
-      enemyX1[enemyCounter] = i % tileNumberX;
-      enemyY1[enemyCounter] = i / tileNumberX;
-      enemyX2[enemyCounter] = i % tileNumberX;
-      enemyY2[enemyCounter] = i / tileNumberX;
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8) + 2;
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8) + 2;
+      dangerType[dangerCounter] = 4;
+      dangerMovement[dangerCounter] = 1;
+      dangerX1[dangerCounter] = i % tileNumberX;
+      dangerY1[dangerCounter] = i / tileNumberX;
+      dangerX2[dangerCounter] = i % tileNumberX;
+      dangerY2[dangerCounter] = i / tileNumberX;
+      dangerStatus[dangerCounter] = 1;
     }
     
-    // Set enemy: Mech
+    // Set danger: Mech
     if(j == 7)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 1;
-      enemyType[enemyCounter] = 5;
-      enemyMovement[enemyCounter] = 1;
-      enemyX1[enemyCounter] = i % tileNumberX;
-      enemyY1[enemyCounter] = i / tileNumberX;
-      enemyX2[enemyCounter] = i % tileNumberX;
-      enemyY2[enemyCounter] = i / tileNumberX;
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8) + 2;
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8) + 1;
+      dangerType[dangerCounter] = 5;
+      dangerMovement[dangerCounter] = 1;
+      dangerX1[dangerCounter] = i % tileNumberX;
+      dangerY1[dangerCounter] = i / tileNumberX;
+      dangerX2[dangerCounter] = i % tileNumberX;
+      dangerY2[dangerCounter] = i / tileNumberX;
+      dangerStatus[dangerCounter] = 1;
     }
 
-    // Set enemy: Fire
+    // Set danger: Fire
     if(j == 8)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 1;
-      enemyType[enemyCounter] = 6;
-      enemyMovement[enemyCounter] = 1;
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8) + 2;
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8) + 1;
+      dangerType[dangerCounter] = 6;
+      dangerMovement[dangerCounter] = 1;
+      dangerStatus[dangerCounter] = 1;
     }
 
-    // Set enemy: Gripper
+    // Set danger: Gripper
     if(j == 9)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 3;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8);
-      enemyType[enemyCounter] = 7;
-      enemyMovement[enemyCounter] = 1;
-      enemyX1[enemyCounter] = i % tileNumberX;
-      enemyY1[enemyCounter] = i / tileNumberX;
-      enemyX2[enemyCounter] = i % tileNumberX;
-      enemyY2[enemyCounter] = i / tileNumberX;
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8) + 3;
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8);
+      dangerType[dangerCounter] = 7;
+      dangerMovement[dangerCounter] = 1;
+      dangerX1[dangerCounter] = i % tileNumberX;
+      dangerY1[dangerCounter] = i / tileNumberX;
+      dangerX2[dangerCounter] = i % tileNumberX;
+      dangerY2[dangerCounter] = i / tileNumberX;
+      dangerStatus[dangerCounter] = 1;
     }
 
-    // Set enemy: Pirate
+    // Set danger: Pirate
     if(j == 10)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 1;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 2;
-      enemyType[enemyCounter] = 8;
-      enemyMovement[enemyCounter] = 1;
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8) + 1;
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8) + 2;
+      dangerType[dangerCounter] = 8;
+      dangerMovement[dangerCounter] = 1;
+      dangerStatus[dangerCounter] = 1;
     }
 
-    // Set enemy: Missile
+    // Set danger: Missile
     if(j == 11)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 3;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 3;
-      enemyType[enemyCounter] = 9;
-      enemyMovement[enemyCounter] = 1;
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8) + 3;
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8) + 3;
+      dangerType[dangerCounter] = 9;
+      dangerMovement[dangerCounter] = 1;
+      dangerStatus[dangerCounter] = 1;
     }
 
-    // Set enemy: Drone
+    // Set danger: Drone
     if(j == 12)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 2;
-      enemyType[enemyCounter] = 10;
-      enemyMovement[enemyCounter] = 1;
-      enemyX1[enemyCounter] = i % tileNumberX;
-      enemyY1[enemyCounter] = i / tileNumberX;
-      enemyX2[enemyCounter] = i % tileNumberX;
-      enemyY2[enemyCounter] = i / tileNumberX;
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8) + 2;
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8) + 2;
+      dangerType[dangerCounter] = 10;
+      dangerMovement[dangerCounter] = 1;
+      dangerX1[dangerCounter] = i % tileNumberX;
+      dangerY1[dangerCounter] = i / tileNumberX;
+      dangerX2[dangerCounter] = i % tileNumberX;
+      dangerY2[dangerCounter] = i / tileNumberX;
+      dangerStatus[dangerCounter] = 1;
     }
     
-    // Set enemy: Plasma floor
+    // Set danger: Plasma floor
     if(j == 13)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8);
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 7;
-      enemyType[enemyCounter] = 11;
-      enemyMovement[enemyCounter] = 1;
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8);
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8) + 7;
+      dangerType[dangerCounter] = 11;
+      dangerMovement[dangerCounter] = 1;
+      dangerStatus[dangerCounter] = 1;
     }
             
-    // Set enemy: Sports glider flying left
+    // Set danger: Sports glider flying left
     if(j == 14)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 2;
-      enemyType[enemyCounter] = 12;
-      enemyMovement[enemyCounter] = 1;
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8) + 2;
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8) + 2;
+      dangerType[dangerCounter] = 12;
+      dangerMovement[dangerCounter] = 1;
+      dangerStatus[dangerCounter] = 1;
     }
 
-    // Set enemy: Sports glider flying right
+    // Set danger: Sports glider flying right
     if(j == 15)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 2;
-      enemyType[enemyCounter] = 13;
-      enemyMovement[enemyCounter] = 1;
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8) + 2;
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8) + 2;
+      dangerType[dangerCounter] = 13;
+      dangerMovement[dangerCounter] = 1;
+      dangerStatus[dangerCounter] = 1;
     }
 
-    // Set enemy: Plasma ufo
+    // Set danger: Plasma ufo
     if(j == 16)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8);
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8);
-      enemyType[enemyCounter] = 14;
-      enemyMovement[enemyCounter] = 1;
-      enemyX1[enemyCounter] = i % tileNumberX;
-      enemyY1[enemyCounter] = i / tileNumberX;
-      enemyX2[enemyCounter] = i % tileNumberX;
-      enemyY2[enemyCounter] = i / tileNumberX;
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8);
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8);
+      dangerType[dangerCounter] = 14;
+      dangerMovement[dangerCounter] = 1;
+      dangerX1[dangerCounter] = i % tileNumberX;
+      dangerY1[dangerCounter] = i / tileNumberX;
+      dangerX2[dangerCounter] = i % tileNumberX;
+      dangerY2[dangerCounter] = i / tileNumberX;
+      dangerStatus[dangerCounter] = 1;
     }
     
-    // Set enemy: Railcar with steel
+    // Set danger: Railcar with steel
     if(j == 17)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 2;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8) + 1;
-      enemyType[enemyCounter] = 15;
-      enemyMovement[enemyCounter] = 1;
-      enemyX1[enemyCounter] = i % tileNumberX;
-      enemyY1[enemyCounter] = i / tileNumberX;
-      enemyX2[enemyCounter] = i % tileNumberX;
-      enemyY2[enemyCounter] = i / tileNumberX;
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8) + 2;
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8) + 1;
+      dangerType[dangerCounter] = 15;
+      dangerMovement[dangerCounter] = 1;
+      dangerX1[dangerCounter] = i % tileNumberX;
+      dangerY1[dangerCounter] = i / tileNumberX;
+      dangerX2[dangerCounter] = i % tileNumberX;
+      dangerY2[dangerCounter] = i / tileNumberX;
+      dangerStatus[dangerCounter] = 1;
     }
 
-    // Set enemy: Meteor
+    // Set danger: Meteor
     if(j == 18)
     {
-      enemyXMap[enemyCounter] = ((i % tileNumberX) * 8) + 3;
-      enemyYMap[enemyCounter] = ((i / tileNumberX) * 8);
-      enemyType[enemyCounter] = 16;
-      enemyMovement[enemyCounter] = random(21);
-      enemyX1[enemyCounter] = ((i % tileNumberX) * 8) + 3; // Special usage of enemyX1: Meteor always starts at the same x position
-      enemyStatus[enemyCounter] = 1;
+      dangerXMap[dangerCounter] = ((i % tileNumberX) * 8) + 3;
+      dangerYMap[dangerCounter] = ((i / tileNumberX) * 8);
+      dangerType[dangerCounter] = 16;
+      dangerMovement[dangerCounter] = random(21);
+      dangerX1[dangerCounter] = ((i % tileNumberX) * 8) + 3; // Special usage of dangerX1: Meteor always starts at the same x position
+      dangerStatus[dangerCounter] = 1;
     }
 
-    if(j > 2 && enemyCounter < 15)
+    if(j > 2 && dangerCounter < 15)
     {
-      enemyCounter++;
+      dangerCounter++;
     }
   }
 
@@ -1351,8 +1352,8 @@ void setupLevel()
     }
   }
 
-  // Initialize enemy movement
-  initializeEnemyMovement();  
+  // Initialize danger movement
+  initializeDangerMovement();  
 
   // Clear screen
   matrix.fillScreen(matrix.Color333(0,0,0));
@@ -1368,13 +1369,12 @@ void setupLevel()
 
   fuel = fuelMax;
   refuling = false;
-  playerXMapNew = playerXMap;
-  playerYMapNew = playerYMap;
-  playerXScreenNew = playerXScreen;
-  playerYScreenNew = playerYScreen;
-  playerYVector = 0.0;
-  playerDirection = RIGHT;
-  playerDirectionNew = RIGHT;
+  taxiXMapNew = taxiXMap;
+  taxiYMapNew = taxiYMap;
+  taxiXScreenNew = taxiXScreen;
+  taxiYScreenNew = taxiYScreen;
+  taxiDirection = RIGHT;
+  taxiDirectionNew = RIGHT;
   taxiParks = false;
   footstepSound = true;
   xSpeed = 0.0;
@@ -1403,6 +1403,7 @@ void setupLevel()
   audioOffUntil = 0;
 }
 
+// drawMiniMap: Shows a small map of the current level for better orientation.
 void drawMiniMap()
 {
   matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
@@ -1501,13 +1502,13 @@ void drawMiniMap()
   {
     if(counter < 256)
     {
-      matrix.drawPixel((playerXMap / 4) + 0 + xOffset, (playerYMap / 4) + 0 + yOffset, matrix.Color333(7, 7, 7));
-      matrix.drawPixel((playerXMap / 4) + 1 + xOffset, (playerYMap / 4) + 0 + yOffset, matrix.Color333(7, 7, 7));       
+      matrix.drawPixel((taxiXMap / 4) + 0 + xOffset, (taxiYMap / 4) + 0 + yOffset, matrix.Color333(7, 7, 7));
+      matrix.drawPixel((taxiXMap / 4) + 1 + xOffset, (taxiYMap / 4) + 0 + yOffset, matrix.Color333(7, 7, 7));       
     }
     else
     {
-      matrix.drawPixel((playerXMap / 4) + 0 + xOffset, (playerYMap / 4) + 0 + yOffset, matrix.Color333(0, 0, 0));
-      matrix.drawPixel((playerXMap / 4) + 1 + xOffset, (playerYMap / 4) + 0 + yOffset, matrix.Color333(0, 0, 0));       
+      matrix.drawPixel((taxiXMap / 4) + 0 + xOffset, (taxiYMap / 4) + 0 + yOffset, matrix.Color333(0, 0, 0));
+      matrix.drawPixel((taxiXMap / 4) + 1 + xOffset, (taxiYMap / 4) + 0 + yOffset, matrix.Color333(0, 0, 0));       
     }
     for(byte i = 0; i < gasStationCounter; i++)
     {
@@ -1532,6 +1533,7 @@ void drawMiniMap()
   matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
 }
 
+// updateLevelColors: Defines values for R, G, and B to draw the map elements
 // Set RGB-values depending on level color
 // 0 == Invisible
 // 1 == Blue
@@ -1595,7 +1597,7 @@ void updateLevelColors()
   }
 }
 
-// Draw the screen according to the current x and y position
+// drawScreen: Draw the screen according to the current x and y position
 void drawScreen()
 {
   if(redraw)
@@ -1632,7 +1634,7 @@ void drawScreen()
   redraw = false;
 }
 
-// Draws a tile (8*8) at position x, y
+// drawTile: Draws a tile (8*8 pixels) at position x, y
 //
 //   type 0     type 1     type 2     type 3     type 4     type 5     type 6     type 7     type 8
 //   --------   --------   --------   O-------   -------O   O-------   -------O   O-------   -------O
@@ -1831,7 +1833,7 @@ void drawTile(byte _type, int _x, int _y)
   }
 }
 
-// Clear a tile (8*8) at position x, y
+// clearTile: Clear a tile (8*8 pixels) at position x, y
 void clearTile(byte _type, int _x, int _y)
 {
   if(_type == 0)
@@ -2019,18 +2021,18 @@ void clearTile(byte _type, int _x, int _y)
   }
 }
 
-// Draw enemy i
-void drawEnemies(byte i)
+// drawDanger: Draw danger i (from the list of all dangers)
+void drawDangers(byte i)
 {
-  x1 = enemyXScreen[i];
-  y1 = enemyYScreen[i];
-  x2 = enemyXScreenNew[i];
-  y2 = enemyYScreenNew[i];
+  x1 = dangerXScreen[i];
+  y1 = dangerYScreen[i];
+  x2 = dangerXScreenNew[i];
+  y2 = dangerYScreenNew[i];
 
   // Other taxi flying left
-  if(enemyType[i] == 2)
+  if(dangerType[i] == 2)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
       matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
@@ -2056,7 +2058,7 @@ void drawEnemies(byte i)
       playfield[x1 + 11][y1 + 10] = 0;
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
       matrix.drawPixel(x2 + 2, y2, matrix.Color333(0, 1, 0));
@@ -2087,9 +2089,9 @@ void drawEnemies(byte i)
   }
 
   // Other taxi flying right
-  if(enemyType[i] == 3)
+  if(dangerType[i] == 3)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
       matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
@@ -2115,7 +2117,7 @@ void drawEnemies(byte i)
       playfield[x1 + 12][y1 + 10] = 0;
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
       matrix.drawPixel(x2 + 1, y2, matrix.Color333(0, 3, 0));
@@ -2146,9 +2148,9 @@ void drawEnemies(byte i)
   }
 
   // Container
-  if(enemyType[i] == 4)
+  if(dangerType[i] == 4)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
       matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
@@ -2173,7 +2175,7 @@ void drawEnemies(byte i)
       playfield[x1 + 10][y1 + 10] = 0;
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
       matrix.drawPixel(x2, y2, matrix.Color333(4, 4, 1));
@@ -2184,7 +2186,7 @@ void drawEnemies(byte i)
       matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(4, 4, 1));
       matrix.drawPixel(x2 + 2, y2 + 1, matrix.Color333(2, 2, 1));
       matrix.drawPixel(x2 + 3, y2 + 1, matrix.Color333(2, 2, 1));
-      if(enemyMovement[i] == 0 && animationCounter % 4 == 0)
+      if(dangerMovement[i] == 0 && animationCounter % 4 == 0)
       {
         matrix.drawPixel(x2 + 1, y2 + 2, matrix.Color333(random(3) + 2, random(3) + 2, 2));
         matrix.drawPixel(x2 + 2, y2 + 2, matrix.Color333(random(3) + 2, random(3) + 2, 2));
@@ -2203,13 +2205,13 @@ void drawEnemies(byte i)
   }
   
   // Mech
-  if(enemyType[i] == 5)
+  if(dangerType[i] == 5)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {  
       // Moving left
-      if(enemyMovement[i] == 0)
+      if(dangerMovement[i] == 0)
       {
         matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
         matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
@@ -2265,10 +2267,10 @@ void drawEnemies(byte i)
       }
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
-      if(enemyMovement[i] == 0)
+      if(dangerMovement[i] == 0)
       {
         matrix.drawPixel(x2 + 2, y2, matrix.Color333(0, 0, 3));
         matrix.drawPixel(x2, y2 + 1, matrix.Color333(3, 0, 0));
@@ -2338,9 +2340,9 @@ void drawEnemies(byte i)
   }
 
   // Fire
-  if(enemyType[i] == 6)
+  if(dangerType[i] == 6)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
       if(animationCounter > 128 || animationCounter == 0)
@@ -2381,7 +2383,7 @@ void drawEnemies(byte i)
       playfield[x1 + 10][y1 + 13] = 0;
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     { 
       if(animationCounter > 127)
@@ -2411,14 +2413,14 @@ void drawEnemies(byte i)
   }
 
   // Gripper  
-  if(enemyType[i] == 7)
+  if(dangerType[i] == 7)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
-      if(enemyMovement[i] > 2 && enemyMovement[i] < 14){ matrix.drawPixel(x1 + 1, y1 - 1, matrix.Color333(0, 0, 0)); playfield[x1 + 9][y1 + 7] = 0; }
-      if(enemyMovement[i] > 4 && enemyMovement[i] < 12){ matrix.drawPixel(x1 + 1, y1 - 2, matrix.Color333(0, 0, 0)); playfield[x1 + 9][y1 + 6] = 0; }
-      if(enemyMovement[i] > 6 && enemyMovement[i] < 10){ matrix.drawPixel(x1 + 1, y1 - 3, matrix.Color333(0, 0, 0)); playfield[x1 + 9][y1 + 5] = 0; }
+      if(dangerMovement[i] > 2 && dangerMovement[i] < 14){ matrix.drawPixel(x1 + 1, y1 - 1, matrix.Color333(0, 0, 0)); playfield[x1 + 9][y1 + 7] = 0; }
+      if(dangerMovement[i] > 4 && dangerMovement[i] < 12){ matrix.drawPixel(x1 + 1, y1 - 2, matrix.Color333(0, 0, 0)); playfield[x1 + 9][y1 + 6] = 0; }
+      if(dangerMovement[i] > 6 && dangerMovement[i] < 10){ matrix.drawPixel(x1 + 1, y1 - 3, matrix.Color333(0, 0, 0)); playfield[x1 + 9][y1 + 5] = 0; }
       
       matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
       matrix.drawPixel(x1 + 1, y1 + 1, matrix.Color333(0, 0, 0));
@@ -2434,12 +2436,12 @@ void drawEnemies(byte i)
       playfield[x1 + 10][y1 + 11] = 0;
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
-      if(enemyMovement[i] > 2 && enemyMovement[i] < 12){ matrix.drawPixel(x2 + 1, y2 - 1, matrix.Color333(1, 1, 1)); playfield[x2 + 9][y2 + 7] = 2; }
-      if(enemyMovement[i] > 4 && enemyMovement[i] < 10){ matrix.drawPixel(x2 + 1, y2 - 2, matrix.Color333(1, 1, 1)); playfield[x2 + 9][y2 + 6] = 2; }
-      if(enemyMovement[i] > 6 && enemyMovement[i] < 8){ matrix.drawPixel(x2 + 1, y2 - 3, matrix.Color333(1, 1, 1)); playfield[x2 + 9][y2 + 5] = 2; }
+      if(dangerMovement[i] > 2 && dangerMovement[i] < 12){ matrix.drawPixel(x2 + 1, y2 - 1, matrix.Color333(1, 1, 1)); playfield[x2 + 9][y2 + 7] = 2; }
+      if(dangerMovement[i] > 4 && dangerMovement[i] < 10){ matrix.drawPixel(x2 + 1, y2 - 2, matrix.Color333(1, 1, 1)); playfield[x2 + 9][y2 + 6] = 2; }
+      if(dangerMovement[i] > 6 && dangerMovement[i] < 8){ matrix.drawPixel(x2 + 1, y2 - 3, matrix.Color333(1, 1, 1)); playfield[x2 + 9][y2 + 5] = 2; }
    
       matrix.drawPixel(x2 + 1, y2, matrix.Color333(1, 1, 1));
       matrix.drawPixel(x2 + 1, y2 + 1, matrix.Color333(1, 1, 1));
@@ -2457,9 +2459,9 @@ void drawEnemies(byte i)
   }
 
   // Pirate
-  if(enemyType[i] == 8)
+  if(dangerType[i] == 8)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
       matrix.drawPixel(x1 + 2, y1, matrix.Color333(0, 0, 0));
@@ -2484,7 +2486,7 @@ void drawEnemies(byte i)
       playfield[x1 + 13][y1 + 10] = 0;
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
       matrix.drawPixel(x2 + 2, y2, matrix.Color333(0, 3, 3));
@@ -2514,9 +2516,9 @@ void drawEnemies(byte i)
   }
 
   // Missile
-  if(enemyType[i] == 9)
+  if(dangerType[i] == 9)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
       matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
@@ -2541,7 +2543,7 @@ void drawEnemies(byte i)
       playfield[x1 + 9][y1 + 12] = 0;
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
       matrix.drawPixel(x2, y2, matrix.Color333(1, 0, 0));
@@ -2576,9 +2578,9 @@ void drawEnemies(byte i)
   }
 
   // Drone
-  if(enemyType[i] == 10)
+  if(dangerType[i] == 10)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
       matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
@@ -2599,7 +2601,7 @@ void drawEnemies(byte i)
       playfield[x1 + 11][y1 + 11] = 0;
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
       matrix.drawPixel(x2, y2, matrix.Color333(0, 0, 3));
@@ -2622,9 +2624,9 @@ void drawEnemies(byte i)
   }
 
   // Plasma floor
-  if(enemyType[i] == 11)
+  if(dangerType[i] == 11)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -8 && x1 < 32 && y1 > -8 && y1 < 32)
     {   
       if(animationCounter < 65 || (animationCounter > 128 && animationCounter < 193))
@@ -2660,7 +2662,7 @@ void drawEnemies(byte i)
       }
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -8 && x2 < 32 && y2 > -8 && y2 < 32)
     {
       if(animationCounter < 64 || (animationCounter > 127 && animationCounter < 192))
@@ -2706,9 +2708,9 @@ void drawEnemies(byte i)
   }
 
   // Sports glider flying left
-  if(enemyType[i] == 12)
+  if(dangerType[i] == 12)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
       matrix.drawPixel(x1 + 3, y1, matrix.Color333(0, 0, 0));
@@ -2729,7 +2731,7 @@ void drawEnemies(byte i)
       playfield[x1 + 10][y1 + 10] = 0;
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
       matrix.drawPixel(x2 + 3, y2, matrix.Color333(3, 0, 0));
@@ -2752,9 +2754,9 @@ void drawEnemies(byte i)
   }
 
   // Sports glider flying right
-  if(enemyType[i] == 13)
+  if(dangerType[i] == 13)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
       matrix.drawPixel(x1 + 1, y1, matrix.Color333(0, 0, 0));
@@ -2775,7 +2777,7 @@ void drawEnemies(byte i)
       playfield[x1 + 12][y1 + 10] = 0;
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
       matrix.drawPixel(x2 + 1, y2, matrix.Color333(3, 0, 0));
@@ -2798,9 +2800,9 @@ void drawEnemies(byte i)
   }  
   
   // Plasma ufo
-  if(enemyType[i] == 14)
+  if(dangerType[i] == 14)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -8 && x1 < 32 && y1 > -8 && y1 < 32)
     {   
       if(animationCounter < 65 || (animationCounter > 128 && animationCounter < 193))
@@ -2848,7 +2850,7 @@ void drawEnemies(byte i)
       playfield[x1 + 10][y1 + 12] = 0;
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -8 && x2 < 32 && y2 > -8 && y2 < 32)
     {
       if(animationCounter < 64 || (animationCounter > 127 && animationCounter < 192))
@@ -2915,9 +2917,9 @@ void drawEnemies(byte i)
   }
   
   // Railcar with steel
-  if(enemyType[i] == 15)
+  if(dangerType[i] == 15)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
       if(animationCounter < 129)
@@ -2957,7 +2959,7 @@ void drawEnemies(byte i)
       playfield[x1 + 11][y1 + 13] = 0;
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     { 
       if(animationCounter < 128)
@@ -3001,9 +3003,9 @@ void drawEnemies(byte i)
   }
   
   // Meteor
-  if(enemyType[i] == 16)
+  if(dangerType[i] == 16)
   {
-    // Remove enemy at old position
+    // Remove danger at old position
     if(x1 > -5 && x1 < 32 && y1 > -5 && y1 < 32)
     {   
       matrix.drawPixel(x1, y1, matrix.Color333(0, 0, 0));
@@ -3016,7 +3018,7 @@ void drawEnemies(byte i)
       playfield[x1 + 9][y1 + 9] = 0;
     }
 
-    // Draw enemy at new position
+    // Draw danger at new position
     if(x2 > -5 && x2 < 32 && y2 > -5 && y2 < 32)
     {
       if(animationCounter % 4 == 3)
@@ -3036,575 +3038,575 @@ void drawEnemies(byte i)
     }
   }
   
-  enemyXScreen[i] = x2;
-  enemyYScreen[i] = y2;
+  dangerXScreen[i] = x2;
+  dangerYScreen[i] = y2;
 }
 
-// Move all active enemies
-void moveEnemies()
+// moveDangers: Move all active dangers
+void moveDangers()
 {
   for(i = 0; i < 16; i++)
   {
-    if(enemyStatus[i] > 0)
+    if(dangerStatus[i] > 0)
     {
       // Other taxi flying left
-      if(enemyType[i] == 2)
+      if(dangerType[i] == 2)
       { 
-        if(enemyXMap[i] > -4)
+        if(dangerXMap[i] > -4)
         {
-          enemyXMap[i] = enemyXMap[i] - 0.25;
+          dangerXMap[i] = dangerXMap[i] - 0.25;
         }
         else
         {
-          enemyXMap[i] = mapWidth - 1;
+          dangerXMap[i] = mapWidth - 1;
         }      
       }
 
       // Other taxi flying right
-      if(enemyType[i] == 3)
+      if(dangerType[i] == 3)
       { 
-        if(enemyXMap[i] < mapWidth)
+        if(dangerXMap[i] < mapWidth)
         {
-          enemyXMap[i] = enemyXMap[i] + 0.25;
+          dangerXMap[i] = dangerXMap[i] + 0.25;
         }
         else
         {
-          enemyXMap[i] = -3;
+          dangerXMap[i] = -3;
         }      
       }
       
       // Container
-      if(enemyType[i] == 4)
+      if(dangerType[i] == 4)
       { 
         // Moving up
-        if(enemyMovement[i] == 0)
+        if(dangerMovement[i] == 0)
         {
-          if(enemyYMap[i] > enemyY1[i])
+          if(dangerYMap[i] > dangerY1[i])
           {
-            enemyYMap[i] = enemyYMap[i] - 0.15;
+            dangerYMap[i] = dangerYMap[i] - 0.15;
           }
           else
           {
-            enemyMovement[i] = 1;
+            dangerMovement[i] = 1;
           }
         }
         // Moving down
         else
         {
-          if(enemyYMap[i] < enemyY2[i])
+          if(dangerYMap[i] < dangerY2[i])
           {
-            enemyYMap[i] = enemyYMap[i] + 0.45;
+            dangerYMap[i] = dangerYMap[i] + 0.45;
           }
           else
           {
-            enemyMovement[i] = 0;
+            dangerMovement[i] = 0;
           }
         }  
       }    
 
       // Mech
-      if(enemyType[i] == 5)
+      if(dangerType[i] == 5)
       { 
         // Moving left
-        if(enemyMovement[i] == 0)
+        if(dangerMovement[i] == 0)
         {
-          if(enemyXMap[i] > enemyX1[i])
+          if(dangerXMap[i] > dangerX1[i])
           {
-            enemyXMap[i] = enemyXMap[i] - 0.2;
+            dangerXMap[i] = dangerXMap[i] - 0.2;
           }
           else
           {
-            enemyMovement[i] = 1;
+            dangerMovement[i] = 1;
           }
         }
         else
         {
-          if(enemyXMap[i] < enemyX2[i])
+          if(dangerXMap[i] < dangerX2[i])
           {
-            enemyXMap[i] = enemyXMap[i] + 0.2;
+            dangerXMap[i] = dangerXMap[i] + 0.2;
           }
           else
           {
-            enemyMovement[i] = 0;
+            dangerMovement[i] = 0;
           }
         }      
       }
 
       // Fire
-      if(enemyType[i] == 6)
+      if(dangerType[i] == 6)
       {
         // Do nothing
       } 
 
       // Gripper
-      if(enemyType[i] == 7 && animationCounter % 2 == 0) // Reduce speed by factor 2
+      if(dangerType[i] == 7 && animationCounter % 2 == 0) // Reduce speed by factor 2
       {
         // Gripper is raised
-        if(enemyMovement[i] > 7)
+        if(dangerMovement[i] > 7)
         {
-          enemyYMap[i]--;
-          enemyMovement[i] = enemyMovement[i] + 2;
+          dangerYMap[i]--;
+          dangerMovement[i] = dangerMovement[i] + 2;
         }
         // Gripper lowers down
-        if(enemyMovement[i] > 1 && enemyMovement[i] < 8)
+        if(dangerMovement[i] > 1 && dangerMovement[i] < 8)
         {
-          enemyYMap[i]++;
-          enemyMovement[i] = enemyMovement[i] + 2;
+          dangerYMap[i]++;
+          dangerMovement[i] = dangerMovement[i] + 2;
         }
         // Gripper back in standard position
-        if(enemyMovement[i] > 13)
+        if(dangerMovement[i] > 13)
         {
-          enemyMovement[i] = enemyMovement[i] - 14;
+          dangerMovement[i] = dangerMovement[i] - 14;
         }
         // Moving left
-        if(enemyMovement[i] % 2 == 0)
+        if(dangerMovement[i] % 2 == 0)
         {
-          if(enemyXMap[i] > enemyX1[i])
+          if(dangerXMap[i] > dangerX1[i])
           {
-            enemyXMap[i] = enemyXMap[i] - 0.5;
+            dangerXMap[i] = dangerXMap[i] - 0.5;
           }
           else
           {
-            enemyMovement[i] = enemyMovement[i] + 1;
+            dangerMovement[i] = dangerMovement[i] + 1;
           }
         }
         else
         {
-          if(enemyXMap[i] < enemyX2[i])
+          if(dangerXMap[i] < dangerX2[i])
           {
-            enemyXMap[i] = enemyXMap[i] + 0.5;
+            dangerXMap[i] = dangerXMap[i] + 0.5;
           }
           else
           {
-            enemyMovement[i] = enemyMovement[i] - 1;
+            dangerMovement[i] = dangerMovement[i] - 1;
           }
         }
         // Start to lower gripper
-        if(enemyMovement[i] < 2 && random(100) < 5)
+        if(dangerMovement[i] < 2 && random(100) < 5)
         {
-          enemyMovement[i] = enemyMovement[i] + 2;
+          dangerMovement[i] = dangerMovement[i] + 2;
         }
       } 
 
       // Pirate
-      if(enemyType[i] == 8)
+      if(dangerType[i] == 8)
       {
-        // Move (turns towards player´s ship)
+        // Move (turns towards taxi´s ship)
         // Calculate directional vector of the shot
-        x = (double(playerXMap + 1.0) - (enemyXMap[i] + 2.0));
-        y = (double(playerYMap + 2.0) - (enemyYMap[i] + 1.5));
+        x = (double(taxiXMap + 1.0) - (dangerXMap[i] + 2.0));
+        y = (double(taxiYMap + 2.0) - (dangerYMap[i] + 1.5));
         // Calculate length of directional vector to normalize the shot speed
         z = sqrt(sq(x) + sq(y));
-        enemyXMap[i] = enemyXMap[i] + ((x / z) / 20.0);
-        enemyYMap[i] = enemyYMap[i] + ((y / z) / 20.0);
-        if(enemyXMap[i] < 0)
+        dangerXMap[i] = dangerXMap[i] + ((x / z) / 20.0);
+        dangerYMap[i] = dangerYMap[i] + ((y / z) / 20.0);
+        if(dangerXMap[i] < 0)
         {
-          enemyXMap[i] = 0;
+          dangerXMap[i] = 0;
         }
-        if(enemyXMap[i] > (mapWidth - 4))
+        if(dangerXMap[i] > (mapWidth - 4))
         {
-          enemyXMap[i] = (mapWidth - 4);
+          dangerXMap[i] = (mapWidth - 4);
         }
-        if(enemyYMap[i] < 0)
+        if(dangerYMap[i] < 0)
         {
-          enemyYMap[i] = 0;
+          dangerYMap[i] = 0;
         }
-        if(enemyYMap[i] > (mapHeight - 4))
+        if(dangerYMap[i] > (mapHeight - 4))
         {
-          enemyYMap[i] = (mapHeight - 4);
+          dangerYMap[i] = (mapHeight - 4);
         }
       } 
 
       // Missile
-      if(enemyType[i] == 9)
+      if(dangerType[i] == 9)
       {
-        if(enemyYMap[i] > -5)
+        if(dangerYMap[i] > -5)
         {
-          enemyYMap[i] = enemyYMap[i] - (float(enemyMovement[i]) / 200.0);
-          if(enemyMovement[i] < 255){ enemyMovement[i]++; }
+          dangerYMap[i] = dangerYMap[i] - (float(dangerMovement[i]) / 200.0);
+          if(dangerMovement[i] < 255){ dangerMovement[i]++; }
         }        
         else
         {
-          enemyYMap[i] = mapHeight;
-          enemyMovement[i] = 1;
+          dangerYMap[i] = mapHeight;
+          dangerMovement[i] = 1;
         }      
       } 
 
       // Drone
-      if(enemyType[i] == 10)
+      if(dangerType[i] == 10)
       {
-        if(enemyMovement[i] == 1)
+        if(dangerMovement[i] == 1)
         {
-          if(enemyXMap[i] < (mapWidth - 5) && enemyYMap[i] > 2)
+          if(dangerXMap[i] < (mapWidth - 5) && dangerYMap[i] > 2)
           {
-            enemyXMap[i] = enemyXMap[i] + 0.15;
-            enemyYMap[i] = enemyYMap[i] - 0.15;
+            dangerXMap[i] = dangerXMap[i] + 0.15;
+            dangerYMap[i] = dangerYMap[i] - 0.15;
           }
           else
           {
-            enemyMovement[i] = byte(random(4)) + 1;
+            dangerMovement[i] = byte(random(4)) + 1;
           }
         }
-        else if(enemyMovement[i] == 2)
+        else if(dangerMovement[i] == 2)
         {
-          if(enemyXMap[i] < (mapWidth - 5) && enemyYMap[i] < (mapHeight - 5))
+          if(dangerXMap[i] < (mapWidth - 5) && dangerYMap[i] < (mapHeight - 5))
           {
-            enemyXMap[i] = enemyXMap[i] + 0.15;
-            enemyYMap[i] = enemyYMap[i] + 0.15;
+            dangerXMap[i] = dangerXMap[i] + 0.15;
+            dangerYMap[i] = dangerYMap[i] + 0.15;
           }
           else
           {
-            enemyMovement[i] = byte(random(4)) + 1;
+            dangerMovement[i] = byte(random(4)) + 1;
           }
         }
-        else if(enemyMovement[i] == 3)
+        else if(dangerMovement[i] == 3)
         {
-          if(enemyXMap[i] > 2 && enemyYMap[i] < (mapHeight - 5))
+          if(dangerXMap[i] > 2 && dangerYMap[i] < (mapHeight - 5))
           {
-            enemyXMap[i] = enemyXMap[i] - 0.15;
-            enemyYMap[i] = enemyYMap[i] + 0.15;
+            dangerXMap[i] = dangerXMap[i] - 0.15;
+            dangerYMap[i] = dangerYMap[i] + 0.15;
           }
           else
           {
-            enemyMovement[i] = byte(random(4)) + 1;
+            dangerMovement[i] = byte(random(4)) + 1;
           }
         }
-        else if(enemyMovement[i] == 4)
+        else if(dangerMovement[i] == 4)
         {
-          if(enemyXMap[i] > 2 && enemyYMap[i] > 2)
+          if(dangerXMap[i] > 2 && dangerYMap[i] > 2)
           {
-            enemyXMap[i] = enemyXMap[i] - 0.15;
-            enemyYMap[i] = enemyYMap[i] - 0.15;
+            dangerXMap[i] = dangerXMap[i] - 0.15;
+            dangerYMap[i] = dangerYMap[i] - 0.15;
           }
           else
           {
-            enemyMovement[i] = byte(random(4)) + 1;
+            dangerMovement[i] = byte(random(4)) + 1;
           }
         }      
       } 
 
       // Plasma floor
-      if(enemyType[i] == 11)
+      if(dangerType[i] == 11)
       {
         // Do nothing
       } 
 
       // Sports glider flying left
-      if(enemyType[i] == 12)
+      if(dangerType[i] == 12)
       { 
-        if(enemyXMap[i] > -4)
+        if(dangerXMap[i] > -4)
         {
-          enemyXMap[i] = enemyXMap[i] - 0.4;
+          dangerXMap[i] = dangerXMap[i] - 0.4;
         }
         else
         {
-          enemyXMap[i] = mapWidth - 1;
+          dangerXMap[i] = mapWidth - 1;
         }      
       }
 
       // Sports glider flying right
-      if(enemyType[i] == 13)
+      if(dangerType[i] == 13)
       { 
-        if(enemyXMap[i] < mapWidth)
+        if(dangerXMap[i] < mapWidth)
         {
-          enemyXMap[i] = enemyXMap[i] + 0.4;
+          dangerXMap[i] = dangerXMap[i] + 0.4;
         }
         else
         {
-          enemyXMap[i] = -3;
+          dangerXMap[i] = -3;
         }      
       }
 
       // Plasma ufo
-      if(enemyType[i] == 14)
+      if(dangerType[i] == 14)
       {
         // Moving left
-        if(enemyMovement[i] == 0)
+        if(dangerMovement[i] == 0)
         {
-          if(enemyXMap[i] > enemyX1[i])
+          if(dangerXMap[i] > dangerX1[i])
           {
-            enemyXMap[i] = enemyXMap[i] - 0.25;
+            dangerXMap[i] = dangerXMap[i] - 0.25;
           }
           else
           {
-            enemyMovement[i] = 1;
+            dangerMovement[i] = 1;
           }
         }
         else
         {
-          if(enemyXMap[i] < enemyX2[i])
+          if(dangerXMap[i] < dangerX2[i])
           {
-            enemyXMap[i] = enemyXMap[i] + 0.25;
+            dangerXMap[i] = dangerXMap[i] + 0.25;
           }
           else
           {
-            enemyMovement[i] = 0;
+            dangerMovement[i] = 0;
           }
         }        
       } 
 
       // Railcar with steel
-      if(enemyType[i] == 15)
+      if(dangerType[i] == 15)
       {
         // Moving left
-        if(enemyMovement[i] == 0)
+        if(dangerMovement[i] == 0)
         {
-          if(enemyXMap[i] > enemyX1[i])
+          if(dangerXMap[i] > dangerX1[i])
           {
-            enemyXMap[i] = enemyXMap[i] - 0.15;
+            dangerXMap[i] = dangerXMap[i] - 0.15;
           }
           else
           {
-            enemyMovement[i] = 1;
+            dangerMovement[i] = 1;
           }
         }
         else
         {
-          if(enemyXMap[i] < enemyX2[i])
+          if(dangerXMap[i] < dangerX2[i])
           {
-            enemyXMap[i] = enemyXMap[i] + 0.15;
+            dangerXMap[i] = dangerXMap[i] + 0.15;
           }
           else
           {
-            enemyMovement[i] = 0;
+            dangerMovement[i] = 0;
           }
         }      
       } 
 
       // Meteor
-      if(enemyType[i] == 16)
+      if(dangerType[i] == 16)
       {
-        enemyXMap[i] = enemyXMap[i] - (float(enemyMovement[i]) - 10.0) / 100.0;
-        if(enemyYMap[i] < mapHeight)
+        dangerXMap[i] = dangerXMap[i] - (float(dangerMovement[i]) - 10.0) / 100.0;
+        if(dangerYMap[i] < mapHeight)
         {
-          enemyYMap[i] = enemyYMap[i] + 0.4;
+          dangerYMap[i] = dangerYMap[i] + 0.4;
         }        
         else
         {
-          enemyYMap[i] = -1;
-          enemyXMap[i] = enemyX1[i];
-          enemyMovement[i] = random(21);
+          dangerYMap[i] = -1;
+          dangerXMap[i] = dangerX1[i];
+          dangerMovement[i] = random(21);
         }      
       }
 
-      enemyXScreenNew[i] = enemyXMap[i] - screenXNew;
-      enemyYScreenNew[i] = enemyYMap[i] - screenYNew;
-      drawEnemies(i);
+      dangerXScreenNew[i] = dangerXMap[i] - screenXNew;
+      dangerYScreenNew[i] = dangerYMap[i] - screenYNew;
+      drawDangers(i);
     }
   }  
 }
 
-// Initialize enemy movement (for those enemies moving between two points)
-void initializeEnemyMovement()
+// initializeDangerMovement: Initialize danger movement (for those dangers moving between two points)
+void initializeDangerMovement()
 {
   for(i = 0; i < 16; i++)
   {
-    if(enemyStatus[i] > 0)
+    if(dangerStatus[i] > 0)
     {      
       // Other taxi flying left
-      if(enemyType[i] == 2)
+      if(dangerType[i] == 2)
       {  
         // Nothing to do
       }
       
       // Other taxi flying right
-      if(enemyType[i] == 3)
+      if(dangerType[i] == 3)
       {  
         // Nothing to do
       }
       
       // Container
-      if(enemyType[i] == 4)
+      if(dangerType[i] == 4)
       {
-        j = enemyX1[i];
-        k = enemyY1[i];
+        j = dangerX1[i];
+        k = dangerY1[i];
         while(k > 0 && levelMap[(tileNumberX * k) + j] == 0)
         {
           k--;
         }
         if(k == 0)
         {
-          enemyY1[i] = k * 8;
+          dangerY1[i] = k * 8;
         }
         else
         {
-          enemyY1[i] = (k + 1) * 8;
+          dangerY1[i] = (k + 1) * 8;
         }
-        j = enemyX2[i];
-        k = enemyY2[i];
+        j = dangerX2[i];
+        k = dangerY2[i];
         while(k < tileNumberY && levelMap[(tileNumberX * k) + j] == 0)
         {
           k++;
         }
         if(levelMap[(tileNumberX * k) + j] == 1)
         {
-          enemyY2[i] = (k * 8) + 5;
+          dangerY2[i] = (k * 8) + 5;
         }
         else if(levelMap[(tileNumberX * k) + j] == 2)
         {
-          enemyY2[i] = (k * 8) + 1;
+          dangerY2[i] = (k * 8) + 1;
         }
         else
         {
-          enemyY2[i] = ((k - 1) * 8) + 6;
+          dangerY2[i] = ((k - 1) * 8) + 6;
         }
       }
       
       // Mech
-      if(enemyType[i] == 5)
+      if(dangerType[i] == 5)
       {  
-        j = enemyX1[i];
-        k = enemyY1[i];
+        j = dangerX1[i];
+        k = dangerY1[i];
         while(j > 0 && levelMap[(tileNumberX * k) + j] == 1)
         {
           j--;
         }
         if(j == 0 && levelMap[(tileNumberX * k) + j] == 1)
         {
-          enemyX1[i] = (j * 8) + 1;
+          dangerX1[i] = (j * 8) + 1;
         }
         else
         {
-          enemyX1[i] = ((j + 1) * 8) + 1;
+          dangerX1[i] = ((j + 1) * 8) + 1;
         }
-        j = enemyX2[i];
-        k = enemyY2[i];
+        j = dangerX2[i];
+        k = dangerY2[i];
         while(j < tileNumberX && levelMap[(tileNumberX * k) + j] == 1)
         {
           j++;
         }
-        enemyX2[i] = ((j - 1) * 8) + 3;
+        dangerX2[i] = ((j - 1) * 8) + 3;
       }
       
       // Fire
-      if(enemyType[i] == 6)
+      if(dangerType[i] == 6)
       {  
         // Nothing to do
       }
       
       // Gripper
-      if(enemyType[i] == 7)
+      if(dangerType[i] == 7)
       {  
-        j = enemyX1[i];
-        k = enemyY1[i];
+        j = dangerX1[i];
+        k = dangerY1[i];
         while(j > 0 && (levelMap[(tileNumberX * (k - 1)) + j] == 1 || levelMap[(tileNumberX * (k - 1)) + j] == 5 || levelMap[(tileNumberX * (k - 1)) + j] == 6))
         {
           j--;
         }
         if(j == 0 && (levelMap[(tileNumberX * (k - 1)) + j] == 1 || levelMap[(tileNumberX * (k - 1)) + j] == 5 || levelMap[(tileNumberX * (k - 1)) + j] == 6))
         {
-          enemyX1[i] = j * 8;
+          dangerX1[i] = j * 8;
         }
         else
         {
-          enemyX1[i] = (j + 1) * 8;
+          dangerX1[i] = (j + 1) * 8;
         }
-        j = enemyX2[i];
-        k = enemyY2[i];
+        j = dangerX2[i];
+        k = dangerY2[i];
         while(j < tileNumberX && (levelMap[(tileNumberX * (k - 1)) + j] == 1 || levelMap[(tileNumberX * (k - 1)) + j] == 5 || levelMap[(tileNumberX * (k - 1)) + j] == 6))
         {
           j++;
         }
         if(j == 1)
         {
-          enemyX2[i] = (j * 8) + 6;
+          dangerX2[i] = (j * 8) + 6;
         }
         else
         {
-          enemyX2[i] = ((j - 1) * 8) + 6;
+          dangerX2[i] = ((j - 1) * 8) + 6;
         }
       }
       
       // Pirate
-      if(enemyType[i] == 8)
+      if(dangerType[i] == 8)
       {  
         // Nothing to do
       }
       
       // Missile
-      if(enemyType[i] == 9)
+      if(dangerType[i] == 9)
       {  
         // Nothing to do
       }
       
       // Drone
-      if(enemyType[i] == 10)
+      if(dangerType[i] == 10)
       {  
         // Nothing to do
       }
       
       // Plasma ufo
-      if(enemyType[i] == 14)
+      if(dangerType[i] == 14)
       {  
-        j = enemyX1[i];
-        k = enemyY1[i];
+        j = dangerX1[i];
+        k = dangerY1[i];
         while(j > 0 && (levelMap[(tileNumberX * k) + j] == 0 || levelMap[(tileNumberX * k) + j] == 1))
         {
           j--;
         }
         if(j == 0 && (levelMap[(tileNumberX * k) + j] == 0 || levelMap[(tileNumberX * k) + j] == 1))
         {
-          enemyX1[i] = j * 8;
+          dangerX1[i] = j * 8;
         }
         else
         {
-          enemyX1[i] = (j + 1) * 8;
+          dangerX1[i] = (j + 1) * 8;
         }
-        j = enemyX2[i];
-        k = enemyY2[i];
+        j = dangerX2[i];
+        k = dangerY2[i];
         while(j < tileNumberX && (levelMap[(tileNumberX * k) + j] == 0 || levelMap[(tileNumberX * k) + j] == 1))
         {
           j++;
         }
         if(levelMap[(tileNumberX * k) + j] == 4)
         {
-          enemyX2[i] = (j * 8) + 3;
+          dangerX2[i] = (j * 8) + 3;
         }
         else
         {
-          enemyX2[i] = ((j - 1) * 8) + 4;
+          dangerX2[i] = ((j - 1) * 8) + 4;
         }
       }      
       
       // Railcar with steel
-      if(enemyType[i] == 15)
+      if(dangerType[i] == 15)
       {  
-        j = enemyX1[i];
-        k = enemyY1[i];
+        j = dangerX1[i];
+        k = dangerY1[i];
         while(j > 0 && levelMap[(tileNumberX * k) + j] == 1)
         {
           j--;
         }
         if(j == 0 && levelMap[(tileNumberX * k) + j] == 1)
         {
-          enemyX1[i] = j * 8;
+          dangerX1[i] = j * 8;
         }
         else if(levelMap[(tileNumberX * k) + j] == 5)
         {
-          enemyX1[i] = (j * 8) + 1;
+          dangerX1[i] = (j * 8) + 1;
         }
         else
         {
-          enemyX1[i] = (j + 1) * 8;
+          dangerX1[i] = (j + 1) * 8;
         }
-        j = enemyX2[i];
-        k = enemyY2[i];
+        j = dangerX2[i];
+        k = dangerY2[i];
         while(j < tileNumberX && levelMap[(tileNumberX * k) + j] == 1)
         {
           j++;
         }
         if(levelMap[(tileNumberX * k) + j] == 6)
         {
-          enemyX2[i] = (j * 8) + 5;
+          dangerX2[i] = (j * 8) + 5;
         }
         else
         {
-          enemyX2[i] = ((j - 1) * 8) + 6;
+          dangerX2[i] = ((j - 1) * 8) + 6;
         }
       }
 
       // Meteor
-      if(enemyType[i] == 16)
+      if(dangerType[i] == 16)
       {
         // Nothing to do
       }      
@@ -3612,7 +3614,7 @@ void initializeEnemyMovement()
   }
 }
 
-// Draw all not collected extra lives
+// drawExtraLives: Draw all not collected extra lives
 void drawExtraLives()
 {
   for(i = 0; i < 16; i++)
@@ -3685,7 +3687,7 @@ void drawExtraLives()
   }  
 }
 
-// Draw platforms
+// drawPlatforms: Draw platforms where passengers are picked up or delivered to
 void drawPlatforms()
 {
   byte r, g, b;
@@ -3693,11 +3695,6 @@ void drawPlatforms()
   {
     if(platformBordingStatus[i] > 0)
     {
-//Serial.print(i);
-//Serial.print(": ");
-//Serial.print(platformBordingStatus[i]);
-//Serial.print(" / ");
-//Serial.println(numberOfWaitingPassengers);
       // Add another waiting passenger
       if(platformBordingStatus[i] == 1 && numberOfWaitingPassengers < maximalNumberOfWaitingPassengers && random(1000) < 10)
       {
@@ -3926,7 +3923,7 @@ void drawPlatforms()
   }  
 }
 
-// Draw gas stations
+// drawGasStations: Draw gas stations where taxi can refuel (and start each game)
 void drawGasStations()
 {
   for(i = 0; i < 4; i++)
@@ -4016,253 +4013,254 @@ void drawGasStations()
   }  
 }
 
-// Draw player
-void drawPlayer(boolean blinking, byte blinkInterval)
+// drawTaxi: Draw taxi
+void drawTaxi(boolean blinking, byte blinkInterval)
 {
-  // Remove player at old position
-  matrix.drawPixel(playerXScreen, playerYScreen, matrix.Color333(0, 0, 0));
-  matrix.drawPixel(playerXScreen + 1, playerYScreen, matrix.Color333(0, 0, 0));
-  matrix.drawPixel(playerXScreen + 2, playerYScreen, matrix.Color333(0, 0, 0));
-  matrix.drawPixel(playerXScreen + 3, playerYScreen, matrix.Color333(0, 0, 0));
-  matrix.drawPixel(playerXScreen, playerYScreen + 1, matrix.Color333(0, 0, 0));
-  matrix.drawPixel(playerXScreen + 1, playerYScreen + 1, matrix.Color333(0, 0, 0));
-  matrix.drawPixel(playerXScreen + 2, playerYScreen + 1, matrix.Color333(0, 0, 0));
-  matrix.drawPixel(playerXScreen + 3, playerYScreen + 1, matrix.Color333(0, 0, 0));
-  matrix.drawPixel(playerXScreen, playerYScreen + 2, matrix.Color333(0, 0, 0));
-  matrix.drawPixel(playerXScreen + 1, playerYScreen + 2, matrix.Color333(0, 0, 0));
-  matrix.drawPixel(playerXScreen + 2, playerYScreen + 2, matrix.Color333(0, 0, 0));
-  matrix.drawPixel(playerXScreen + 3, playerYScreen + 2, matrix.Color333(0, 0, 0));
+  // Remove taxi at old position
+  matrix.drawPixel(taxiXScreen, taxiYScreen, matrix.Color333(0, 0, 0));
+  matrix.drawPixel(taxiXScreen + 1, taxiYScreen, matrix.Color333(0, 0, 0));
+  matrix.drawPixel(taxiXScreen + 2, taxiYScreen, matrix.Color333(0, 0, 0));
+  matrix.drawPixel(taxiXScreen + 3, taxiYScreen, matrix.Color333(0, 0, 0));
+  matrix.drawPixel(taxiXScreen, taxiYScreen + 1, matrix.Color333(0, 0, 0));
+  matrix.drawPixel(taxiXScreen + 1, taxiYScreen + 1, matrix.Color333(0, 0, 0));
+  matrix.drawPixel(taxiXScreen + 2, taxiYScreen + 1, matrix.Color333(0, 0, 0));
+  matrix.drawPixel(taxiXScreen + 3, taxiYScreen + 1, matrix.Color333(0, 0, 0));
+  matrix.drawPixel(taxiXScreen, taxiYScreen + 2, matrix.Color333(0, 0, 0));
+  matrix.drawPixel(taxiXScreen + 1, taxiYScreen + 2, matrix.Color333(0, 0, 0));
+  matrix.drawPixel(taxiXScreen + 2, taxiYScreen + 2, matrix.Color333(0, 0, 0));
+  matrix.drawPixel(taxiXScreen + 3, taxiYScreen + 2, matrix.Color333(0, 0, 0));
 
   if(!blinking || animationCounter % blinkInterval != 0)
   {
-    // Draw player at new position
-    if(playerDirectionNew == RIGHT)
+    // Draw taxi at new position
+    if(taxiDirectionNew == RIGHT)
     {
-      matrix.drawPixel(playerXScreenNew, playerYScreenNew, matrix.Color333(0, 5, 2));
-      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew, matrix.Color333(0, 3, 1));
-      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(playerXScreenNew, playerYScreenNew + 1, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(taxiXScreenNew, taxiYScreenNew, matrix.Color333(0, 5, 2));
+      matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(taxiXScreenNew + 3, taxiYScreenNew, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(taxiXScreenNew, taxiYScreenNew + 1, matrix.Color333(0, 3, 1));
       switch(targetPlatform)
       {
         case RED:
-          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(2, 0, 0));
-          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(3, 0, 0));
+          matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 1, matrix.Color333(2, 0, 0));
+          matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 1, matrix.Color333(3, 0, 0));
           break;
         case GREEN:
-          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 2, 0));
-          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 3, 0));
+          matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 1, matrix.Color333(0, 2, 0));
+          matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 1, matrix.Color333(0, 3, 0));
           break;
         case BLUE:
-          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 0, 2));
-          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 0, 3));
+          matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 1, matrix.Color333(0, 0, 2));
+          matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 1, matrix.Color333(0, 0, 3));
           break;
         case YELLOW:
-          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(2, 2, 0));
-          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(3, 3, 0));
+          matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 1, matrix.Color333(2, 2, 0));
+          matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 1, matrix.Color333(3, 3, 0));
           break;
         case VIOLET:
-          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(2, 0, 2));
-          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(3, 0, 3));
+          matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 1, matrix.Color333(2, 0, 2));
+          matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 1, matrix.Color333(3, 0, 3));
           break;
         case TURQUOISE:
-          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 2, 2));
-          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 3, 3));
+          matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 1, matrix.Color333(0, 2, 2));
+          matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 1, matrix.Color333(0, 3, 3));
           break;
         default:
-          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(1, 1, 1));
-          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(2, 2, 2));
+          matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 1, matrix.Color333(1, 1, 1));
+          matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 1, matrix.Color333(2, 2, 2));
           break;
       }
-      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 1, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(playerXScreenNew, playerYScreenNew + 2, matrix.Color333(0, 5, 2));
-      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 2, matrix.Color333(0, 3, 1));
-      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 2, matrix.Color333(0, 3, 1));
-      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 2, matrix.Color333(0, 5, 2));
+      matrix.drawPixel(taxiXScreenNew + 3, taxiYScreenNew + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(taxiXScreenNew, taxiYScreenNew + 2, matrix.Color333(0, 5, 2));
+      matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 2, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 2, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(taxiXScreenNew + 3, taxiYScreenNew + 2, matrix.Color333(0, 5, 2));
     }
     else
     {
-      matrix.drawPixel(playerXScreenNew, playerYScreenNew, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew, matrix.Color333(0, 0, 0));
-      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew, matrix.Color333(0, 3, 1));
-      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew, matrix.Color333(0, 5, 2));
-      matrix.drawPixel(playerXScreenNew, playerYScreenNew + 1, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(taxiXScreenNew, taxiYScreenNew, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew, matrix.Color333(0, 0, 0));
+      matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(taxiXScreenNew + 3, taxiYScreenNew, matrix.Color333(0, 5, 2));
+      matrix.drawPixel(taxiXScreenNew, taxiYScreenNew + 1, matrix.Color333(0, 0, 0));
       switch(targetPlatform)
       {
         case RED:
-          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(3, 0, 0));
-          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(2, 0, 0));
+          matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 1, matrix.Color333(3, 0, 0));
+          matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 1, matrix.Color333(2, 0, 0));
           break;
         case GREEN:
-          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 3, 0));
-          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 2, 0));
+          matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 1, matrix.Color333(0, 3, 0));
+          matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 1, matrix.Color333(0, 2, 0));
           break;
         case BLUE:
-          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 0, 3));
-          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 0, 2));
+          matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 1, matrix.Color333(0, 0, 3));
+          matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 1, matrix.Color333(0, 0, 2));
           break;
         case YELLOW:
-          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(3, 3, 0));
-          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(2, 2, 0));
+          matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 1, matrix.Color333(3, 3, 0));
+          matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 1, matrix.Color333(2, 2, 0));
           break;
         case VIOLET:
-          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(3, 0, 3));
-          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(2, 0, 2));
+          matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 1, matrix.Color333(3, 0, 3));
+          matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 1, matrix.Color333(2, 0, 2));
           break;
         case TURQUOISE:
-          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(0, 3, 3));
-          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(0, 2, 2));
+          matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 1, matrix.Color333(0, 3, 3));
+          matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 1, matrix.Color333(0, 2, 2));
           break;
         default:
-          matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 1, matrix.Color333(2, 2, 2));
-          matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 1, matrix.Color333(1, 1, 1));
+          matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 1, matrix.Color333(2, 2, 2));
+          matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 1, matrix.Color333(1, 1, 1));
           break;
       }
-      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 1, matrix.Color333(0, 3, 1));
-      matrix.drawPixel(playerXScreenNew, playerYScreenNew + 2, matrix.Color333(0, 5, 2));
-      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 2, matrix.Color333(0, 3, 1));
-      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 2, matrix.Color333(0, 3, 1));
-      matrix.drawPixel(playerXScreenNew + 3, playerYScreenNew + 2, matrix.Color333(0, 5, 2));
+      matrix.drawPixel(taxiXScreenNew + 3, taxiYScreenNew + 1, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(taxiXScreenNew, taxiYScreenNew + 2, matrix.Color333(0, 5, 2));
+      matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 2, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 2, matrix.Color333(0, 3, 1));
+      matrix.drawPixel(taxiXScreenNew + 3, taxiYScreenNew + 2, matrix.Color333(0, 5, 2));
     }
   }
 }
 
-// Check whether movement to the left is possible
+// directionLeftFree: Check whether movement to the left is possible
 boolean directionLeftFree()
 {
-  if(playfield[playerXScreenNew + 9][playerYScreenNew + 8] == 1){ return false; }
-  if(playfield[playerXScreenNew + 8][playerYScreenNew + 9] == 1){ return false; }
-  if(playfield[playerXScreenNew + 7][playerYScreenNew + 10] == 1){ return false; }
+  if(playfield[taxiXScreenNew + 9][taxiYScreenNew + 8] == 1){ return false; }
+  if(playfield[taxiXScreenNew + 8][taxiYScreenNew + 9] == 1){ return false; }
+  if(playfield[taxiXScreenNew + 7][taxiYScreenNew + 10] == 1){ return false; }
   return true;
 }
 
-// Check whether movement to the right is possible
+// directionRightFree:Check whether movement to the right is possible
 boolean directionRightFree()
 {
-  if(playfield[playerXScreenNew + 10][playerYScreenNew + 8] == 1){ return false; }
-  if(playfield[playerXScreenNew + 11][playerYScreenNew + 9] == 1){ return false; }
-  if(playfield[playerXScreenNew + 12][playerYScreenNew + 10] == 1){ return false; }
+  if(playfield[taxiXScreenNew + 10][taxiYScreenNew + 8] == 1){ return false; }
+  if(playfield[taxiXScreenNew + 11][taxiYScreenNew + 9] == 1){ return false; }
+  if(playfield[taxiXScreenNew + 12][taxiYScreenNew + 10] == 1){ return false; }
   return true;
 }
 
-// Check whether proceeding of jump is possible
+// directionUpFree: Check whether movement upwards is possible
 boolean directionUpFree()
 {
-  if(playerDirection == RIGHT)
+  if(taxiDirection == RIGHT)
   {
-    if(playfield[playerXScreenNew + 8][playerYScreenNew + 7] == 1){ return false; }
-    if(playfield[playerXScreenNew + 9][playerYScreenNew + 8] == 1){ return false; }
-    if(playfield[playerXScreenNew + 10][playerYScreenNew + 9] == 1){ return false; }
-    if(playfield[playerXScreenNew + 11][playerYScreenNew + 9] == 1){ return false; }
+    if(playfield[taxiXScreenNew + 8][taxiYScreenNew + 7] == 1){ return false; }
+    if(playfield[taxiXScreenNew + 9][taxiYScreenNew + 8] == 1){ return false; }
+    if(playfield[taxiXScreenNew + 10][taxiYScreenNew + 9] == 1){ return false; }
+    if(playfield[taxiXScreenNew + 11][taxiYScreenNew + 9] == 1){ return false; }
   }
   else
   {
-    if(playfield[playerXScreenNew + 8][playerYScreenNew + 9] == 1){ return false; }
-    if(playfield[playerXScreenNew + 9][playerYScreenNew + 9] == 1){ return false; }
-    if(playfield[playerXScreenNew + 10][playerYScreenNew + 8] == 1){ return false; }
-    if(playfield[playerXScreenNew + 11][playerYScreenNew + 7] == 1){ return false; }
+    if(playfield[taxiXScreenNew + 8][taxiYScreenNew + 9] == 1){ return false; }
+    if(playfield[taxiXScreenNew + 9][taxiYScreenNew + 9] == 1){ return false; }
+    if(playfield[taxiXScreenNew + 10][taxiYScreenNew + 8] == 1){ return false; }
+    if(playfield[taxiXScreenNew + 11][taxiYScreenNew + 7] == 1){ return false; }
   }
   return true;
 }
 
-// Check whether proceeding of falling is possible
+// directionDownFree: Check whether movement downwards is possible
 boolean directionDownFree()
 {
-  if(playfield[playerXScreenNew + 8][playerYScreenNew + 11] == 1){ return false; }
-  if(playfield[playerXScreenNew + 9][playerYScreenNew + 11] == 1){ return false; }
-  if(playfield[playerXScreenNew + 10][playerYScreenNew + 11] == 1){ return false; }
-  if(playfield[playerXScreenNew + 11][playerYScreenNew + 11] == 1){ return false; }
+  if(playfield[taxiXScreenNew + 8][taxiYScreenNew + 11] == 1){ return false; }
+  if(playfield[taxiXScreenNew + 9][taxiYScreenNew + 11] == 1){ return false; }
+  if(playfield[taxiXScreenNew + 10][taxiYScreenNew + 11] == 1){ return false; }
+  if(playfield[taxiXScreenNew + 11][taxiYScreenNew + 11] == 1){ return false; }
   return true;
 }
 
+// drawThrusters: Draw thruster effects
 void drawThrusters()
 {
   // Remove old thruster effect
-  if(playerDirection == LEFT)
+  if(taxiDirection == LEFT)
   {
-    if(playfield[playerXScreen + 12][playerYScreen + 9] == 0)
+    if(playfield[taxiXScreen + 12][taxiYScreen + 9] == 0)
     {
-      matrix.drawPixel(playerXScreen + 4, playerYScreen + 1, matrix.Color333(0, 0, 0));                
+      matrix.drawPixel(taxiXScreen + 4, taxiYScreen + 1, matrix.Color333(0, 0, 0));                
     }    
-    if(playfield[playerXScreen + 7][playerYScreen + 10] == 0)
+    if(playfield[taxiXScreen + 7][taxiYScreen + 10] == 0)
     {
-      matrix.drawPixel(playerXScreen - 1, playerYScreen + 2, matrix.Color333(0, 0, 0));                
+      matrix.drawPixel(taxiXScreen - 1, taxiYScreen + 2, matrix.Color333(0, 0, 0));                
     }
-    if(playfield[playerXScreen + 9][playerYScreen + 11] == 0 && playfield[playerXScreen + 10][playerYScreen + 11] == 0)
+    if(playfield[taxiXScreen + 9][taxiYScreen + 11] == 0 && playfield[taxiXScreen + 10][taxiYScreen + 11] == 0)
     {
-      matrix.drawPixel(playerXScreen + 1, playerYScreen + 3, matrix.Color333(0, 0, 0));                
-      matrix.drawPixel(playerXScreen + 2, playerYScreen + 3, matrix.Color333(0, 0, 0));                
+      matrix.drawPixel(taxiXScreen + 1, taxiYScreen + 3, matrix.Color333(0, 0, 0));                
+      matrix.drawPixel(taxiXScreen + 2, taxiYScreen + 3, matrix.Color333(0, 0, 0));                
     }
-    if(playfield[playerXScreen + 10][playerYScreen + 7] == 0)
+    if(playfield[taxiXScreen + 10][taxiYScreen + 7] == 0)
     {
-      matrix.drawPixel(playerXScreen + 2, playerYScreen - 1, matrix.Color333(0, 0, 0));                
+      matrix.drawPixel(taxiXScreen + 2, taxiYScreen - 1, matrix.Color333(0, 0, 0));                
     }
   }
   else
   {
-    if(playfield[playerXScreen + 7][playerYScreen + 9] == 0)
+    if(playfield[taxiXScreen + 7][taxiYScreen + 9] == 0)
     {
-      matrix.drawPixel(playerXScreen - 1, playerYScreen + 1, matrix.Color333(0, 0, 0));                
+      matrix.drawPixel(taxiXScreen - 1, taxiYScreen + 1, matrix.Color333(0, 0, 0));                
     }
-    if(playfield[playerXScreen + 12][playerYScreen + 10] == 0)
+    if(playfield[taxiXScreen + 12][taxiYScreen + 10] == 0)
     {
-      matrix.drawPixel(playerXScreen + 4, playerYScreen + 2, matrix.Color333(0, 0, 0)); 
+      matrix.drawPixel(taxiXScreen + 4, taxiYScreen + 2, matrix.Color333(0, 0, 0)); 
     }                   
-    if(playfield[playerXScreen + 9][playerYScreen + 11] == 0 && playfield[playerXScreen + 10][playerYScreen + 11] == 0)
+    if(playfield[taxiXScreen + 9][taxiYScreen + 11] == 0 && playfield[taxiXScreen + 10][taxiYScreen + 11] == 0)
     {
-      matrix.drawPixel(playerXScreen + 1, playerYScreen + 3, matrix.Color333(0, 0, 0));                
-      matrix.drawPixel(playerXScreen + 2, playerYScreen + 3, matrix.Color333(0, 0, 0));                
+      matrix.drawPixel(taxiXScreen + 1, taxiYScreen + 3, matrix.Color333(0, 0, 0));                
+      matrix.drawPixel(taxiXScreen + 2, taxiYScreen + 3, matrix.Color333(0, 0, 0));                
     }      
-    if(playfield[playerXScreen + 9][playerYScreen + 7] == 0)
+    if(playfield[taxiXScreen + 9][taxiYScreen + 7] == 0)
     {
-      matrix.drawPixel(playerXScreen + 1, playerYScreen - 1, matrix.Color333(0, 0, 0));                
+      matrix.drawPixel(taxiXScreen + 1, taxiYScreen - 1, matrix.Color333(0, 0, 0));                
     }
   }
 
-  if(playerDirectionNew == LEFT)
+  if(taxiDirectionNew == LEFT)
   {
-    if(mainThrusters && playfield[playerXScreenNew + 12][playerYScreenNew + 9] == 0 && animationCounter % 4 == 0)
+    if(mainThrusters && playfield[taxiXScreenNew + 12][taxiYScreenNew + 9] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew + 4, playerYScreenNew + 1, matrix.Color333(random(3) + 2, random(3) + 2, 2));
+      matrix.drawPixel(taxiXScreenNew + 4, taxiYScreenNew + 1, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
-    if(breakThrusters && playfield[playerXScreenNew + 7][playerYScreenNew + 10] == 0 && animationCounter % 4 == 0)
+    if(breakThrusters && playfield[taxiXScreenNew + 7][taxiYScreenNew + 10] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew - 1, playerYScreenNew + 2, matrix.Color333(random(3) + 2, random(3) + 2, 2));
+      matrix.drawPixel(taxiXScreenNew - 1, taxiYScreenNew + 2, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
-    if(hoverThrusters && playfield[playerXScreenNew + 9][playerYScreenNew + 11] == 0 && playfield[playerXScreenNew + 10][playerYScreenNew + 11] == 0 && animationCounter % 4 == 0)
+    if(hoverThrusters && playfield[taxiXScreenNew + 9][taxiYScreenNew + 11] == 0 && playfield[taxiXScreenNew + 10][taxiYScreenNew + 11] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));        
-      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));
+      matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));        
+      matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
-    if(downThrusters && playfield[playerXScreenNew + 10][playerYScreenNew + 7] == 0 && animationCounter % 4 == 0)
+    if(downThrusters && playfield[taxiXScreenNew + 10][taxiYScreenNew + 7] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew - 1, matrix.Color333(random(3) + 2, random(3) + 2, 2));
+      matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew - 1, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
   }
   else
   {
-    if(mainThrusters && playfield[playerXScreenNew + 7][playerYScreenNew + 9] == 0 && animationCounter % 4 == 0)
+    if(mainThrusters && playfield[taxiXScreenNew + 7][taxiYScreenNew + 9] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew - 1, playerYScreenNew + 1, matrix.Color333(random(3) + 2, random(3) + 2, 2));
+      matrix.drawPixel(taxiXScreenNew - 1, taxiYScreenNew + 1, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
-    if(breakThrusters && playfield[playerXScreenNew + 12][playerYScreenNew + 10] == 0 && animationCounter % 4 == 0)
+    if(breakThrusters && playfield[taxiXScreenNew + 12][taxiYScreenNew + 10] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew + 4, playerYScreenNew + 2, matrix.Color333(random(3) + 2, random(3) + 2, 2));
+      matrix.drawPixel(taxiXScreenNew + 4, taxiYScreenNew + 2, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
-    if(hoverThrusters && playfield[playerXScreenNew + 9][playerYScreenNew + 11] == 0 && playfield[playerXScreenNew + 10][playerYScreenNew + 11] == 0 && animationCounter % 4 == 0)
+    if(hoverThrusters && playfield[taxiXScreenNew + 9][taxiYScreenNew + 11] == 0 && playfield[taxiXScreenNew + 10][taxiYScreenNew + 11] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));        
-      matrix.drawPixel(playerXScreenNew + 2, playerYScreenNew + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));
+      matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));        
+      matrix.drawPixel(taxiXScreenNew + 2, taxiYScreenNew + 3, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
-    if(downThrusters && playfield[playerXScreenNew + 9][playerYScreenNew + 7] == 0 && animationCounter % 4 == 0)
+    if(downThrusters && playfield[taxiXScreenNew + 9][taxiYScreenNew + 7] == 0 && animationCounter % 4 == 0)
     {
-      matrix.drawPixel(playerXScreenNew + 1, playerYScreenNew - 1, matrix.Color333(random(3) + 2, random(3) + 2, 2));
+      matrix.drawPixel(taxiXScreenNew + 1, taxiYScreenNew - 1, matrix.Color333(random(3) + 2, random(3) + 2, 2));
     }
   } 
 }
 
-// Moves player (checks also the joystick)
-void movePlayer()
+// moveTaxi: Checks joystick and moves taxi
+void moveTaxi()
 {
   // Simulate friction
   if(xSpeed < 0.0)
@@ -4282,7 +4280,7 @@ void movePlayer()
   // Left
   if(joy1Left() && fuel > 0 && !taxiParks)
   {
-    if(playerDirection == LEFT){ mainThrusters = true; }
+    if(taxiDirection == LEFT){ mainThrusters = true; }
     else{ breakThrusters = true; }
     fuel--;
     // SOUND: Thrusters
@@ -4293,7 +4291,7 @@ void movePlayer()
   // Right
   else if(joy1Right() && fuel > 0 && !taxiParks)
   {
-    if(playerDirection == RIGHT){ mainThrusters = true; }
+    if(taxiDirection == RIGHT){ mainThrusters = true; }
     else{ breakThrusters = true; }
     fuel--;
     // SOUND: Thrusters
@@ -4344,24 +4342,24 @@ void movePlayer()
     tone(audio, 800, 20);
   }
   
-  if(xSpeed < 0.0 && int(playerXMap) > 0)
+  if(xSpeed < 0.0 && int(taxiXMap) > 0)
   {
-    playerDirectionNew = LEFT;
+    taxiDirectionNew = LEFT;
     xStepCounter = xStepCounter + xSpeed;      
     if(directionLeftFree())
     {
       if(xStepCounter <= -1.0)
       {
         xStepCounter = xStepCounter + 1.0;
-        playerXMapNew = playerXMap - 1;
-        if(screenX > 0 && playerXScreen < 16)
+        taxiXMapNew = taxiXMap - 1;
+        if(screenX > 0 && taxiXScreen < 16)
         {
           screenXNew = screenX - 1;
           redraw = true;
         }
         else
         {
-          playerXScreenNew = playerXScreen - 1;
+          taxiXScreenNew = taxiXScreen - 1;
         }
       }
     }
@@ -4373,24 +4371,24 @@ void movePlayer()
     }
   }
   // Moving to the right side
-  else if(xSpeed > 0.0 && int(playerXMap) < (mapWidth - 4))
+  else if(xSpeed > 0.0 && int(taxiXMap) < (mapWidth - 4))
   {
-    playerDirectionNew = RIGHT;
+    taxiDirectionNew = RIGHT;
     xStepCounter = xStepCounter + xSpeed;      
     if(directionRightFree())
     {
       if(xStepCounter >= 1.0)
       {
         xStepCounter = xStepCounter - 1.0;
-        playerXMapNew = playerXMap + 1;
-        if(screenX < (mapWidth - 32) && playerXScreen > 13)
+        taxiXMapNew = taxiXMap + 1;
+        if(screenX < (mapWidth - 32) && taxiXScreen > 13)
         {
           screenXNew = screenX + 1;
           redraw = true;
         }
         else
         {
-          playerXScreenNew = playerXScreen + 1;
+          taxiXScreenNew = taxiXScreen + 1;
         }
       }
     }
@@ -4403,7 +4401,7 @@ void movePlayer()
   }
 
   // Moving up
-  if(ySpeed < 0.0 && int(playerYMap) > 0)
+  if(ySpeed < 0.0 && int(taxiYMap) > 0)
   {
     yStepCounter = yStepCounter + ySpeed;          
     if(directionUpFree())
@@ -4411,15 +4409,15 @@ void movePlayer()
       if(yStepCounter <= -1.0)
       {
         yStepCounter = yStepCounter + 1.0;
-        playerYMapNew = playerYMap - 1;
-        if(screenY > 0 && playerYScreen < 16)
+        taxiYMapNew = taxiYMap - 1;
+        if(screenY > 0 && taxiYScreen < 16)
         {
           screenYNew = screenY - 1;
           redraw = true;
         }
         else
         {
-          playerYScreenNew = playerYScreen - 1;
+          taxiYScreenNew = taxiYScreen - 1;
         }
       }
     }
@@ -4431,7 +4429,7 @@ void movePlayer()
     }
   }
   // Moving down
-  else if(ySpeed > 0.0 && int(playerYMap) < (mapHeight - 3))
+  else if(ySpeed > 0.0 && int(taxiYMap) < (mapHeight - 3))
   {
     yStepCounter = yStepCounter + ySpeed;              
     if(directionDownFree())
@@ -4439,15 +4437,15 @@ void movePlayer()
       if(yStepCounter >= 1.0)
       {
         yStepCounter = yStepCounter - 1.0;
-        playerYMapNew = playerYMap + 1;
-        if(screenY < (mapHeight - 32) && playerYScreen > 13)
+        taxiYMapNew = taxiYMap + 1;
+        if(screenY < (mapHeight - 32) && taxiYScreen > 13)
         {
           screenYNew = screenY + 1;
           redraw = true;
         }
         else
         {
-          playerYScreenNew = playerYScreen + 1;
+          taxiYScreenNew = taxiYScreen + 1;
         }
       }
     }
@@ -4466,50 +4464,47 @@ void movePlayer()
   hoverThrusters = false;        
   downThrusters = false;        
 
-  // Redraw player if position has changed or animation is incomplete   
-//  if(redraw || ((playerXScreen != playerXScreenNew) || (playerYScreen != playerYScreenNew) || (playerXMap != playerXMapNew) || (playerYMap != playerYMapNew) || playerDirection != playerDirectionNew))
-//  {
-  if(fuel < 64){ drawPlayer(true, 8); }
-  else if(fuel < 128){ drawPlayer(true, 16); }
-  else if(fuel < 256){ drawPlayer(true, 32); }
-  else{ drawPlayer(false, 0); }
-  playerXScreen = playerXScreenNew;
-  playerYScreen = playerYScreenNew;
-  playerXMap = playerXMapNew;
-  playerYMap = playerYMapNew;
-  playerDirection = playerDirectionNew;
-//  }
+  // Redraw taxi if position has changed or animation is incomplete   
+  if(fuel < 64){ drawTaxi(true, 8); }
+  else if(fuel < 128){ drawTaxi(true, 16); }
+  else if(fuel < 256){ drawTaxi(true, 32); }
+  else{ drawTaxi(false, 0); }
+  taxiXScreen = taxiXScreenNew;
+  taxiYScreen = taxiYScreenNew;
+  taxiXMap = taxiXMapNew;
+  taxiYMap = taxiYMapNew;
+  taxiDirection = taxiDirectionNew;
 }
 
-// Checks whether new player position collides with something (except walls)
+// collisionDetection: Checks whether new taxi position collides with something (except walls)
 byte collisionDetection()
 {
-  if(playerDirection == RIGHT)
+  if(taxiDirection == RIGHT)
   {
-    if(playfield[playerXScreenNew + 8][playerYScreenNew + 8] > 1){ return playfield[playerXScreenNew + 8][playerYScreenNew + 8]; }
-    if(playfield[playerXScreenNew + 8][playerYScreenNew + 9] > 1){ return playfield[playerXScreenNew + 8][playerYScreenNew + 9]; }
-    if(playfield[playerXScreenNew + 9][playerYScreenNew + 9] > 1){ return playfield[playerXScreenNew + 9][playerYScreenNew + 9]; }
-    if(playfield[playerXScreenNew + 10][playerYScreenNew + 9] > 1){ return playfield[playerXScreenNew + 10][playerYScreenNew + 9]; }
-    if(playfield[playerXScreenNew + 8][playerYScreenNew + 10] > 1){ return playfield[playerXScreenNew + 8][playerYScreenNew + 10]; }
-    if(playfield[playerXScreenNew + 9][playerYScreenNew + 10] > 1){ return playfield[playerXScreenNew + 9][playerYScreenNew + 10]; }
-    if(playfield[playerXScreenNew + 10][playerYScreenNew + 10] > 1){ return playfield[playerXScreenNew + 10][playerYScreenNew + 10]; }
-    if(playfield[playerXScreenNew + 11][playerYScreenNew + 10] > 1){ return playfield[playerXScreenNew + 11][playerYScreenNew + 10]; }  
+    if(playfield[taxiXScreenNew + 8][taxiYScreenNew + 8] > 1){ return playfield[taxiXScreenNew + 8][taxiYScreenNew + 8]; }
+    if(playfield[taxiXScreenNew + 8][taxiYScreenNew + 9] > 1){ return playfield[taxiXScreenNew + 8][taxiYScreenNew + 9]; }
+    if(playfield[taxiXScreenNew + 9][taxiYScreenNew + 9] > 1){ return playfield[taxiXScreenNew + 9][taxiYScreenNew + 9]; }
+    if(playfield[taxiXScreenNew + 10][taxiYScreenNew + 9] > 1){ return playfield[taxiXScreenNew + 10][taxiYScreenNew + 9]; }
+    if(playfield[taxiXScreenNew + 8][taxiYScreenNew + 10] > 1){ return playfield[taxiXScreenNew + 8][taxiYScreenNew + 10]; }
+    if(playfield[taxiXScreenNew + 9][taxiYScreenNew + 10] > 1){ return playfield[taxiXScreenNew + 9][taxiYScreenNew + 10]; }
+    if(playfield[taxiXScreenNew + 10][taxiYScreenNew + 10] > 1){ return playfield[taxiXScreenNew + 10][taxiYScreenNew + 10]; }
+    if(playfield[taxiXScreenNew + 11][taxiYScreenNew + 10] > 1){ return playfield[taxiXScreenNew + 11][taxiYScreenNew + 10]; }  
   }
   else
   {
-    if(playfield[playerXScreenNew + 11][playerYScreenNew + 8] > 1){ return playfield[playerXScreenNew + 11][playerYScreenNew + 8]; }
-    if(playfield[playerXScreenNew + 9][playerYScreenNew + 9] > 1){ return playfield[playerXScreenNew + 9][playerYScreenNew + 9]; }
-    if(playfield[playerXScreenNew + 10][playerYScreenNew + 9] > 1){ return playfield[playerXScreenNew + 10][playerYScreenNew + 9]; }
-    if(playfield[playerXScreenNew + 11][playerYScreenNew + 9] > 1){ return playfield[playerXScreenNew + 11][playerYScreenNew + 9]; }
-    if(playfield[playerXScreenNew + 8][playerYScreenNew + 10] > 1){ return playfield[playerXScreenNew + 8][playerYScreenNew + 10]; }
-    if(playfield[playerXScreenNew + 9][playerYScreenNew + 10] > 1){ return playfield[playerXScreenNew + 9][playerYScreenNew + 10]; }
-    if(playfield[playerXScreenNew + 10][playerYScreenNew + 10] > 1){ return playfield[playerXScreenNew + 10][playerYScreenNew + 10]; }
-    if(playfield[playerXScreenNew + 11][playerYScreenNew + 10] > 1){ return playfield[playerXScreenNew + 11][playerYScreenNew + 10]; }  
+    if(playfield[taxiXScreenNew + 11][taxiYScreenNew + 8] > 1){ return playfield[taxiXScreenNew + 11][taxiYScreenNew + 8]; }
+    if(playfield[taxiXScreenNew + 9][taxiYScreenNew + 9] > 1){ return playfield[taxiXScreenNew + 9][taxiYScreenNew + 9]; }
+    if(playfield[taxiXScreenNew + 10][taxiYScreenNew + 9] > 1){ return playfield[taxiXScreenNew + 10][taxiYScreenNew + 9]; }
+    if(playfield[taxiXScreenNew + 11][taxiYScreenNew + 9] > 1){ return playfield[taxiXScreenNew + 11][taxiYScreenNew + 9]; }
+    if(playfield[taxiXScreenNew + 8][taxiYScreenNew + 10] > 1){ return playfield[taxiXScreenNew + 8][taxiYScreenNew + 10]; }
+    if(playfield[taxiXScreenNew + 9][taxiYScreenNew + 10] > 1){ return playfield[taxiXScreenNew + 9][taxiYScreenNew + 10]; }
+    if(playfield[taxiXScreenNew + 10][taxiYScreenNew + 10] > 1){ return playfield[taxiXScreenNew + 10][taxiYScreenNew + 10]; }
+    if(playfield[taxiXScreenNew + 11][taxiYScreenNew + 10] > 1){ return playfield[taxiXScreenNew + 11][taxiYScreenNew + 10]; }  
   }
   return 0;  
 }
 
-// Check if collision with enemy is true
+// checkForLosingLive: Check if collision with danger is true
 boolean checkForLosingLive()
 {
   // Heavy collision with obstacle
@@ -4520,7 +4515,7 @@ boolean checkForLosingLive()
     return true;
   }
   
-  // Collision with enemy
+  // Collision with danger
   if(collisionDetection() == 2)
   {
     lives--;
@@ -4537,7 +4532,7 @@ boolean checkForLosingLive()
   return false;  
 }
 
-// Check if collision is true
+// checkForFuelPlatformsExtraLives: Check if collision is true
 void checkForFuelPlatformsExtraLives()
 {
   i = collisionDetection();
@@ -4610,7 +4605,7 @@ void checkForFuelPlatformsExtraLives()
   }
 }
 
-// Show status screen
+// showStatus: Show status screen
 void showStatus()
 {
 
@@ -4716,18 +4711,18 @@ void showStatus()
   delay(200);  
 }
 
-// Taxi explodes
+// taxiExplodes: Taxi explodes
 void taxiExplodes()
 {
   for(byte i = 0; i < 8; i++)
   {
     for(byte j = 0; j < i; j++)
     {
-      matrix.drawCircle(playerXScreen + 1, playerYScreen + 1, j, matrix.Color333(random(3) + 3, random(3) + 3, 7 - i));
+      matrix.drawCircle(taxiXScreen + 1, taxiYScreen + 1, j, matrix.Color333(random(3) + 3, random(3) + 3, 7 - i));
       delay(8);
       // SOUND: Taxi explodes
       tone(audio, 120 - i * j + random(40), 7);
-      matrix.drawCircle(playerXScreen + 2, playerYScreen + 1, j, matrix.Color333(random(3) + 3, random(3) + 3, 7 - i));
+      matrix.drawCircle(taxiXScreen + 2, taxiYScreen + 1, j, matrix.Color333(random(3) + 3, random(3) + 3, 7 - i));
       delay(8);
       // SOUND: Taxi explodes
       tone(audio, 120 - i * j + random(20), 7);
@@ -4735,14 +4730,14 @@ void taxiExplodes()
   }
   for(byte i = 0; i < 8; i++)
   {
-     matrix.drawCircle(playerXScreen + 1, playerYScreen + 1, i, matrix.Color333(0, 0, 0));
+     matrix.drawCircle(taxiXScreen + 1, taxiYScreen + 1, i, matrix.Color333(0, 0, 0));
      delay(8);
-     matrix.drawCircle(playerXScreen + 2, playerYScreen + 1, i, matrix.Color333(0, 0, 0));
+     matrix.drawCircle(taxiXScreen + 2, taxiYScreen + 1, i, matrix.Color333(0, 0, 0));
      delay(8);
   }
 }
 
-// End sequence after completion of all levels
+// endSequence: End sequence after completion of all levels
 void endSequence()
 {
   matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
@@ -4797,7 +4792,7 @@ void endSequence()
   initializeNewLevel = true; // Important for a new start of the game (to have a correct setup of extra lives and passengers)
 }
 
-// Main loop
+// loop: Main loop
 void loop()
 {
   mithotronic();
@@ -4816,7 +4811,7 @@ void loop()
       reset = false; // Set reset indicator to false
       matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
 
-      drawPlayer(false, 0);
+      drawTaxi(false, 0);
       
       do
       {
@@ -4832,10 +4827,10 @@ void loop()
         // Draw screen
         drawScreen();
         
-        // Move player (draws also the player)
+        // Move taxi (draws also the taxi)
         if(animationCounter % 2 == 0)
         {
-          movePlayer();
+          moveTaxi();
         }
 
         // Draw platforms
@@ -4847,8 +4842,8 @@ void loop()
         // Draw extra lives
         drawExtraLives();
         
-        // Move enemies
-        moveEnemies();
+        // Move dangers
+        moveDangers();
         
         // Check for goods
         checkForFuelPlatformsExtraLives();
@@ -4919,7 +4914,7 @@ void loop()
     }
     while(!reset && level < (numberOfLevels + 1) && lives > 0);
 
-    // All lives lost (Game over sequence)
+    // All lives lost (Game Over Sequence)
     if(lives < 1)
     {
       matrix.setTextColor(matrix.Color333(4,2,0));
