@@ -257,13 +257,14 @@ const uint8_t levels[] PROGMEM  = {
                                          1,  21,   1,   3,   4,   1,  21,   1,
                                                                               
                                          // Level 7: Mech Warrior
-                                         9, 7, 1,
+                                         9, 8, 1,
                                          0,   0,   0,   3, 241,   4,   0,   0,   0,
                                          0,  21,  71,   1,   1,   1,   1,  21,   0,
                                          1,   0,   0,   1,   0,   1,   0,  90,   1,
                                          1,   1,   1,   1, 130,   1,   1,   1,   1,
                                          3,   0,   1,   1,   1,   1,   1,   0,   4,
                                          3,   0,   0,   1,  31,   1,   0,   0,   4,
+                                         3,   0,   0,   0,   0,   0,   0,   0,   4,
                                          5,  21,   1,  71,  11,   1,   1,  21,   6,
 
                                          // Level 8: Freeway
@@ -309,7 +310,7 @@ const uint8_t levels[] PROGMEM  = {
                                          9, 8, 4,
                                          0,   0,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,  21,   1,   1,   1, 171, 130,   1,
-                                       241, 130,   3,  60,   0,   1,   4,   1,  11,
+                                       241, 130,   3,  60,   0,   0,   4,   1,  11,
                                          0,   0,   0,   0,   0,   1,   1,  90,   0,
                                          0,   0,   0,   0,   1,   5,   6,   1,  21, 
                                          1,   1,  60,   0,   0,  60,   0,   0,   0,
@@ -353,7 +354,7 @@ const uint8_t levels[] PROGMEM  = {
                                          // Level 14: Missile attack
                                          11, 7, 5, 
                                          0, 110,   0,   0,   0,   0,   0,   0,   0,   0,  21,
-                                       120,   0, 110,   0,   0,   0,   0,   0,   0,   0,   0,
+                                         0,   0, 110,   0,   0,   0,   0,   0,   0,   0,   0,
                                          0,   0,   0,   0, 110,   0,   0,  21,   0,   0,  31,
                                          0,   0,   0,   0,   0, 110,   0,   0,   0,   0, 120,
                                        241,   0,   0,  21,   0,   0, 110,   0,   0,   0,   0,
@@ -654,9 +655,6 @@ void setup()
 {
   // Initialize serial connection
   Serial.begin(9600);
-
-  // Initialize random number generator
-  randomSeed(analogRead(40));
 
   // Initialize joysticks and  buttons
   pinMode(buttonL1, INPUT);     
@@ -978,6 +976,9 @@ void title()
   tone(audio,1024,20);
   delay(200);
   matrix.fillRect(0, 0, 32, 32, matrix.Color333(0,0,0));
+  
+  // Initialize random number generator
+  randomSeed(analogRead(40));
 }
 
 // setupGame: Setup a new game and initialize all variables
@@ -1082,10 +1083,10 @@ void setupLevel()
     // Set starting position of taxi
     if(j == 24)
     {
-      taxiXMap = ((i % tileNumberX) * 8) + 3;
+      taxiXMap = ((i % tileNumberX) * 8) + 2;
       taxiYMap = ((i / tileNumberX) * 8) + 2;
       taxiXScreen = 14;
-      taxiYScreen = 15;
+      taxiYScreen = 14;
 
       if(taxiXMap > 14)
       {
@@ -3420,7 +3421,7 @@ void initializeDangerMovement()
       {
         j = dangerX1[i];
         k = dangerY1[i];
-        while(k > 0 && levelMap[(tileNumberX * k) + j] == 0)
+        while(k > 0 && ((levelMap[(tileNumberX * k) + j] == 0) || (levelMap[(tileNumberX * k) + j] == 3) || (levelMap[(tileNumberX * k) + j] == 4)))
         {
           k--;
         }
@@ -3430,7 +3431,7 @@ void initializeDangerMovement()
         }
         else
         {
-          dangerY1[i] = (k + 1) * 8;
+          dangerY1[i] = ((k + 1) * 8) + 1;
         }
         j = dangerX2[i];
         k = dangerY2[i];
@@ -3438,7 +3439,7 @@ void initializeDangerMovement()
         {
           k++;
         }
-        if(levelMap[(tileNumberX * k) + j] == 1)
+        if(levelMap[(tileNumberX * k) + j] == 1 || levelMap[(tileNumberX * k) + j] == 5 || levelMap[(tileNumberX * k) + j] == 6)
         {
           dangerY2[i] = (k * 8) + 5;
         }
