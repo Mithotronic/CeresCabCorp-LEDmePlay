@@ -19,7 +19,7 @@ const byte initialNumberOfLives = 3;             // Number of lives at game star
 const int fuelMax = 1024;                        // Maximal fuel (this is also the initial value)
 const byte numberOfPassengersToFinishLevel = 5;  // Passengers per level
 const byte maximalNumberOfWaitingPassengers = 3; // Maximal number of waiting passengers
-const boolean hiddenLevelJumps = true;           // Allows to select any level by first moving left/right followed by pressing fire button
+const boolean hiddenLevelJumps = false;          // Allows to select any level by first moving left/right followed by pressing fire button
 
 // Setup adafruit matrix
 #define CLK 50
@@ -578,6 +578,7 @@ byte extraLifeStatus[16];              // 0 == inactive, 1 == active, 2 == just 
 byte extraLifeCounter;                 // Number of extra lives in current level (16 is the maximum)
 
 boolean initializeNewLevel;            // true, if a new level is initialized
+boolean showInitialStatus;             // true, if the game is started (when the initial status is shown)
 
 // Game synchronization
 unsigned long engineLoopStartPoint; // Contains millisconds since start of LEDmePlay at begin of each engine loop (every 20ms)
@@ -988,6 +989,7 @@ void setupGame()
   level = 1;
   passengers = 0;
   initializeNewLevel = true;
+  showInitialStatus = true;
 }
 
 // setupLevel: Setup a new level and initialize all variables
@@ -1088,9 +1090,9 @@ void setupLevel()
       taxiXScreen = 14;
       taxiYScreen = 14;
 
-      if(taxiXMap > 14)
+      if(taxiXMap > 13)
       {
-        screenX = taxiXMap - 15;
+        screenX = taxiXMap - 14;
         if(screenX > mapWidth - 32)
         {
           screenX = mapWidth - 32;
@@ -4612,10 +4614,11 @@ void showStatus()
 
   // If a new game is started, it is possible to jump to a higher level which has already been reached in a previous game.
   boolean levelSelection = false;
-  if(level == 1 && maximalReachedLevel > 1)
+  if(level == 1 && maximalReachedLevel > 1 && showInitialStatus)
   {
     levelSelection = true;
   }
+  showInitialStatus = false;
 
   // Frame
   matrix.setTextColor(matrix.Color333(4,2,0));
@@ -4696,7 +4699,7 @@ void showStatus()
       initializeNewLevel = true;
       changed = true;
       tone(audio,1024,20);
-      delay(100);  
+      delay(200);  
     }
     else if((joy1Right() && levelSelection && level < maximalReachedLevel && lives > 0) || (hiddenLevelJumps && joy1Fire() && joy1Right() && level < numberOfLevels && lives > 0))
     {
